@@ -1,9 +1,10 @@
 import requests
 import pprint
+import sens
 
 # Basic Info
 summoner_name = 'Enemy Graves'
-riot_key = 'RGAPI-bd171f51-9070-4067-af73-a6f888faff55'
+riot_key = sens.riot_key
 player_url = f'https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summoner_name}'
 headers = {'X-Riot-Token': riot_key}
 
