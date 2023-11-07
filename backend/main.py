@@ -1,16 +1,16 @@
 import requests
 import pprint
-import sens
+import secret
 
 # Basic Info
 summoner_name = 'Enemy Graves'
-riot_key = sens.riot_key
+riot_key = secret.riot_key
 player_url = f'https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summoner_name}'
 headers = {'X-Riot-Token': riot_key}
 
 
 # GET basic player profile
-response_player = requests.get(player_url, headers=headers)
+response_player = requests.get(player_url, headers=headers, verify=True)
 puuid = response_player.json()['puuid']
 print("puuid: "+ puuid, "status: " + str(response_player.status_code))
 
