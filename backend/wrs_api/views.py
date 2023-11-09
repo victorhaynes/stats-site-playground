@@ -11,10 +11,9 @@ import os
 
 ### Config ###
 load_dotenv()
+riot_key = os.environ["RIOT_KEY"]
+headers = {'X-Riot-Token': riot_key}
 ##############
-
-testing = os.environ["RIOT_KEY"]
-
 
 
 @api_view(['GET'])
@@ -23,12 +22,23 @@ def car_list(request):
     car_serializer = CarSerializer(cars, many=True)
     return Response({"cars": car_serializer.data})
 
+# requires "region", "gameName", "tagLine", "platform" as URL parameters
 @api_view(['GET'])
-def deprecated_get(request):
-    summoner_name = 'Enemy Graves'
-    riot_key = os.environ["RIOT_KEY"]
-    player_url = f'https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summoner_name}'
-    headers = {'X-Riot-Token': riot_key}
-    response_player = requests.get(player_url, headers=headers, verify=True)
-    puuid = response_player.json()['puuid']
-    return Response("puuid: "+ puuid)
+def search_summoner(request):
+    try:
+        account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
+        response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
+        puuid = response_account_details.json()['puuid']
+
+        encrypted_summonerID_by_puuid_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}"
+        response_summonerID = requests.get(encrypted_summonerID_by_puuid_url, headers=headers, verify=True)
+        summonerID = response_summonerID.json()['id']
+
+        league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerID}"
+        response_elo = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
+        elo = response_elo.json()[0]
+
+    except:
+        return Response("error")
+    
+    return Response(elo)

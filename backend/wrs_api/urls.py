@@ -21,5 +21,5 @@ from wrs_api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('cars/', views.car_list),
-    path('testing/', views.deprecated_get)
+    path('testing/', views.search_summoner)
 ]
