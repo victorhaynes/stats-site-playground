@@ -7,13 +7,22 @@ from django.http import JsonResponse
 import requests
 from dotenv import load_dotenv
 import os
-# SWAP RESPONSE TO JSON RESPONSE FOR PRODUCTION
+
+#### SWAP RESPONSE TO JSON RESPONSE FOR PRODUCTION
 
 ### Config ###
 load_dotenv()
 riot_key = os.environ["RIOT_KEY"]
 headers = {'X-Riot-Token': riot_key}
 ##############
+
+
+#### utility function
+def get_region(request):
+    match request.query_params.get('platform'):
+        case "americas":
+            return "na1"
+
 
 
 @api_view(['GET'])
@@ -24,7 +33,7 @@ def car_list(request):
 
 # requires "region", "gameName", "tagLine", "platform" as URL parameters
 @api_view(['GET'])
-def search_summoner(request):
+def get_summoner_profile(request):
     try:
         account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
         response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
@@ -39,6 +48,9 @@ def search_summoner(request):
         elo = response_elo.json()[0]
 
     except:
-        return Response("error")
+        return Response("error", status=status.HTTP_404_NOT_FOUND)
     
-    return Response(elo)
+    return Response(elo, status=status.HTTP_200_OK)
+
+
+
