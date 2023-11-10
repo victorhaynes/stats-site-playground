@@ -17,12 +17,11 @@ function App() {
       platform: "",
       gameName: "",
       tagLine: "",
-      // region: "",
   })
 
   const [region, setRegion] = useState("")
   
-  function helpRegion(){
+  function convertPlatformToRegion(){
     let re = ""
     if ({...summonerSearchFormData}.platform === "na1" || {...summonerSearchFormData}.platform === "oc1"){
       re = "americas"
@@ -37,7 +36,7 @@ function App() {
   }
 
   useEffect(()=>{
-    setRegion(helpRegion())
+    setRegion(convertPlatformToRegion())
   },[summonerSearchFormData])
 
   function handleSummonerSearchChange(event){

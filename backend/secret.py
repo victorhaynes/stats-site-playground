@@ -1,2 +1,2 @@
-riot_key = "RGAPI-3750a6f1-a522-4c16-9c5f-1023551b0b92"
+riot_key = "RGAPI-df309be0-df2d-4a91-b68e-1ee31fc77d80"
 django_superuser = "victorhaynes vhadmin admin@admin.admin"

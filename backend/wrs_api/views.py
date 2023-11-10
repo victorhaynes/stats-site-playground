@@ -24,16 +24,21 @@ def get_region(request):
             return "na1"
 
 
-
 @api_view(['GET'])
 def car_list(request):
     cars = Car.objects.all()
     car_serializer = CarSerializer(cars, many=True)
     return Response({"cars": car_serializer.data})
 
+
+@api_view(['GET'])
+def testing(request):
+    return JsonResponse({"message": [request.query_params.get('region'),request.query_params.get('gameName'),request.query_params.get('platform'),request.query_params.get('tagLine')]})
+
+
 # requires "region", "gameName", "tagLine", "platform" as URL parameters
 @api_view(['GET'])
-def get_summoner_profile(request):
+def get_summoner_overview(request):
     try:
         account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
         response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
@@ -48,7 +53,7 @@ def get_summoner_profile(request):
         elo = response_elo.json()[0]
 
     except:
-        return Response("error", status=status.HTTP_404_NOT_FOUND)
+        return Response("OH NO", status=status.HTTP_404_NOT_FOUND)
     
     return Response(elo, status=status.HTTP_200_OK)
 

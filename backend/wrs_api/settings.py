@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'wrs_api',
-    'rest_framework'
+    'rest_framework',
+    ## CORS
+    "corsheaders"
 ]
 
 MIDDLEWARE = [
@@ -50,9 +52,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    ## CORS
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = 'wrs_api.urls'
+
+## CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000"
+]
 
 TEMPLATES = [
     {

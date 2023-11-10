@@ -7,22 +7,25 @@ const SummonerDetail = () => {
 
     const params = useParams()
 
+
     useEffect(() => {
-        getSummonerPuuid()
+        fetchSummonerOveview()
     },[])
 
     // FROM HERE: SETUP DJANGO API BACKEND, SO THE API CAN DO THIS FETCH REQUEST, THEN I CAN QUERY AND CHAIN THE RESULTS
     // ON THE CLIENT SIDE USING AXIOS
     
-    async function getSummonerPuuid(){
-        try {
-            let response = await axios.get(`https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${params.summoner}`)
-            console.log("yay i waited")
-        } catch (error) {
+    function fetchSummonerOveview(){
+        axios.get(`http://127.0.0.1:8000/summoner-overview/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}`)
+        .then((res)=>{
+            console.log(res.data)
+        })
+        .catch((error)=>{
             console.log(error)
-        }
-    }
+        })
 
+    }
+    
     return (
         <>
             <div>SummonerDetail</div>
