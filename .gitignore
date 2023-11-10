@@ -1,3 +1,4 @@
 secret.py
 .env
 INTERNALNOTES.md
+.DS_Store

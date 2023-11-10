@@ -1,27 +1,24 @@
 import React, {useState} from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const Home = ({handleSummonerSearchChange, summonerSearchFormData,setSummonerSearchFormData}) => {
+const Home = ({handleSummonerSearchChange, summonerSearchFormData,region}) => {
 
     const navigate = useNavigate()
 
     function submitAndSearchSummoner(event){
-        let re = ""
-        if ({...summonerSearchFormData}.platform === "na1" || {...summonerSearchFormData}.platform === "oc1"){
-          re = "americas"
-        } else if ({...summonerSearchFormData}.platform === "kr" || {...summonerSearchFormData}.platform === "jp1"){
-          re = "asia"
-        // } else if ({...summonerSearchFormData}.platform == "sea" || {...summonerSearchFormData}.platform == "sea"){
-        //   re = "sea"
+        // let re = ""
+        // if ({...summonerSearchFormData}.platform === "na1" || {...summonerSearchFormData}.platform === "oc1"){
+        //   re = "americas"
+        // } else if ({...summonerSearchFormData}.platform === "kr" || {...summonerSearchFormData}.platform === "jp1"){
+        //   re = "asia"
+        // } else if ({...summonerSearchFormData}.platform === "euw1" || {...summonerSearchFormData}.platform === "eun1"){
+        //   re = "europe"
+        // } else {
+        //   re = ""
         // }
-        } else if ({...summonerSearchFormData}.platform === "euw1" || {...summonerSearchFormData}.platform === "eun1"){
-          re = "europe"
-        } else {
-          re = ""
-        }
-        setSummonerSearchFormData({...summonerSearchFormData, region:re})
+        // setSummonerSearchFormData({...summonerSearchFormData, region:re})
         event.preventDefault()
-        navigate(`/summoners/${summonerSearchFormData.platform}/${summonerSearchFormData.gameName}/${summonerSearchFormData.tagLine}`)
+        navigate(`/summoners/${region}/${summonerSearchFormData.platform}/${summonerSearchFormData.gameName}/${summonerSearchFormData.tagLine}`)
     }
 
 

@@ -27,7 +27,8 @@ const SummonerDetail = () => {
         <>
             <div>SummonerDetail</div>
             <h3>Region: {params.platform}</h3>
-            <h3>Summoner: {params.summoner}</h3>
+            <h3>Summoner: {params.gameName}</h3>
+            <h3>tagLine: {params.tagLine}</h3>
         </>
     )
 }
