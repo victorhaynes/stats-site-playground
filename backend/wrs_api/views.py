@@ -1,5 +1,5 @@
 from .models import Car
-from .serializers import CarSerializer
+from .serializers import CarSerializer, SummonerOverviewSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -49,13 +49,14 @@ def get_summoner_overview(request):
         summonerID = response_summonerID.json()['id']
 
         league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerID}"
-        response_elo = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
-        elo = response_elo.json()[0]
+        response_overview = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
+        overview = response_overview.json()[0]
 
+        summoner_overview_serializer = SummonerOverviewSerializer(overview)
     except:
-        return Response("OH NO", status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": "Cannot Fetch From Riot API."}, status=status.HTTP_400_BAD_REQUEST)
     
-    return Response(elo, status=status.HTTP_200_OK)
+    return Response(summoner_overview_serializer.data, status=status.HTTP_200_OK)
 
 
 
