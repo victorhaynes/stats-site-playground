@@ -92,7 +92,7 @@ def get_match_history(request):
         for match in matches:
             match_detail_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/{match}'
             response_match_detail = requests.get(match_detail_url, headers=headers, verify=True)
-            match_history.append(response_match_detail.json())
+            match_history.append(response_match_detail.json()['info']['participants'])
 
         return Response(match_history)
 

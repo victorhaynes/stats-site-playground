@@ -33,6 +33,10 @@ const SummonerDetail = () => {
         }
     }
 
+    function renderMatchHistory(){
+        // write function that maps through match history state and renders elements
+    }
+
     return (
         <>
             <h1>{params.gameName} #{params.tagLine}</h1>

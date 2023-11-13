@@ -111,3 +111,7 @@ pid = "ov8JXNYMSJniDq64EfgegywEQWxFCJ2YFCXXSG8-92SUcsAq2wuznZrxamByvvrqV0Kpde6XA
 e_id = "183JkygBT9DGzkWeJNXJ0SekGHJwAkAKo3RigjYm1SSDAfQE8hL1KDH6sw"
 accountId = "uhEnek-BvrTInm1QFbNilSSNDw2A2ynbEBYHuoPa7jIKKCSwGzuqUD9i"
 bwipo_game = "NA1_4828761378"
+
+
+    # "puuid": "lj0l8sYJSuZRO40_XBXeQ5RwssEx80UUdvP1P89kA3qpTrg0upbnA9LIWSB2eWoSAiKVxrc9KMtKfg",
+    # "name": "Convolutional",
