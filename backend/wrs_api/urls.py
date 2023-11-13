@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('cars/', views.car_list),
     path('summoner-overview/', views.get_summoner_overview),
-    path('test/', views.testing)
-
+    path('match-history/', views.get_match_history),
+    path('test/', views.testing),
+    path('test2/', views.testing2)
 ]

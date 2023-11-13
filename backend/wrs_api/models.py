@@ -20,3 +20,4 @@ class SummonerOverview(models.Model):
         inactive = models.BooleanField()
         freshBlood = models.BooleanField()
         hotStreak = models.BooleanField()
+        puuid = models.CharField(max_length=200, blank=True)

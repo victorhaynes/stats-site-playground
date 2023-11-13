@@ -10,6 +10,7 @@ const SummonerDetail = () => {
 
     useEffect(() => {
         fetchSummonerOveview()
+        fetchMatchHistory()
     },[])
 
     
@@ -23,29 +24,20 @@ const SummonerDetail = () => {
         }
     }
 
-    // function renderRank(){
-    //     let iconPath = ""
-    //     switch(summonerOverview.tier){
-    //         case "IRON":
-    //             return iconPath = "/"
-    //         case "BRONZE":
-    //         case "SILVER":
-    //         case "GOLD":
-    //         case "PLATINUM":
-    //         case "EMERALD":
-    //         case "DIAMOND":
-    //         case "MASTER":
-    //         case "GRANDMASTER":
-    //         case "CHALLENGER":
+    async function fetchMatchHistory(){
+        try {
+            let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&gameName=${params.gameName}&tagLine=${params.tagLine}`)
+            console.log(response.data)
+        } catch (error) {
+            console.log({[error.response.request.status]: error.response.data})
+        }
+    }
 
-    //     }
-    // }
-    
     return (
         <>
             <h1>{params.gameName} #{params.tagLine}</h1>
             <h2>Ranked Solo Queue:</h2>
-            <img width="150" height ="150" src={process.env.PUBLIC_URL + '/assets/RankPlatinum.png'} /> 
+            <img width="150" height ="150" src={process.env.PUBLIC_URL + `/assets/Rank${summonerOverview?.tier?.toLowerCase()}.png`} /> 
             <plaintext>{summonerOverview.tier} {summonerOverview.rank}</plaintext>
             <plaintext>Wins: {summonerOverview.wins} Losses:{summonerOverview.losses}</plaintext>
             <plaintext>Win Rate {Math.round(summonerOverview.wins/(summonerOverview.wins + summonerOverview.losses)*100)}%</plaintext>
@@ -54,3 +46,31 @@ const SummonerDetail = () => {
 }
 
 export default SummonerDetail
+
+
+   // function renderRank(){
+    //     let iconPath = ""
+    //     switch(summonerOverview.tier){
+    //         case "IRON":
+    //             return iconPath = "/RankIron.png"
+    //         case "BRONZE":
+    //             return iconPath = "/RankBronze.png"
+    //         case "SILVER":
+    //             return iconPath = "/RankSilver.png"
+    //         case "GOLD":
+    //             return iconPath = "/RankGold.png"
+    //         case "PLATINUM":
+    //             return iconPath = "/RankPlatinum.png"
+    //         case "EMERALD":
+    //             return iconPath = "/RankEmerald.png"
+    //         case "DIAMOND":
+    //             return iconPath = "/RankDiamond.png"
+    //         case "MASTER":
+    //             return iconPath = "/RankMaster.png"
+    //         case "GRANDMASTER":
+    //             return iconPath = "/RannkGrandMaster.png"
+    //         case "CHALLENGER":
+    //             return iconPath = "/RankChallenger.png"
+
+    //     }
+    // }
