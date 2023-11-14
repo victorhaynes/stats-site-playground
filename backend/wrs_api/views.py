@@ -70,7 +70,7 @@ def get_summoner_overview(request):
         summoner_overview_serializer = SummonerOverviewSerializer(overview)
     except:
         return Response({"message": "Failed to Fetch Summoner Overview."}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     return Response(summoner_overview_serializer.data, status=status.HTTP_200_OK)
 
 
@@ -82,19 +82,26 @@ def get_match_history(request):
         puuid = response_account_details.json()['puuid']
 
         start = 0
-        count = 20 # must be <= 100
-        queue = "ranked"
-        matches_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&type={queue}'
+        count = 10 # must be <= 100
+
+        if request.query_params.get('type'):
+            matches_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&type={request.query_params.get("type")}'
+        else:
+            matches_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}'
+
         response_matches = requests.get(matches_url, headers=headers, verify=True)
         matches = response_matches.json()
-
+        
         match_history = []
         for match in matches:
             match_detail_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/{match}'
             response_match_detail = requests.get(match_detail_url, headers=headers, verify=True)
+            if response_match_detail.status_code != 200:
+                return Response(response_match_detail)
             match_history.append(response_match_detail.json())
-
+        
         return Response(match_history)
 
     except:
         return Response({"message": "Failed to Fetch Match History."}, status=status.HTTP_400_BAD_REQUEST)
+

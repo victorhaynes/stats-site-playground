@@ -11,57 +11,60 @@ const SummonerDetail = () => {
 
     useEffect(() => {
         fetchSummonerOveview()
-        fetchMatchHistory()
+        fetchMatchHistory("ranked")
     },[])
 
-    
-    async function fetchSummonerOveview(){
-        try {
-            let response = await axios.get(`http://127.0.0.1:8000/summoner-overview/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}`)
-            console.log(response.data)
-            setSummonerOverview(response.data)
-        } catch (error) {
-            console.log({[error.response.request.status]: error.response.data})
-        }
-    }
 
-    async function fetchMatchHistory(){
-        try {
-            let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&gameName=${params.gameName}&tagLine=${params.tagLine}`)
-            console.log(response.data)
-            setMatchHistory(response.data)
-        } catch (error) {
-            console.log({[error.response.request.status]: error.response.data})
-        }
+async function fetchSummonerOveview(){
+    try {
+        let response = await axios.get(`http://127.0.0.1:8000/summoner-overview/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}`)
+        console.log(response.data)
+        setSummonerOverview(response.data)
+    } catch (error) {
+        console.log({[error.response.request.status]: error.response.data})
     }
+}
 
-    function renderMatchHistory(){
-        return matchHistory.map((match)=>{
-            return (
-                <>
-                    <div>
-                        <>Game ID: {match.info.gameId}<br></br></>
-                        {match.info.participants.map((participant)=>{
-                            return <>{participant.summonerName}<br></br></>
-                        })}
-                    </div>
-                    <br></br>
-                </>
-            )
-        })
+async function fetchMatchHistory(type=""){
+
+    let queueTypeParameter = type ? `&type=${type}` : ""
+
+    try {
+        let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueTypeParameter}`)
+        console.log(response.data)
+        setMatchHistory(response.data)
+    } catch (error) {
+        console.log({[error.response.request.status]: error.response.data})
     }
+}
 
-    return (
-        <>
-            <h1>{params.gameName} #{params.tagLine}</h1>
-            <h2>Ranked Solo Queue:</h2>
-            <img width="150" height ="150" src={process.env.PUBLIC_URL + `/assets/Rank${summonerOverview?.tier?.toLowerCase()}.png`} /> 
-            <plaintext>{summonerOverview.tier} {summonerOverview.rank}</plaintext>
-            <plaintext>Wins: {summonerOverview.wins} Losses:{summonerOverview.losses}</plaintext>
-            <plaintext>Win Rate {Math.round(summonerOverview.wins/(summonerOverview.wins + summonerOverview.losses)*100)}%</plaintext>
-            {renderMatchHistory()}
-        </>
-    )
+function renderMatchHistory(){
+    return matchHistory.map((match)=>{
+        return (
+            <>
+                <div>
+                    <>Game ID: {match?.info?.gameId}<br></br></>
+                    {match?.info?.participants?.map((participant)=>{
+                        return <>{participant.summonerName}<br></br></>
+                    })}
+                </div>
+                <br></br>
+            </>
+        )
+    })
+}
+
+return (
+    <>
+        <h1>{params.gameName} #{params.tagLine}</h1>
+        <h2>Ranked Solo Queue:</h2>
+        <img width="150" height ="150" src={process.env.PUBLIC_URL + `/assets/Rank${summonerOverview?.tier?.toLowerCase()}.png`} /> 
+        <plaintext>{summonerOverview.tier} {summonerOverview.rank}</plaintext>
+        <plaintext>Wins: {summonerOverview.wins} Losses:{summonerOverview.losses}</plaintext>
+        <plaintext>Win Rate {Math.round(summonerOverview.wins/(summonerOverview.wins + summonerOverview.losses)*100)}%</plaintext>
+        {renderMatchHistory()}
+    </>
+)
 }
 
 export default SummonerDetail
