@@ -82,10 +82,10 @@ def get_match_history(request):
         puuid = response_account_details.json()['puuid']
 
         start = 0
-        count = 10 # must be <= 100
+        count = 5 # must be <= 100
 
-        if request.query_params.get('type'):
-            matches_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&type={request.query_params.get("type")}'
+        if request.query_params.get('queue'):
+            matches_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&queue={request.query_params.get("queue")}'
         else:
             matches_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}'
 

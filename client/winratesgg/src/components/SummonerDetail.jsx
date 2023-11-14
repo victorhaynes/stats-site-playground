@@ -11,7 +11,7 @@ const SummonerDetail = () => {
 
     useEffect(() => {
         fetchSummonerOveview()
-        fetchMatchHistory("ranked")
+        fetchMatchHistory()
     },[])
 
 
@@ -25,12 +25,12 @@ async function fetchSummonerOveview(){
     }
 }
 
-async function fetchMatchHistory(type=""){
+async function fetchMatchHistory(queueId=""){
 
-    let queueTypeParameter = type ? `&type=${type}` : ""
-
+    let queueUrlParameter = queueId ? `&queue=${queueId}` : ""
+    console.log(queueUrlParameter)
     try {
-        let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueTypeParameter}`)
+        let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}`)
         console.log(response.data)
         setMatchHistory(response.data)
     } catch (error) {
@@ -47,6 +47,7 @@ function renderMatchHistory(){
                     {match?.info?.participants?.map((participant)=>{
                         return <>{participant.summonerName}<br></br></>
                     })}
+                    <>queueId: {match?.info?.queueId}</>
                 </div>
                 <br></br>
             </>
@@ -56,6 +57,8 @@ function renderMatchHistory(){
 
 return (
     <>
+        <button onClick={fetchMatchHistory}>All</button><button onClick={()=>fetchMatchHistory("420")}>Ranked Solo/Duo</button><button onClick={()=>fetchMatchHistory("400")}>Normal</button><button onClick={()=>fetchMatchHistory("450")}>ARAM</button><button onClick={()=>fetchMatchHistory("440")}>Flex</button>
+        <button onClick={()=>fetchMatchHistory("700")}>Clash</button><button onClick={()=>fetchMatchHistory("1300")}>Nexus Blitz</button>
         <h1>{params.gameName} #{params.tagLine}</h1>
         <h2>Ranked Solo Queue:</h2>
         <img width="150" height ="150" src={process.env.PUBLIC_URL + `/assets/Rank${summonerOverview?.tier?.toLowerCase()}.png`} /> 
@@ -70,29 +73,11 @@ return (
 export default SummonerDetail
 
 
-   // function renderRank(){
-    //     let iconPath = ""
-    //     switch(summonerOverview.tier){
-    //         case "IRON":
-    //             return iconPath = "/RankIron.png"
-    //         case "BRONZE":
-    //             return iconPath = "/RankBronze.png"
-    //         case "SILVER":
-    //             return iconPath = "/RankSilver.png"
-    //         case "GOLD":
-    //             return iconPath = "/RankGold.png"
-    //         case "PLATINUM":
-    //             return iconPath = "/RankPlatinum.png"
-    //         case "EMERALD":
-    //             return iconPath = "/RankEmerald.png"
-    //         case "DIAMOND":
-    //             return iconPath = "/RankDiamond.png"
-    //         case "MASTER":
-    //             return iconPath = "/RankMaster.png"
-    //         case "GRANDMASTER":
-    //             return iconPath = "/RannkGrandMaster.png"
-    //         case "CHALLENGER":
-    //             return iconPath = "/RankChallenger.png"
-
-    //     }
-    // }
+// Queue IDs:
+// 1300 = nb
+// 420 = ranked
+// 400 = normal
+// aram = 450
+// flex = 440
+// clash = 700
+// arena = ? not out yet, comes back on nov 22nd
