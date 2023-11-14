@@ -69,7 +69,7 @@ def get_summoner_overview(request):
 
         summoner_overview_serializer = SummonerOverviewSerializer(overview)
     except:
-        return Response({"message": "Failed to Fetch From Riot API."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Failed to Fetch Summoner Overview."}, status=status.HTTP_400_BAD_REQUEST)
     
     return Response(summoner_overview_serializer.data, status=status.HTTP_200_OK)
 
@@ -92,9 +92,9 @@ def get_match_history(request):
         for match in matches:
             match_detail_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/{match}'
             response_match_detail = requests.get(match_detail_url, headers=headers, verify=True)
-            match_history.append(response_match_detail.json()['info']['participants'])
+            match_history.append(response_match_detail.json())
 
         return Response(match_history)
 
     except:
-        return Response({"message": "Failed to Fetch From Riot API."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Failed to Fetch Match History."}, status=status.HTTP_400_BAD_REQUEST)
