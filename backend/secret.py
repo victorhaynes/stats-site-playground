@@ -1,4 +1,4 @@
-riot_key = "RGAPI-f89cf450-a0eb-482b-93ab-b02fcb33d366"
+riot_key = "RGAPI-38ad8bd7-88ec-48e9-b048-b8daf2254c29"
 django_superuser = "victorhaynes vhadmin admin@admin.admin"
 
 puuid = "f649YxVWblcWTKMjnLYAZTKlbH6b3iNEZXf9-HXZhxxJRBSQ-Zws7v6jErBh0tzyVS9VNo50FHK3rA "
@@ -115,3 +115,9 @@ bwipo_game = "NA1_4828761378"
 
     # "puuid": "lj0l8sYJSuZRO40_XBXeQ5RwssEx80UUdvP1P89kA3qpTrg0upbnA9LIWSB2eWoSAiKVxrc9KMtKfg",
     # "name": "Convolutional",
+
+
+# Tallish
+# puuid - aYWKw--LdXozLfm-HJ8OFiHW9vKVUZLzwnsLvJFufYsmr4Xdjnac-3-u_2lRJPQZ6Z2Eop0EbJdOwQ
+# gameName Tallish
+# tagLine NA1
