@@ -1,5 +1,5 @@
 import React from 'react'
-import { useParams, Link, Navigate } from 'react-router-dom'
+import { useParams, Link, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 
@@ -10,11 +10,19 @@ const SummonerDetail = () => {
     const [summonerOverview, setSummonerOverview] = useState({})
     const [matchHistory, setMatchHistory] = useState([])
     const [again, setAgain] = useState(0)
+    const location = useLocation()
+
+
+
+    // useEffect(() => {
+    //     fetchSummonerOveview()
+    //     fetchMatchHistory()
+    // },[again, pathName])
 
     useEffect(() => {
         fetchSummonerOveview()
         fetchMatchHistory()
-    },[again])
+    },[location.pathname])
 
 
 async function fetchSummonerOveview(){
@@ -45,7 +53,7 @@ function navAndSearchParticipant(gName = "I will trade", tLine ="NA1"){
     // additionally, in the "Link" make sure that we are passing in gameName and tagLine from the individual participant once riot populates
     setSummonerOverview({})
     setMatchHistory([])
-    setAgain((old)=>old+1)
+    // setAgain((old)=>old+1)
 } 
 
 
@@ -57,6 +65,7 @@ function renderMatchHistory(){
                     <>Game ID: {match?.info?.gameId}<br></br></>
                     {match?.info?.participants?.map((participant)=>{
                         return <Link to={`/summoners/${params.region}/${params.platform}/I will trade/NA1`} onClick={navAndSearchParticipant}>{participant.summonerName}<br></br></Link>
+                        // return <Link to={`/summoners/${params.region}/${params.platform}/I will trade/NA1`}>{participant.summonerName}<br></br></Link>
                     })}
                     <>queueId: {match?.info?.queueId}</>
                 </div>
