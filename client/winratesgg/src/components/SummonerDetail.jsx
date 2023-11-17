@@ -9,7 +9,7 @@ const SummonerDetail = () => {
     const params = useParams()
     const [summonerOverview, setSummonerOverview] = useState({})
     const [matchHistory, setMatchHistory] = useState([])
-    const [again, setAgain] = useState(0)
+    // const [again, setAgain] = useState(0)
     const location = useLocation()
 
 
@@ -56,18 +56,32 @@ function navAndSearchParticipant(gName = "I will trade", tLine ="NA1"){
     // setAgain((old)=>old+1)
 } 
 
+// function isolateIndividualStats(match){
+//     let individualStats = match?.info?.participants?.filter((player) => player.summonerName == "Enemy Graves")[0]
+//     return individualStats
+// }
+
 
 function renderMatchHistory(){
     return matchHistory.map((match)=>{
+        let individualStats = match?.info?.participants?.filter((player) => player.summonerName == "Enemy Graves")[0]
         return (
             <>
                 <div>
-                    <>Game ID: {match?.info?.gameId}<br></br></>
+                    <>Match ID: {match?.metadata?.matchId}<br></br></>
+                    <>queueId: {match?.info?.queueId}</>
+                    <h3>{individualStats?.championName}</h3>
+                    <h3>Role {individualStats?.teamPosition ? individualStats.teamPosition  : "ARAM/NB"}, </h3>
+                    <h3>Outcome: {individualStats?.win ? "Victory" : "Defeat"}</h3>
+                    <h3>Damage: {individualStats?.totalDamageDealtToChampions}, Damage Taken: {individualStats?.totalDamageTaken}</h3>
                     {match?.info?.participants?.map((participant)=>{
-                        return <Link to={`/summoners/${params.region}/${params.platform}/I will trade/NA1`} onClick={navAndSearchParticipant}>{participant.summonerName}<br></br></Link>
+                        return (
+                            <div>
+                                <Link to={`/summoners/${params.region}/${params.platform}/I will trade/NA1`} onClick={navAndSearchParticipant}>{participant.summonerName}<br></br></Link>
+                            </div>
+                        )
                         // return <Link to={`/summoners/${params.region}/${params.platform}/I will trade/NA1`}>{participant.summonerName}<br></br></Link>
                     })}
-                    <>queueId: {match?.info?.queueId}</>
                 </div>
                 <br></br>
             </>
