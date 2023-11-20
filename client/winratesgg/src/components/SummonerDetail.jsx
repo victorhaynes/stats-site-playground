@@ -47,11 +47,6 @@ const SummonerDetail = () => {
         setMatchHistory([])
     } 
 
-    // function isolateIndividualStats(match){
-    //     let individualStats = match?.info?.participants?.filter((player) => player.summonerName == "Enemy Graves")[0]
-    //     return individualStats
-    // }
-
     function renderItemIcons(individualStats){
         return (
             <>
@@ -72,34 +67,111 @@ const SummonerDetail = () => {
             )
     }
 
+    function renderHighestStreak(individualStats){
+        if(individualStats?.pentaKills){
+            return "PENTA KILL"
+        } else if (individualStats?.quadraKills){
+            return "QUADRA KILL"
+        } else if (individualStats?.tripleKills){
+            return "TRIPLE KILL"
+        } else if (individualStats?.doubleKills){
+            return "DOUBLE KILL"
+        } else {
+            return null
+        }
+    }
+
+
+    function calculateCs(individualStats, match){
+        let totalCs = individualStats?.neutralMinionsKilled + individualStats?.totalMinionsKilled
+        let gameLengthMinutes = match?.info?.gameDuration / 60
+        let csPerMin = totalCs / gameLengthMinutes
+
+        return (<plaintext>CS: {totalCs} ({csPerMin.toFixed(1)})</plaintext>)
+
+    }
+
+    // CHANGE THIS TO PARTICIPANT.RIOTID AND TAGLINE AND CHANGE URL TO THE GAMENAME AND TAGLINE
+    function renderParticipants(match){
+        let blueSide = match?.info?.participants?.filter((participant) => {
+            return parseInt(participant.teamId) === 100
+        })
+        let redSide = match?.info.participants?.filter((participant) => {
+            return parseInt(participant.teamId) === 200
+        })
+
+        return (
+            <div>
+                <h4>Blue Team:</h4>
+                    {blueSide.map((participant, index)=>{
+                        return (
+                            <div key={index}>
+                                <Link to={`/summoners/${params.region}/${params.platform}/I will trade/NA1`} onClick={navAndSearchParticipant}>{participant.summonerName}<br></br></Link>
+                            </div>
+                        )
+                    })}
+                <h4>Red Team:</h4>
+                    {redSide.map((participant, index)=>{
+                        return (
+                            <div key={index}>
+                                <Link to={`/summoners/${params.region}/${params.platform}/I will trade/NA1`} onClick={navAndSearchParticipant}>{participant.summonerName}<br></br></Link>
+                            </div>
+                        )
+                    })}
+            </div>
+        )
+
+    }
+
+    function renderGameModeRole(match, individualStats){
+        let gameType = ""
+        if (parseInt(match?.info?.queueId) === 420){
+            gameType = "Solo Ranked"
+        } else if (parseInt(match?.info?.queueId) === 400){
+            gameType = "Normal"
+        } else if (parseInt(match?.info?.queueId) === 450){
+            gameType = "ARAM"
+        } else if (parseInt(match?.info?.queueId) === 440){
+            gameType = "Flex"
+        } else if (parseInt(match?.info?.queueId) === 700){
+            gameType = "Clash"
+        } else if (parseInt(match?.info?.queueId) === 1300){
+            gameType = "Nexus Blitz"
+        } else {
+            gameType = "GAME TYPE NOT FOUND"
+        }
+        
+        return (
+            <>
+                {/* <>Match ID: {match?.metadata?.matchId}<br></br></> */}
+                {/* <>queueId: {match?.info?.queueId}</> */}
+                {/* <>{gameType}</> */}
+                <plaintext>{gameType}</plaintext>
+                <plaintext>{individualStats?.teamPosition ? <>{individualStats?.teamPosition}</> :null }</plaintext>
+            </>
+        )
+    }
 
     function renderMatchHistory(){
         return matchHistory.map((match, index)=>{
+            // CHANGE THIS TO PLAYER.RIOTID AND TAGLINE TO === PARAMS.RIOT ID AND TAGLINE WHEN RIOT API IS FIXED
             let individualStats = match?.info?.participants?.filter((player) => player.summonerName === "Enemy Graves")[0]
             return (
-                // <>
                     <div key={index}>
-                        <>Match ID: {match?.metadata?.matchId}<br></br></>
-                        <>queueId: {match?.info?.queueId}</>
                         <h3>{individualStats?.championName}</h3>
+                        {renderGameModeRole(match, individualStats)}
+                        <plaintext>{renderHighestStreak(individualStats)}</plaintext>
+                        {calculateCs(individualStats, match)}
                         {renderChampionIcon(individualStats)}
                         {renderSummonerSpells(individualStats)}
                         <div>
                             {renderItemIcons(individualStats)}
                         </div>
-                        <h3>Role {individualStats?.teamPosition ? individualStats.teamPosition  : "ARAM/NB"}, </h3>
-                        <h3>Outcome: {individualStats?.win ? "Victory" : "Defeat"}</h3>
+                        <h3>{individualStats?.win ? "VICTORY" : "DEFEAT"}</h3>
                         <h3>Damage: {individualStats?.totalDamageDealtToChampions}, Damage Taken: {individualStats?.totalDamageTaken}</h3>
-                        {match?.info?.participants?.map((participant, index)=>{
-                            return (
-                                <div key={index}>
-                                    <Link to={`/summoners/${params.region}/${params.platform}/I will trade/NA1`} onClick={navAndSearchParticipant}>{participant.summonerName}<br></br></Link>
-                                </div>
-                            )
-                        })}
+                        {renderParticipants(match)}
                         <br></br>
                     </div>
-                // </>
             )
         })
 }
@@ -113,7 +185,7 @@ return (
         <button onClick={()=>fetchMatchHistory("700")}>Clash</button><button onClick={()=>fetchMatchHistory("1300")}>Nexus Blitz</button>
         <h1>{params.gameName} #{params.tagLine}</h1>
         <h2>Ranked Solo Queue:</h2>
-        <img width="150" height ="150" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank${summonerOverview?.tier?.toLowerCase()}.png`} /> 
+        <img width="150" height ="150" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank${summonerOverview?.tier?.toLowerCase()}.png`} /> 
         <plaintext>{summonerOverview.tier} {summonerOverview.rank}</plaintext>
         <plaintext>Wins: {summonerOverview.wins} Losses:{summonerOverview.losses}</plaintext>
         <plaintext>Win Rate {Math.round(summonerOverview.wins/(summonerOverview.wins + summonerOverview.losses)*100)}%</plaintext>

@@ -1,4 +1,4 @@
-riot_key = "RGAPI-5f5bb99e-d799-466d-80ba-7404a9c3af7d"
+riot_key = "RGAPI-67feac3f-f2c3-4664-8e36-76cadf0ac1de"
 django_superuser = "victorhaynes vhadmin admin@admin.admin"
 
 puuid = "f649YxVWblcWTKMjnLYAZTKlbH6b3iNEZXf9-HXZhxxJRBSQ-Zws7v6jErBh0tzyVS9VNo50FHK3rA "
