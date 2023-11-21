@@ -82,13 +82,54 @@ const SummonerDetail = () => {
     }
 
 
-    function calculateCs(individualStats, match){
+    function calculateCsGold(individualStats, match){
         let totalCs = individualStats?.neutralMinionsKilled + individualStats?.totalMinionsKilled
         let gameLengthMinutes = match?.info?.gameDuration / 60
         let csPerMin = totalCs / gameLengthMinutes
+        let gold = individualStats?.goldEarned
+        let goldPerMin = gold / gameLengthMinutes
 
-        return (<plaintext>CS: {totalCs} ({csPerMin.toFixed(1)})</plaintext>)
+        return (
+            <>
+                <plaintext>CS: {totalCs} ({csPerMin.toFixed(1)})</plaintext>
+                <plaintext>Gold/min: {goldPerMin.toFixed(1)}</plaintext>
+            </>
+        )
+    }
 
+    function calculateGameTimes(match){
+        let gameEndTime = match?.info?.gameEndTimestamp
+        let now = Date.now()
+        let unixTimeHoursAgo = (now - gameEndTime) / 1000 / 60 / 60
+        let daysAgo = 0
+        let minutesAgo = 0 
+        let hoursAgo = 0
+
+        if(unixTimeHoursAgo < 1){
+            minutesAgo = Math.round(unixTimeHoursAgo * 60)
+        } else if (unixTimeHoursAgo > 24){
+            daysAgo = Math.floor(unixTimeHoursAgo/24)
+        } else if (unixTimeHoursAgo >= 1 && unixTimeHoursAgo < 24){
+            hoursAgo = Math.round(unixTimeHoursAgo)
+            minutesAgo = Math.round((unixTimeHoursAgo % 24) * 60)
+        }
+        
+        let duration = new Date(match?.info?.gameDuration * 1000)
+        let durationString = duration.toUTCString()
+        let formattedDuration = durationString.slice(-11,-4)
+        let individualDurations = formattedDuration.split(":")
+        let gameHours = parseInt(individualDurations[0])
+        let gameMinutes = parseInt(individualDurations[1])
+        let gameSeconds = parseInt(individualDurations[2])
+
+        return (
+            <>
+                {gameHours ? <plaintext>{gameHours}h {gameMinutes}m {gameSeconds}s</plaintext> : <plaintext>{gameMinutes}m {gameSeconds}s</plaintext>}
+                {daysAgo ? <plaintext>{daysAgo} day(s) ago</plaintext> : null}
+                {(!daysAgo && hoursAgo) ? <plaintext>{hoursAgo} hour(s) ago</plaintext> : null}
+                {(!daysAgo && hoursAgo < 1 && minutesAgo) ? <plaintext>{minutesAgo} minute(s) ago</plaintext> : null}
+            </>
+        )
     }
 
     // CHANGE THIS TO PARTICIPANT.RIOTID AND TAGLINE AND CHANGE URL TO THE GAMENAME AND TAGLINE
@@ -96,7 +137,7 @@ const SummonerDetail = () => {
         let blueSide = match?.info?.participants?.filter((participant) => {
             return parseInt(participant.teamId) === 100
         })
-        let redSide = match?.info.participants?.filter((participant) => {
+        let redSide = match?.info?.participants?.filter((participant) => {
             return parseInt(participant.teamId) === 200
         })
 
@@ -129,18 +170,30 @@ const SummonerDetail = () => {
             gameType = "Solo Ranked"
         } else if (parseInt(match?.info?.queueId) === 400){
             gameType = "Normal"
+        } else if (parseInt(match?.info?.queueId) === 490){
+            gameType = "Quick Play"
         } else if (parseInt(match?.info?.queueId) === 450){
             gameType = "ARAM"
+        } else if (parseInt(match?.info?.queueId) === 1300){
+            gameType = "Nexus Blitz"
+        } else if (parseInt(match?.info?.queueId) === 1700){
+            gameType = "Arena"
         } else if (parseInt(match?.info?.queueId) === 440){
             gameType = "Flex"
         } else if (parseInt(match?.info?.queueId) === 700){
             gameType = "Clash"
-        } else if (parseInt(match?.info?.queueId) === 1300){
-            gameType = "Nexus Blitz"
+        } else if (parseInt(match?.info?.queueId) === 900){
+            gameType = "ARUF"
+        } else if (parseInt(match?.info?.queueId) === 1900){
+            gameType = "Pick URF"
+        } else if (parseInt(match?.info?.queueId) === 1020){
+            gameType = "One For All"
+        } else if (parseInt(match?.info?.queueId) === 470){
+            gameType = "(N) Twisted Treeline"
         } else {
-            gameType = "GAME TYPE NOT FOUND"
+            gameType = "Unknown Game Mode"
         }
-        
+
         return (
             <>
                 {/* <>Match ID: {match?.metadata?.matchId}<br></br></> */}
@@ -158,17 +211,20 @@ const SummonerDetail = () => {
             let individualStats = match?.info?.participants?.filter((player) => player.summonerName === "Enemy Graves")[0]
             return (
                     <div key={index}>
-                        <h3>{individualStats?.championName}</h3>
+                        <h1>------------------------------</h1>
+                        <h3>{individualStats?.championName} {`[${individualStats?.champLevel}]`}</h3>
                         {renderGameModeRole(match, individualStats)}
                         <plaintext>{renderHighestStreak(individualStats)}</plaintext>
-                        {calculateCs(individualStats, match)}
+                        {calculateCsGold(individualStats, match)}
+                        {calculateGameTimes(match)}
                         {renderChampionIcon(individualStats)}
                         {renderSummonerSpells(individualStats)}
                         <div>
                             {renderItemIcons(individualStats)}
                         </div>
                         <h3>{individualStats?.win ? "VICTORY" : "DEFEAT"}</h3>
-                        <h3>Damage: {individualStats?.totalDamageDealtToChampions}, Damage Taken: {individualStats?.totalDamageTaken}</h3>
+                        <plaintext>Damage: {individualStats?.totalDamageDealtToChampions}</plaintext>
+                        <plaintext>Damage Taken: {individualStats?.totalDamageTaken}</plaintext>
                         {renderParticipants(match)}
                         <br></br>
                     </div>
@@ -181,8 +237,8 @@ const SummonerDetail = () => {
 
 return (
     <>
-        <button onClick={fetchMatchHistory}>All</button><button onClick={()=>fetchMatchHistory("420")}>Ranked Solo/Duo</button><button onClick={()=>fetchMatchHistory("400")}>Normal</button><button onClick={()=>fetchMatchHistory("450")}>ARAM</button><button onClick={()=>fetchMatchHistory("440")}>Flex</button>
-        <button onClick={()=>fetchMatchHistory("700")}>Clash</button><button onClick={()=>fetchMatchHistory("1300")}>Nexus Blitz</button>
+        <button onClick={()=>fetchMatchHistory()}>All</button><button onClick={()=>fetchMatchHistory("420")}>Ranked Solo/Duo</button><button onClick={()=>fetchMatchHistory("400")}>Normal</button><button onClick={()=>fetchMatchHistory("490")}>Quick Play</button><button onClick={()=>fetchMatchHistory("450")}>ARAM</button><button onClick={()=>fetchMatchHistory("440")}>Flex</button>
+        <button onClick={()=>fetchMatchHistory("700")}>Clash</button><button onClick={()=>fetchMatchHistory("1300")}>Nexus Blitz</button><button onClick={()=>fetchMatchHistory("1700")}>Arena</button>
         <h1>{params.gameName} #{params.tagLine}</h1>
         <h2>Ranked Solo Queue:</h2>
         <img width="150" height ="150" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank${summonerOverview?.tier?.toLowerCase()}.png`} /> 
@@ -196,13 +252,3 @@ return (
 
 export default SummonerDetail
 
-
-// Queue IDs:
-// 1300 = nb
-// 420 = ranked
-// 400 = normal
-// aram = 450
-// flex = 440
-// clash = 700
-// arena = ? not out yet, comes back on nov 22nd
-// custom ?
