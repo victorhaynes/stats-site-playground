@@ -147,7 +147,7 @@ const SummonerDetail = () => {
                     {blueSide.map((participant, index)=>{
                         return (
                             <div key={index}>
-                                <Link to={`/summoners/${params.region}/${params.platform}/I will trade/NA1`} onClick={navAndSearchParticipant}>{participant.summonerName}<br></br></Link>
+                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
                             </div>
                         )
                     })}
@@ -155,7 +155,7 @@ const SummonerDetail = () => {
                     {redSide.map((participant, index)=>{
                         return (
                             <div key={index}>
-                                <Link to={`/summoners/${params.region}/${params.platform}/I will trade/NA1`} onClick={navAndSearchParticipant}>{participant.summonerName}<br></br></Link>
+                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
                             </div>
                         )
                     })}
@@ -208,7 +208,11 @@ const SummonerDetail = () => {
     function renderMatchHistory(){
         return matchHistory.map((match, index)=>{
             // CHANGE THIS TO PLAYER.RIOTID AND TAGLINE TO === PARAMS.RIOT ID AND TAGLINE WHEN RIOT API IS FIXED
-            let individualStats = match?.info?.participants?.filter((player) => player.summonerName === "Enemy Graves")[0]
+            // let individualStats = match?.info?.participants?.filter((player) => player.summonerName === "Enemy Graves")[0]
+            let individualStats = match?.info?.participants?.filter((player) => {
+                return player.riotIdGameName?.toLowerCase() === (params.gameName).toLowerCase() && player.riotIdTagline?.toLowerCase() === params.tagLine.toLowerCase()
+            })[0]
+            // let individualStats = match?.info?.participants?.filter((player) => ((player?.riotIdGameName)?.toLowerCase() === (params.gameName.toLowerCase().replace("%20"," ")) && (player?.riotIdTagline)?.toLowerCase) === (params.tagLine).toLowerCase())[0]
             return (
                     <div key={index}>
                         <h1>------------------------------</h1>
