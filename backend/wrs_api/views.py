@@ -105,3 +105,15 @@ def get_match_history(request):
     except:
         return Response({"message": "Failed to Fetch Match History."}, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET'])
+def test_puuid(request):
+    try:
+        # account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
+        url = "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/vanilli%20vanilli/vv2"
+        response_account_details = requests.get(url, headers=headers, verify=True)
+        puuid = response_account_details.json()['puuid']
+    except:
+        # return Response(response_account_details.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(requests.get(url, headers=headers, verify=True))
+    return Response(puuid, status=status.HTTP_200_OK)

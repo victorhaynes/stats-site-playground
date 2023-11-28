@@ -24,5 +24,6 @@ urlpatterns = [
     path('summoner-overview/', views.get_summoner_overview),
     path('match-history/', views.get_match_history),
     path('test/', views.testing),
-    path('test2/', views.testing2)
+    path('test2/', views.testing2),
+    path('puuidtest/', views.test_puuid)
 ]
