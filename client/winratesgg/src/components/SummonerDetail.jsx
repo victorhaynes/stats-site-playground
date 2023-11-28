@@ -207,12 +207,9 @@ const SummonerDetail = () => {
 
     function renderMatchHistory(){
         return matchHistory.map((match, index)=>{
-            // CHANGE THIS TO PLAYER.RIOTID AND TAGLINE TO === PARAMS.RIOT ID AND TAGLINE WHEN RIOT API IS FIXED
-            // let individualStats = match?.info?.participants?.filter((player) => player.summonerName === "Enemy Graves")[0]
             let individualStats = match?.info?.participants?.filter((player) => {
                 return player.riotIdGameName?.toLowerCase() === (params.gameName).toLowerCase() && player.riotIdTagline?.toLowerCase() === params.tagLine.toLowerCase()
             })[0]
-            // let individualStats = match?.info?.participants?.filter((player) => ((player?.riotIdGameName)?.toLowerCase() === (params.gameName.toLowerCase().replace("%20"," ")) && (player?.riotIdTagline)?.toLowerCase) === (params.tagLine).toLowerCase())[0]
             return (
                     <div key={index}>
                         <h1>------------------------------</h1>
@@ -244,8 +241,9 @@ return (
         <button onClick={()=>fetchMatchHistory()}>All</button><button onClick={()=>fetchMatchHistory("420")}>Ranked Solo/Duo</button><button onClick={()=>fetchMatchHistory("400")}>Normal</button><button onClick={()=>fetchMatchHistory("490")}>Quick Play</button><button onClick={()=>fetchMatchHistory("450")}>ARAM</button><button onClick={()=>fetchMatchHistory("440")}>Flex</button>
         <button onClick={()=>fetchMatchHistory("700")}>Clash</button><button onClick={()=>fetchMatchHistory("1300")}>Nexus Blitz</button><button onClick={()=>fetchMatchHistory("1700")}>Arena</button>
         <h1>{params.gameName} #{params.tagLine}</h1>
+        <img width="75" height ="75" alt="profile icon" src={process.env.PUBLIC_URL + `/assets/profile_icons/${summonerOverview?.profileIcon}.png`} /> 
         <h2>Ranked Solo Queue:</h2>
-        <img width="150" height ="150" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank${summonerOverview?.tier?.toLowerCase()}.png`} /> 
+        <img width="100" height ="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank${summonerOverview?.tier?.toLowerCase()}.png`} /> 
         <plaintext>{summonerOverview.tier} {summonerOverview.rank}</plaintext>
         <plaintext>Wins: {summonerOverview.wins} Losses:{summonerOverview.losses}</plaintext>
         <plaintext>Win Rate {Math.round(summonerOverview.wins/(summonerOverview.wins + summonerOverview.losses)*100)}%</plaintext>

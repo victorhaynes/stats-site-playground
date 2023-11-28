@@ -60,12 +60,13 @@ def get_summoner_overview(request):
 
         encrypted_summonerID_by_puuid_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}"
         response_summonerID = requests.get(encrypted_summonerID_by_puuid_url, headers=headers, verify=True)
-        summonerID = response_summonerID.json()['id']
+        summonerID, summoner_icon = response_summonerID.json()['id'], response_summonerID.json()['profileIconId']
 
         league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerID}"
         response_overview = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
         overview = response_overview.json()[0]
         overview["puuid"] = puuid
+        overview["profileIcon"] = summoner_icon
 
         summoner_overview_serializer = SummonerOverviewSerializer(overview)
     except:

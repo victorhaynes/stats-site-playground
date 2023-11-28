@@ -21,3 +21,4 @@ class SummonerOverview(models.Model):
         freshBlood = models.BooleanField()
         hotStreak = models.BooleanField()
         puuid = models.CharField(max_length=200, blank=True)
+        profileIcon = models.CharField(max_length=200, blank=True)
