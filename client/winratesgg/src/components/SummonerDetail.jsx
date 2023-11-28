@@ -50,13 +50,21 @@ const SummonerDetail = () => {
     function renderItemIcons(individualStats){
         return (
             <>
-                <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item0}.png`} /><img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item1}.png`}/><img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item2}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item3}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item4}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item5}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item6}.png`} /> 
+                <img width="40" height="40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item0}.png`} /><img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item1}.png`}/><img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item2}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item3}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item4}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item5}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item6}.png`} /> 
             </>
             )
     }
 
-    function renderChampionIcon(individualStats){
-        return <img width= "40" height = "40" alt="champion icon" src={process.env.PUBLIC_URL + `/assets/champ_icons/champion_img/${individualStats?.championName}.png`} />
+    function renderParticipantItemIcons(individualStats, width="20", height="20"){
+        return (
+            <>
+                <img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item0}.png`} /><img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item1}.png`}/><img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item2}.png`} /> <img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item3}.png`} /> <img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item4}.png`} /> <img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item5}.png`} /> <img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item6}.png`} /> 
+            </>
+            )
+    }
+
+    function renderChampionIcon(individualStats, width="40", height="40"){
+        return <img width={width} height={height} alt="champion icon" src={process.env.PUBLIC_URL + `/assets/champ_icons/champion_img/${individualStats?.championName}.png`} />
     }
 
     function renderSummonerSpells(individualStats){
@@ -147,7 +155,8 @@ const SummonerDetail = () => {
                     {blueSide.map((participant, index)=>{
                         return (
                             <div key={index}>
-                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
+                                {renderChampionIcon(participant, "25", "25")}
+                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link><>{renderParticipantItemIcons(participant)}</>
                             </div>
                         )
                     })}
@@ -155,7 +164,8 @@ const SummonerDetail = () => {
                     {redSide.map((participant, index)=>{
                         return (
                             <div key={index}>
-                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
+                                {renderChampionIcon(participant, "25", "25")}
+                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link><>{renderParticipantItemIcons(participant)}</>
                             </div>
                         )
                     })}
