@@ -82,8 +82,8 @@ def get_match_history(request):
         response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
         puuid = response_account_details.json()['puuid']
 
-        start = 0
-        count = 2 # must be <= 100
+        start = 3
+        count = 1 # must be <= 100
 
         if request.query_params.get('queue'):
             matches_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&queue={request.query_params.get("queue")}'
@@ -118,3 +118,31 @@ def test_puuid(request):
         # return Response(response_account_details.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(requests.get(url, headers=headers, verify=True))
     return Response(puuid, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def test1(request):
+    match_id = ['NA1_4842865737'][0]
+    match_url=f'https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}'
+    response_match = requests.get(match_url, headers=headers)
+    match_detail = response_match.json()
+    # pprint.pprint(match_detail)
+    return JsonResponse(match_detail)
+
+@api_view(['GET'])
+def test2(request):
+    match_id = ['NA1_4841859405'][0]
+    match_url=f'https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}'
+    response_match = requests.get(match_url, headers=headers)
+    match_detail = response_match.json()
+    # pprint.pprint(match_detail)
+    return JsonResponse(match_detail)
+
+@api_view(['GET'])
+def test3(request):
+    match_id = ['NA1_4828480152'][0]
+    match_url=f'https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}'
+    response_match = requests.get(match_url, headers=headers)
+    match_detail = response_match.json()
+    # pprint.pprint(match_detail)
+    return JsonResponse(match_detail)

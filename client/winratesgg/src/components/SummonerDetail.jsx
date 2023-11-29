@@ -94,13 +94,11 @@ const SummonerDetail = () => {
         let totalCs = individualStats?.neutralMinionsKilled + individualStats?.totalMinionsKilled
         let gameLengthMinutes = match?.info?.gameDuration / 60
         let csPerMin = totalCs / gameLengthMinutes
-        let gold = individualStats?.goldEarned
-        let goldPerMin = gold / gameLengthMinutes
 
         return (
             <>
                 <plaintext>CS: {totalCs} ({csPerMin.toFixed(1)})</plaintext>
-                <plaintext>Gold/min: {goldPerMin.toFixed(1)}</plaintext>
+                <plaintext>Gold: {individualStats?.goldEarned} ({individualStats?.challenges?.goldPerMinute.toFixed(1)})</plaintext>
             </>
         )
     }
@@ -151,28 +149,46 @@ const SummonerDetail = () => {
 
         return (
             <div>
-                <h4>Blue Team:</h4>
+                <h3>Blue Team:</h3>
                     {blueSide.map((participant, index)=>{
                         return (
                             <div key={index}>
                                 {renderChampionIcon(participant, "25", "25")}
-                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link><>{renderParticipantItemIcons(participant)}</>
+                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
+                                <>{renderParticipantItemIcons(participant)}</>
+                                <plaintext>Damage: {participant?.totalDamageDealtToChampions}</plaintext>
+                                <plaintext>Damage Taken: {participant?.totalDamageTaken}</plaintext>
+                                <plaintext>Control Wards Placed: {participant?.challenges?.controlWardsPlaced}</plaintext>
+                                <plaintext>{participant?.wardsPlaced} / {participant?.wardsKilled}</plaintext>
                             </div>
                         )
                     })}
-                <h4>Red Team:</h4>
+                <h3>Red Team:</h3>
                     {redSide.map((participant, index)=>{
                         return (
                             <div key={index}>
                                 {renderChampionIcon(participant, "25", "25")}
-                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link><>{renderParticipantItemIcons(participant)}</>
+                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
+                                <>{renderParticipantItemIcons(participant)}</>
+                                <plaintext>Damage: {participant?.totalDamageDealtToChampions}</plaintext>
+                                <plaintext>Damage Taken: {participant?.totalDamageTaken}</plaintext>
+                                <plaintext>Control Wards Placed: {participant?.challenges?.controlWardsPlaced}</plaintext>
+                                <plaintext>{participant?.wardsPlaced} / {participant?.wardsKilled}</plaintext>
                             </div>
                         )
                     })}
             </div>
         )
-
     }
+
+
+    function calculateKda(individualStats){
+        let kda = individualStats?.challenges?.perfectGame ? "Perfect" : (individualStats?.challenges?.kda).toFixed(1)
+        return (
+            <plaintext>KDA: ({kda}) {individualStats?.kills}/{individualStats?.deaths}/{individualStats?.assists} ({(individualStats?.challenges?.killParticipation).toFixed(2)*100}%)</plaintext>
+        )
+    }
+
 
     function renderGameModeRole(match, individualStats){
         let gameType = ""
@@ -210,7 +226,7 @@ const SummonerDetail = () => {
                 {/* <>queueId: {match?.info?.queueId}</> */}
                 {/* <>{gameType}</> */}
                 <plaintext>{gameType}</plaintext>
-                <plaintext>{individualStats?.teamPosition ? <>{individualStats?.teamPosition}</> :null }</plaintext>
+                <plaintext>{individualStats?.teamPosition ? <>{individualStats?.teamPosition === "UTILITY" ? "SUPPORT" : individualStats?.teamPosition}</> :null }</plaintext>
             </>
         )
     }
@@ -220,12 +236,14 @@ const SummonerDetail = () => {
             let individualStats = match?.info?.participants?.filter((player) => {
                 return player.riotIdGameName?.toLowerCase() === (params.gameName).toLowerCase() && player.riotIdTagline?.toLowerCase() === params.tagLine.toLowerCase()
             })[0]
+            console.log(individualStats)
             return (
                     <div key={index}>
                         <h1>------------------------------</h1>
                         <h3>{individualStats?.championName} {`[${individualStats?.champLevel}]`}</h3>
                         {renderGameModeRole(match, individualStats)}
                         <plaintext>{renderHighestStreak(individualStats)}</plaintext>
+                        {calculateKda(individualStats)}
                         {calculateCsGold(individualStats, match)}
                         {calculateGameTimes(match)}
                         {renderChampionIcon(individualStats)}
@@ -236,6 +254,9 @@ const SummonerDetail = () => {
                         <h3>{individualStats?.win ? "VICTORY" : "DEFEAT"}</h3>
                         <plaintext>Damage: {individualStats?.totalDamageDealtToChampions}</plaintext>
                         <plaintext>Damage Taken: {individualStats?.totalDamageTaken}</plaintext>
+                        <plaintext>Vision Score: {individualStats?.visionScore}</plaintext>
+                        <plaintext>Control Wards Placed: {individualStats?.challenges?.controlWardsPlaced}</plaintext>
+                        <plaintext>{individualStats?.wardsPlaced} / {individualStats?.wardsKilled}</plaintext>
                         {renderParticipants(match)}
                         <br></br>
                     </div>
