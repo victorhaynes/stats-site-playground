@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.http import JsonResponse
 import requests
+from requests.exceptions import HTTPError
 from dotenv import load_dotenv
 import os
 
@@ -69,8 +70,17 @@ def get_summoner_overview(request):
         overview["profileIcon"] = summoner_icon
 
         summoner_overview_serializer = SummonerOverviewSerializer(overview)
+
+    except HTTPError as e:
+        return Response(e.response.text, status=status.HTTP_400_BAD_REQUEST)
+    except IndexError:
+        # This means that the player has no Ranked match history
+        overview = {}
+        overview["puuid"] = puuid
+        overview["profileIcon"] = summoner_icon
+        return Response(overview, status=status.HTTP_200_OK)
     except:
-        return Response({"message": "Failed to Fetch Summoner Overview."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Server Error. Failed to Fetch Summoner Overview."}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(summoner_overview_serializer.data, status=status.HTTP_200_OK)
 
@@ -122,7 +132,7 @@ def test_puuid(request):
 
 @api_view(['GET'])
 def test1(request):
-    match_id = ['NA1_4842865737'][0]
+    match_id = ['NA1_4844473260'][0]
     match_url=f'https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}'
     response_match = requests.get(match_url, headers=headers)
     match_detail = response_match.json()
