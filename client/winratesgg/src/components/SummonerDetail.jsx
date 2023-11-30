@@ -138,8 +138,39 @@ const SummonerDetail = () => {
         )
     }
 
-    // CHANGE THIS TO PARTICIPANT.RIOTID AND TAGLINE AND CHANGE URL TO THE GAMENAME AND TAGLINE
-    function renderParticipants(match){
+    function renderParticipantNamesChampions(match){
+        let blueSide = match?.info?.participants?.filter((participant) => {
+            return parseInt(participant.teamId) === 100
+        })
+        let redSide = match?.info?.participants?.filter((participant) => {
+            return parseInt(participant.teamId) === 200
+        })
+
+        return (
+            <div>
+                <h3>Blue Team:</h3>
+                    {blueSide.map((participant, index)=>{
+                        return (
+                            <div key={index}>
+                                {renderChampionIcon(participant, "25", "25")}
+                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
+                            </div>
+                        )
+                    })}
+                <h3>Red Team:</h3>
+                    {redSide.map((participant, index)=>{
+                        return (
+                            <div key={index}>
+                                {renderChampionIcon(participant, "25", "25")}
+                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
+                            </div>
+                        )
+                    })}
+            </div>
+        )
+    }    
+
+    function renderParticipantsDetail(match){
         let blueSide = match?.info?.participants?.filter((participant) => {
             return parseInt(participant.teamId) === 100
         })
@@ -257,7 +288,8 @@ const SummonerDetail = () => {
                         <plaintext>Vision Score: {individualStats?.visionScore}</plaintext>
                         <plaintext>Control Wards Placed: {individualStats?.challenges?.controlWardsPlaced}</plaintext>
                         <plaintext>{individualStats?.wardsPlaced} / {individualStats?.wardsKilled}</plaintext>
-                        {renderParticipants(match)}
+                        {renderParticipantNamesChampions(match)}
+                        {/* {renderParticipantsDetail(match)} */}
                         <br></br>
                     </div>
             )

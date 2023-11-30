@@ -82,8 +82,8 @@ def get_match_history(request):
         response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
         puuid = response_account_details.json()['puuid']
 
-        start = 3
-        count = 1 # must be <= 100
+        start = 0
+        count = 3 # must be <= 100
 
         if request.query_params.get('queue'):
             matches_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&queue={request.query_params.get("queue")}'
