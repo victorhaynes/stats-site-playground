@@ -56,7 +56,7 @@ const MatchHistory = ({matchHistory, setSummonerOverview, setMatchHistory}) => {
     }
 
 
-    function calculateCsGold(individualStats, match){
+    function calculateCsAndGold(individualStats, match){
         let totalCs = individualStats?.neutralMinionsKilled + individualStats?.totalMinionsKilled
         let gameLengthMinutes = match?.info?.gameDuration / 60
         let csPerMin = totalCs / gameLengthMinutes
@@ -140,7 +140,7 @@ const MatchHistory = ({matchHistory, setSummonerOverview, setMatchHistory}) => {
     function calculateKda(individualStats){
         let kda = individualStats?.challenges?.perfectGame ? "Perfect" : (individualStats?.challenges?.kda)?.toFixed(1)
         return (
-            <plaintext>KDA: ({kda}) {individualStats?.kills}/{individualStats?.deaths}/{individualStats?.assists} ({(individualStats?.challenges?.killParticipation)?.toFixed(2)*100}%)</plaintext>
+            <plaintext>KDA: ({kda}) {individualStats?.kills}/{individualStats?.deaths}/{individualStats?.assists} ({(individualStats?.challenges?.killParticipation)?.toFixed(2).substring(2)}%)</plaintext>
         )
     }
 
@@ -191,7 +191,6 @@ const MatchHistory = ({matchHistory, setSummonerOverview, setMatchHistory}) => {
             let individualStats = match?.info?.participants?.filter((player) => {
                 return player.riotIdGameName?.toLowerCase() === (params.gameName).toLowerCase() && player.riotIdTagline?.toLowerCase() === params.tagLine.toLowerCase()
             })[0]
-            console.log(individualStats)
             return (
                     <div key={index}>
                         <h1>------------------------------</h1>
@@ -199,7 +198,7 @@ const MatchHistory = ({matchHistory, setSummonerOverview, setMatchHistory}) => {
                         {renderGameModeRole(match, individualStats)}
                         <plaintext>{renderHighestStreak(individualStats)}</plaintext>
                         {calculateKda(individualStats)}
-                        {calculateCsGold(individualStats, match)}
+                        {calculateCsAndGold(individualStats, match)}
                         {calculateGameTimes(match)}
                         {renderChampionIcon(individualStats)}
                         {renderSummonerSpells(individualStats)}
@@ -213,7 +212,7 @@ const MatchHistory = ({matchHistory, setSummonerOverview, setMatchHistory}) => {
                         <plaintext>Control Wards Placed: {individualStats?.challenges?.controlWardsPlaced}</plaintext>
                         <plaintext>{individualStats?.wardsPlaced} / {individualStats?.wardsKilled}</plaintext>
                         {renderParticipantNamesChampions(match)}
-                        <MatchDetails key={match?.metadata?.matchId} match={match} renderChampionIcon={renderChampionIcon} navAndSearchParticipant={navAndSearchParticipant} renderParticipantItemIcons={renderParticipantItemIcons}/>
+                        <MatchDetails key={match?.metadata?.matchId} match={match} renderChampionIcon={renderChampionIcon} navAndSearchParticipant={navAndSearchParticipant} renderParticipantItemIcons={renderParticipantItemIcons} calculateKda={calculateKda} calculateCsAndGold={calculateCsAndGold}/>
                         <br></br>
                     </div>
             )

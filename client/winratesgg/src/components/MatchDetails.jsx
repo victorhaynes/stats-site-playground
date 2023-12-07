@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-const MatchDetails = ({match, renderChampionIcon, navAndSearchParticipant, renderParticipantItemIcons}) => {
+const MatchDetails = ({match, renderChampionIcon, navAndSearchParticipant, renderParticipantItemIcons, calculateKda, calculateCsAndGold}) => {
 
     const [showDetails, setShowDetails] = useState(false)
     const params = useParams()
@@ -28,6 +28,8 @@ const MatchDetails = ({match, renderChampionIcon, navAndSearchParticipant, rende
                                 {renderChampionIcon(participant, "25", "25")}
                                 <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
                                 <>{renderParticipantItemIcons(participant)}</>
+                                {calculateKda(participant)}
+                                {calculateCsAndGold(participant, match)}
                                 <plaintext>Damage: {participant?.totalDamageDealtToChampions}</plaintext>
                                 <plaintext>Damage Taken: {participant?.totalDamageTaken}</plaintext>
                                 <plaintext>Control Wards Placed: {participant?.challenges?.controlWardsPlaced}</plaintext>

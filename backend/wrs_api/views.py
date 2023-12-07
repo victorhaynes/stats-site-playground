@@ -1,4 +1,4 @@
-from .models import Car
+from .models import Car, SummonerOverview
 from .serializers import CarSerializer, SummonerOverviewSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -51,9 +51,23 @@ def testing2(request):
     return JsonResponse(match_detail)
 
 
+def search_db_for_summoner_overview(request):
+    try:
+        summoner_overview = SummonerOverview.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'))
+        summoner_overview_serializer = SummonerOverviewSerializer(summoner_overview)
+        return Response(summoner_overview_serializer.data, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+    except SummonerOverview.DoesNotExist:
+        return None
+    
+
 # requires "region", "gameName", "tagLine", "platform" as URL parameters
 @api_view(['GET'])
 def get_summoner_overview(request):
+    if request.query_params.get('update') == "false":
+        database_response = search_db_for_summoner_overview(request)
+        if database_response:
+            return database_response
+
     try:
         account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
         response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
@@ -68,8 +82,13 @@ def get_summoner_overview(request):
         overview = response_overview.json()[0]
         overview["puuid"] = puuid
         overview["profileIcon"] = summoner_icon
+        overview["gameName"] = request.query_params.get('gameName')
+        overview["tagLine"] = request.query_params.get('tagLine')
 
+        SummonerOverview.objects.update_or_create(**overview)
         summoner_overview_serializer = SummonerOverviewSerializer(overview)
+
+
 
     except HTTPError as e:
         return Response(e.response.text, status=status.HTTP_400_BAD_REQUEST)
@@ -79,8 +98,8 @@ def get_summoner_overview(request):
         overview["puuid"] = puuid
         overview["profileIcon"] = summoner_icon
         return Response(overview, status=status.HTTP_200_OK)
-    except:
-        return Response({"message": "Server Error. Failed to Fetch Summoner Overview."}, status=status.HTTP_400_BAD_REQUEST)
+    # except:
+    #     return Response({"message": "Server Error. Failed to Fetch Summoner Overview."}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(summoner_overview_serializer.data, status=status.HTTP_200_OK)
 

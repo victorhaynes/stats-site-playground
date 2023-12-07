@@ -17,9 +17,9 @@ const SummonerDetail = () => {
     },[location.pathname])
 
 
-    async function fetchSummonerOveview(){
+    async function fetchSummonerOveview(update=false){
         try {
-            let response = await axios.get(`http://127.0.0.1:8000/summoner-overview/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}`)
+            let response = await axios.get(`http://127.0.0.1:8000/summoner-overview/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}&update=${update}`)
             console.log(response.data)
             setSummonerOverview(response.data)
         } catch (error) {
