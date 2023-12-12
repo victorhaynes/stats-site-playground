@@ -51,6 +51,7 @@ def testing2(request):
     return JsonResponse(match_detail)
 
 
+# Helper Function to check database of summoner overviews before hitting Riot API
 def search_db_for_summoner_overview(request):
     try:
         summoner_overview = SummonerOverview.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'))
@@ -60,7 +61,8 @@ def search_db_for_summoner_overview(request):
         return None
     
 
-# requires "region", "gameName", "tagLine", "platform" as URL parameters
+# URL: /summoner-overview/
+# requires "region", "gameName", "tagLine", "platform", "update" as URL parameters
 @api_view(['GET'])
 def get_summoner_overview(request):
     if request.query_params.get('update') == "false":
@@ -85,8 +87,9 @@ def get_summoner_overview(request):
         overview["gameName"] = request.query_params.get('gameName')
         overview["tagLine"] = request.query_params.get('tagLine')
 
-        SummonerOverview.objects.update_or_create(**overview)
-        summoner_overview_serializer = SummonerOverviewSerializer(overview)
+        # .updated_or_create() returns a tuple
+        updated_sum_overview = SummonerOverview.objects.update_or_create(overview)[0]
+        summoner_overview_serializer = SummonerOverviewSerializer(updated_sum_overview)
 
 
 
@@ -103,7 +106,8 @@ def get_summoner_overview(request):
 
     return Response(summoner_overview_serializer.data, status=status.HTTP_200_OK)
 
-
+# URL: /match-history/
+# requires "region", "gameName", "tagLine", "platform", "update" as URL parameters
 @api_view(['GET'])
 def get_match_history(request):
     try:
@@ -115,16 +119,16 @@ def get_match_history(request):
         count = 3 # must be <= 100
 
         if request.query_params.get('queue'):
-            matches_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&queue={request.query_params.get("queue")}'
+            matches_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&queue={request.query_params.get('queue')}"
         else:
-            matches_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}'
+            matches_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}"
 
         response_matches = requests.get(matches_url, headers=headers, verify=True)
         matches = response_matches.json()
         
         match_history = []
         for match in matches:
-            match_detail_url = f'https://americas.api.riotgames.com/lol/match/v5/matches/{match}'
+            match_detail_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/{match}"
             response_match_detail = requests.get(match_detail_url, headers=headers, verify=True)
             if response_match_detail.status_code != 200:
                 return Response(response_match_detail)

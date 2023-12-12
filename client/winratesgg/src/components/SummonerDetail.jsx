@@ -12,12 +12,12 @@ const SummonerDetail = () => {
     const location = useLocation()
 
     useEffect(() => {
-        fetchSummonerOveview()
+        fetchSummonerOverview()
         fetchMatchHistory()
     },[location.pathname])
 
 
-    async function fetchSummonerOveview(update=false){
+    async function fetchSummonerOverview(update=false){
         try {
             let response = await axios.get(`http://127.0.0.1:8000/summoner-overview/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}&update=${update}`)
             console.log(response.data)
@@ -26,6 +26,7 @@ const SummonerDetail = () => {
             console.log({[error.response.request.status]: error.response.data})
         }
     }
+
 
     async function fetchMatchHistory(queueId=""){
 
@@ -41,6 +42,123 @@ const SummonerDetail = () => {
     }
 
 
+    function formatLastUpdateTime(summonerOverview){
+        let lastUpdatedText = "time unknown"
+        try {
+            let lastUpdated = summonerOverview?.updated_at
+            console.log(lastUpdated)
+            let yearUpdated = lastUpdated.split("-")[0]
+            let monthUpdated = lastUpdated.split("-")[1]
+            let dayUpdated = lastUpdated.split("-")[2].split("T")[0]
+            let hoursMinsSeconds = lastUpdated.split("T")[1].split(":")
+            let hoursUpdated = hoursMinsSeconds[0]
+            let minutesUpdated = hoursMinsSeconds[1]
+            let secondsUpdated = hoursMinsSeconds[2].split(".")[0]
+
+            console.log("lastupdated: " + lastUpdated)
+            console.log("yearUpdated: " + yearUpdated)
+            console.log("monthUpdated: " + monthUpdated)
+            console.log("dayUpdated: " + dayUpdated)
+            console.log("hoursMinsSeconds: " + hoursMinsSeconds)
+            console.log("hoursUpdated: " + hoursUpdated)
+            console.log("minutesUpdated: " + minutesUpdated)
+            console.log("secondsUpdated: " + secondsUpdated)
+            console.log("//////////////////////////")
+
+            let now = new Date();
+            let currentDay = String(now.getDate()).padStart(2, '0');
+            let currentMonth = String(now.getMonth() + 1).padStart(2, '0'); //January is 0!
+            let currentYear = now.getFullYear();
+            let currentHours = now.getHours();
+            let currentMinutes = now.getMinutes();
+            let currentSeconds = now.getSeconds();
+
+            console.log("currentSeconds " + currentSeconds)
+            console.log("ssssssssssssssssssss")
+
+            let elapsedYears = currentYear - yearUpdated
+            let elapsedMonths = currentMonth - monthUpdated
+            let elapsedDays = currentDay - dayUpdated
+            let elapsedHours = currentHours - hoursUpdated
+            let elapsedMinutes = currentMinutes - minutesUpdated
+            let elapsedSeconds = currentSeconds - secondsUpdated
+            
+            console.log("currentHours " + currentHours)
+            console.log("hoursUpdated " + hoursUpdated)
+            console.log("elapsedYears " + elapsedYears)
+            console.log("elapsedMonths " + elapsedMonths)
+            console.log("elapsedDays " + elapsedDays)
+            console.log("elapsedHours " + elapsedHours)
+            console.log("elapsedMinutes " + elapsedMinutes)
+            console.log("elapsedSeconds " + elapsedSeconds)
+
+
+            if (elapsedYears){
+                lastUpdatedText = `${elapsedYears} year(s) ago`
+            } else if (elapsedMonths){
+                lastUpdatedText = `${elapsedMonths} months(s) ago`
+            } else if (parseInt(elapsedDays)*24 + elapsedHours > 24) {
+                lastUpdatedText = `${elapsedDays} days(s) ago`
+            // } else if (elapsedHours > 0 && elapsedMinutes > 0){
+            //     lastUpdatedText = `${elapsedHours} hours(s) ago`
+            //     console.log("ONE")
+            } else if (parseInt(elapsedHours)*60 + elapsedMinutes > 60){
+                lastUpdatedText = `${elapsedHours} hours(s) ago`
+                console.log("ONE")
+            // } else if (elapsedHours < 0 && elapsedHours != 0){
+            //     lastUpdatedText = `${elapsedHours + 24} hours(s) ago`
+            //     // console.log("TWO")
+            //     console.log(now)
+            // } else if (elapsedMinutes && elapsedHours == 0){
+            //     lastUpdatedText = `${elapsedMinutes} minutes(s) ago`
+            } else if (parseInt(elapsedMinutes)*60 + elapsedSeconds > 60){
+            lastUpdatedText = `${elapsedMinutes} minutes(s) ago`
+            } else if (elapsedSeconds > 0){
+                lastUpdatedText = `${elapsedSeconds} seconds(s) ago`
+            } else if (elapsedSeconds == 0){
+                console.log(lastUpdatedText)
+                lastUpdatedText = 'just now'
+                console.log(lastUpdatedText)
+            }
+        } catch (error){
+            return lastUpdatedText
+        }
+        return lastUpdatedText
+
+        // let now = Date.now()
+        // let unixTimeHoursAgo = (now - gameEndTime) / 1000 / 60 / 60
+        // let daysAgo = 0
+        // let minutesAgo = 0 
+        // let hoursAgo = 0
+
+        // if(unixTimeHoursAgo < 1){
+        //     minutesAgo = Math.round(unixTimeHoursAgo * 60)
+        // } else if (unixTimeHoursAgo > 24){
+        //     daysAgo = Math.floor(unixTimeHoursAgo/24)
+        // } else if (unixTimeHoursAgo >= 1 && unixTimeHoursAgo < 24){
+        //     hoursAgo = Math.round(unixTimeHoursAgo)
+        //     minutesAgo = Math.round((unixTimeHoursAgo % 24) * 60)
+        // }
+        
+        // let duration = new Date(match?.info?.gameDuration * 1000)
+        // let durationString = duration.toUTCString()
+        // let formattedDuration = durationString.slice(-11,-4)
+        // let individualDurations = formattedDuration.split(":")
+        // let gameHours = parseInt(individualDurations[0])
+        // let gameMinutes = parseInt(individualDurations[1])
+        // let gameSeconds = parseInt(individualDurations[2])
+
+        // return (
+        //     <>
+        //         {gameHours ? <plaintext>{gameHours}h {gameMinutes}m {gameSeconds}s</plaintext> : <plaintext>{gameMinutes}m {gameSeconds}s</plaintext>}
+        //         {daysAgo ? <plaintext>{daysAgo} day(s) ago</plaintext> : null}
+        //         {(!daysAgo && hoursAgo) ? <plaintext>{hoursAgo} hour(s) ago</plaintext> : null}
+        //         {(!daysAgo && hoursAgo < 1 && minutesAgo) ? <plaintext>{minutesAgo} minute(s) ago</plaintext> : null}
+        //     </>
+        // )
+    }
+
+
     return (
         <>
             <button onClick={()=>fetchMatchHistory()}>All</button><button onClick={()=>fetchMatchHistory("420")}>Ranked Solo/Duo</button><button onClick={()=>fetchMatchHistory("400")}>Normal</button><button onClick={()=>fetchMatchHistory("490")}>Quick Play</button><button onClick={()=>fetchMatchHistory("450")}>ARAM</button><button onClick={()=>fetchMatchHistory("440")}>Flex</button>
@@ -52,6 +170,8 @@ const SummonerDetail = () => {
             <plaintext>{summonerOverview.tier} {summonerOverview.rank}</plaintext>
             <plaintext>Wins: {summonerOverview.wins} Losses:{summonerOverview.losses}</plaintext>
             <plaintext>Win Rate {Math.round(summonerOverview.wins/(summonerOverview.wins + summonerOverview.losses)*100)}%</plaintext>
+            <plaintext>Last Updated {formatLastUpdateTime(summonerOverview)}</plaintext>
+            <button onClick={()=>fetchSummonerOverview(true)}>Update</button>
             <MatchHistory matchHistory={matchHistory} setMatchHistory={setMatchHistory} setSummonerOverview={setSummonerOverview}/>
         </>
     )

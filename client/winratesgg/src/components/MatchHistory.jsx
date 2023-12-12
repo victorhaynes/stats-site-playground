@@ -171,7 +171,9 @@ const MatchHistory = ({matchHistory, setSummonerOverview, setMatchHistory}) => {
             gameType = "One For All"
         } else if (parseInt(match?.info?.queueId) === 470){
             gameType = "(N) Twisted Treeline"
-        } else {
+        } else if (parseInt(match?.info?.queueId) === 720){
+            gameType = "ARAM Clash"
+        }else {
             gameType = "Unknown Game Mode"
         }
 
