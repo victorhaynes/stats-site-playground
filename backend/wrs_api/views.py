@@ -30,7 +30,7 @@ def search_db_for_summoner_overview(request):
     try:
         summoner_overview = SummonerOverview.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))
         summoner_overview_serializer = SummonerOverviewSerializer(summoner_overview)
-        return Response(summoner_overview_serializer.data, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        return Response(summoner_overview_serializer.data['overview'], status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     except SummonerOverview.DoesNotExist:
         return None
 
@@ -40,7 +40,7 @@ def search_db_for_match_history(request):
     try:
         match_history = MatchHistory.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))
         match_history_serializer = MatchHistorySerializer(match_history)
-        return Response(match_history_serializer.data['metadata'], status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        return Response(match_history_serializer.data['history'], status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     except MatchHistory.DoesNotExist:
         return None
 
@@ -65,7 +65,12 @@ def get_summoner_overview(request):
 
         league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerID}"
         response_overview = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
-        overview = response_overview.json()[0]
+
+        if len(response_overview.json()) == 0:
+                overview = {"tier": "UNRANKED"}
+        else:
+            overview = response_overview.json()[0]
+
         overview["puuid"] = puuid
         overview["profileIcon"] = summoner_icon
         overview["gameName"] = request.query_params.get('gameName')
@@ -73,21 +78,21 @@ def get_summoner_overview(request):
         overview["region"] = request.query_params.get('region')
 
         # .updated_or_create() returns a tuple
-        updated_sum_overview = SummonerOverview.objects.update_or_create(overview)[0]
+        # .update() only works on QuerySets
+        updated_sum_overview = SummonerOverview.objects.get_or_create(puuid=puuid)[0]
+        updated_sum_overview.gameName = request.query_params.get('gameName')
+        updated_sum_overview.tagLine = request.query_params.get('tagLine')
+        updated_sum_overview.region = request.query_params.get('region')
+        updated_sum_overview.overview = overview
+        updated_sum_overview.save()
         summoner_overview_serializer = SummonerOverviewSerializer(updated_sum_overview)
 
     except HTTPError as error:
         return Response(error.response.text, status=status.HTTP_400_BAD_REQUEST)
-    except IndexError:
-        # This means that the player has no Ranked match history
-        overview = {}
-        overview["puuid"] = puuid
-        overview["profileIcon"] = summoner_icon
-        return Response(overview, status=status.HTTP_200_OK)
-    except:
-        return Response({"message": "Server Error. Failed to Fetch Summoner Overview."}, status=status.HTTP_400_BAD_REQUEST)
+    # except:
+    #     return Response({"message": "Server Error. Failed to Fetch Summoner Overview."}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response(summoner_overview_serializer.data, status=status.HTTP_200_OK)
+    return Response(summoner_overview_serializer.data['overview'], status=status.HTTP_200_OK)
 
 
 # URL: /match-history/
@@ -122,11 +127,23 @@ def get_match_history(request):
                 return Response(response_match_detail)
             match_history.append(response_match_detail.json())
         
+        # # .updated_or_create() returns a tuple
+        # updated_match_history = MatchHistory.objects.update_or_create(history=match_history, gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))[0]
+        # updated_match_history.puuid = puuid
+        # updated_match_history.save()
+        # match_history_serializer = MatchHistorySerializer(updated_match_history)
+
         # .updated_or_create() returns a tuple
-        updated_match_history = MatchHistory.objects.update_or_create(metadata=match_history, gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))[0]
+        updated_match_history = MatchHistory.objects.get_or_create(puuid=puuid)[0]
+        updated_match_history.history = match_history
+        updated_match_history.gameName = request.query_params.get('gameName')
+        updated_match_history.tagLine = request.query_params.get('tagLine')
+        updated_match_history.region = request.query_params.get('region')
+        updated_match_history.history = match_history
+        updated_match_history.save()
         match_history_serializer = MatchHistorySerializer(updated_match_history)
         
     except:
         return Response({"message": "Failed to Fetch Match History."}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response(match_history_serializer.data['metadata'], status=status.HTTP_200_OK)
+    return Response(match_history_serializer.data['history'], status=status.HTTP_200_OK)

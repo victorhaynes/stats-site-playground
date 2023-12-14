@@ -10,10 +10,11 @@ class CarSerializer(serializers.ModelSerializer):
 class SummonerOverviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = SummonerOverview
-        fields = '__all__'
+        # fields = '__all__'
+        fields = ['overview']
 
 
 class MatchHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = MatchHistory
-        fields = ['metadata']
+        fields = ['history']
