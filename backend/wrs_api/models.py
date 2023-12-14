@@ -1,3 +1,11 @@
+## While SummonerOverview and MatchHistory do have overlap in fields, having a parent class "Summoner"
+## does not fit the use case for this API as there is no "Summoner" class equivalent that can be retrieved
+## from the Riot API. And therefore there is no reason to be storing "Summoner" in the database.
+## There seemingly is room for a "has-one/belongs-to" for SummonerOverview and MatchHistory 
+## but Riot-side these are not actually coupled in anyway. Additionally, SummonerOverview would naturally own a MatchHistory
+## but SummonerOverview will not lopgically exist for every end user.
+
+
 from django.db import models
 
 class Car(models.Model):
@@ -32,7 +40,10 @@ class SummonerOverview(models.Model):
     tagLine = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    region = models.CharField(max_length=200)
 
-    # @property
-    # def formatted_updated_at(self):
-    #     return unformatted = self.updated_at
+class MatchHistory(models.Model):
+    gameName = models.CharField(max_length=50)
+    tagLine = models.CharField(max_length=20)
+    region = models.CharField(max_length=200)
+    metadata = models.JSONField(default=list)

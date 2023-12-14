@@ -28,12 +28,12 @@ const SummonerDetail = () => {
     }
 
 
-    async function fetchMatchHistory(queueId=""){
+    async function fetchMatchHistory(queueId="", update=false){
 
         let queueUrlParameter = queueId ? `&queue=${queueId}` : ""
         console.log(queueUrlParameter)
         try {
-            let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}`)
+            let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}&update=${update}`)
             console.log(response.data)
             setMatchHistory(response.data)
         } catch (error) {
@@ -55,16 +55,6 @@ const SummonerDetail = () => {
             let minutesUpdated = hoursMinsSeconds[1]
             let secondsUpdated = hoursMinsSeconds[2].split(".")[0]
 
-            console.log("lastupdated: " + lastUpdated)
-            console.log("yearUpdated: " + yearUpdated)
-            console.log("monthUpdated: " + monthUpdated)
-            console.log("dayUpdated: " + dayUpdated)
-            console.log("hoursMinsSeconds: " + hoursMinsSeconds)
-            console.log("hoursUpdated: " + hoursUpdated)
-            console.log("minutesUpdated: " + minutesUpdated)
-            console.log("secondsUpdated: " + secondsUpdated)
-            console.log("//////////////////////////")
-
             let now = new Date();
             let currentDay = String(now.getDate()).padStart(2, '0');
             let currentMonth = String(now.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -73,89 +63,36 @@ const SummonerDetail = () => {
             let currentMinutes = now.getMinutes();
             let currentSeconds = now.getSeconds();
 
-            console.log("currentSeconds " + currentSeconds)
-            console.log("ssssssssssssssssssss")
-
             let elapsedYears = currentYear - yearUpdated
             let elapsedMonths = currentMonth - monthUpdated
             let elapsedDays = currentDay - dayUpdated
             let elapsedHours = currentHours - hoursUpdated
             let elapsedMinutes = currentMinutes - minutesUpdated
             let elapsedSeconds = currentSeconds - secondsUpdated
-            
-            console.log("currentHours " + currentHours)
-            console.log("hoursUpdated " + hoursUpdated)
-            console.log("elapsedYears " + elapsedYears)
-            console.log("elapsedMonths " + elapsedMonths)
-            console.log("elapsedDays " + elapsedDays)
-            console.log("elapsedHours " + elapsedHours)
-            console.log("elapsedMinutes " + elapsedMinutes)
-            console.log("elapsedSeconds " + elapsedSeconds)
-
 
             if (elapsedYears){
                 lastUpdatedText = `${elapsedYears} year(s) ago`
             } else if (elapsedMonths){
                 lastUpdatedText = `${elapsedMonths} months(s) ago`
-            } else if (parseInt(elapsedDays)*24 + elapsedHours > 24) {
+            } else if (parseInt(elapsedDays)*24 + elapsedHours >= 24) {
                 lastUpdatedText = `${elapsedDays} days(s) ago`
-            // } else if (elapsedHours > 0 && elapsedMinutes > 0){
-            //     lastUpdatedText = `${elapsedHours} hours(s) ago`
-            //     console.log("ONE")
-            } else if (parseInt(elapsedHours)*60 + elapsedMinutes > 60){
+            } else if (parseInt(elapsedHours)*60 + elapsedMinutes >= 60){
                 lastUpdatedText = `${elapsedHours} hours(s) ago`
                 console.log("ONE")
-            // } else if (elapsedHours < 0 && elapsedHours != 0){
-            //     lastUpdatedText = `${elapsedHours + 24} hours(s) ago`
-            //     // console.log("TWO")
-            //     console.log(now)
-            // } else if (elapsedMinutes && elapsedHours == 0){
-            //     lastUpdatedText = `${elapsedMinutes} minutes(s) ago`
-            } else if (parseInt(elapsedMinutes)*60 + elapsedSeconds > 60){
+            } else if (parseInt(elapsedMinutes)*60 + elapsedSeconds >= 60){
             lastUpdatedText = `${elapsedMinutes} minutes(s) ago`
             } else if (elapsedSeconds > 0){
                 lastUpdatedText = `${elapsedSeconds} seconds(s) ago`
-            } else if (elapsedSeconds == 0){
+            } else if (parseInt(elapsedSeconds) === 0){
                 console.log(lastUpdatedText)
                 lastUpdatedText = 'just now'
                 console.log(lastUpdatedText)
             }
+
         } catch (error){
             return lastUpdatedText
         }
         return lastUpdatedText
-
-        // let now = Date.now()
-        // let unixTimeHoursAgo = (now - gameEndTime) / 1000 / 60 / 60
-        // let daysAgo = 0
-        // let minutesAgo = 0 
-        // let hoursAgo = 0
-
-        // if(unixTimeHoursAgo < 1){
-        //     minutesAgo = Math.round(unixTimeHoursAgo * 60)
-        // } else if (unixTimeHoursAgo > 24){
-        //     daysAgo = Math.floor(unixTimeHoursAgo/24)
-        // } else if (unixTimeHoursAgo >= 1 && unixTimeHoursAgo < 24){
-        //     hoursAgo = Math.round(unixTimeHoursAgo)
-        //     minutesAgo = Math.round((unixTimeHoursAgo % 24) * 60)
-        // }
-        
-        // let duration = new Date(match?.info?.gameDuration * 1000)
-        // let durationString = duration.toUTCString()
-        // let formattedDuration = durationString.slice(-11,-4)
-        // let individualDurations = formattedDuration.split(":")
-        // let gameHours = parseInt(individualDurations[0])
-        // let gameMinutes = parseInt(individualDurations[1])
-        // let gameSeconds = parseInt(individualDurations[2])
-
-        // return (
-        //     <>
-        //         {gameHours ? <plaintext>{gameHours}h {gameMinutes}m {gameSeconds}s</plaintext> : <plaintext>{gameMinutes}m {gameSeconds}s</plaintext>}
-        //         {daysAgo ? <plaintext>{daysAgo} day(s) ago</plaintext> : null}
-        //         {(!daysAgo && hoursAgo) ? <plaintext>{hoursAgo} hour(s) ago</plaintext> : null}
-        //         {(!daysAgo && hoursAgo < 1 && minutesAgo) ? <plaintext>{minutesAgo} minute(s) ago</plaintext> : null}
-        //     </>
-        // )
     }
 
 
