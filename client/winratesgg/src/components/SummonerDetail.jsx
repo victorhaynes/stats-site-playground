@@ -114,7 +114,7 @@ const SummonerDetail = () => {
             <plaintext>Win Rate {Math.round(summonerOverview.wins/(summonerOverview.wins + summonerOverview.losses)*100)}%</plaintext>
             <plaintext>Last Updated {formatLastUpdateTime(summonerOverview)}</plaintext>
             <button onClick={()=>forceUpdatePage()}>Update</button>
-            <MatchHistory matchHistory={matchHistory} setMatchHistory={setMatchHistory} setSummonerOverview={setSummonerOverview}/>
+            <MatchHistory matchHistory={matchHistory} setMatchHistory={setMatchHistory} summonerOverview={summonerOverview} setSummonerOverview={setSummonerOverview}/>
         </>
     )
 }

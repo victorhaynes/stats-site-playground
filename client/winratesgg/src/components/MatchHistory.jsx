@@ -2,7 +2,7 @@ import React from 'react'
 import { useParams, Link } from 'react-router-dom'
 import MatchDetails from './MatchDetails'
 
-const MatchHistory = ({matchHistory, setSummonerOverview, setMatchHistory}) => {
+const MatchHistory = ({matchHistory, setMatchHistory, summonerOverview, setSummonerOverview}) => {
 
     const params = useParams()
 
@@ -191,7 +191,8 @@ const MatchHistory = ({matchHistory, setSummonerOverview, setMatchHistory}) => {
     function renderMatchHistory(){
         return matchHistory.map((match, index)=>{
             let individualStats = match?.info?.participants?.filter((player) => {
-                return player.riotIdGameName?.toLowerCase() === (params.gameName).toLowerCase() && player.riotIdTagline?.toLowerCase() === params.tagLine.toLowerCase()
+                // return player.riotIdGameName?.toLowerCase() === (params.gameName).toLowerCase() && player.riotIdTagline?.toLowerCase() === params.tagLine.toLowerCase()
+                return player?.puuid === summonerOverview?.puuid && summonerOverview?.puuid
             })[0]
             return (
                     <div key={index}>
