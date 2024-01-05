@@ -33,7 +33,7 @@ const SummonerDetail = () => {
         let queueUrlParameter = queueId ? `&queue=${queueId}` : ""
         console.log(queueUrlParameter)
         try {
-            let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}&update=${update}`)
+            let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}&update=${update}`)
             console.log(response.data)
             setMatchHistory(response.data)
         } catch (error) {

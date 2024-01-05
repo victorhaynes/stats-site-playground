@@ -18,31 +18,23 @@ headers = {'X-Riot-Token': riot_key}
 ##############
 
 
-# #### utility function
-# def get_region(request):
-#     match request.query_params.get('platform'):
-#         case "americas":
-#             return "na1"
-
 def convert_platform_to_region(func):
     def wrapper(request, *args, **kwargs):
-        # print("HELLOOOOOOOOOOOOOOOOOOOO")
         region = ""
         if request.query_params.get('platform') == "na1" or request.query_params.get('platform') == "oc1":
             region+= "americas"
         elif request.query_params.get('platform') == "kr1" or request.query_params.get('platform') == "jp1":
             region+= "asia"
         elif request.query_params.get('platform') == "euw1" or request.query_params.get('platform') == "eun1":
-            region+= "europe" 
-
+            region+= "europe"
         return func(request, region)
-
     return wrapper
 
 # Helper Function to check database of existing summoner overviews before hitting Riot API
-def search_db_for_summoner_overview(request):
+@convert_platform_to_region
+def search_db_for_summoner_overview(request, region):
     try:
-        summoner_overview = SummonerOverview.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))
+        summoner_overview = SummonerOverview.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=region)
         summoner_overview_serializer = SummonerOverviewSerializer(summoner_overview)
         return Response(summoner_overview_serializer.data['overview'], status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     except SummonerOverview.DoesNotExist:
@@ -50,9 +42,11 @@ def search_db_for_summoner_overview(request):
 
 
 # Helper Function to check database for existing match histories before hitting Riot API
-def search_db_for_match_history(request):
+# @convert_platform_to_region
+@convert_platform_to_region
+def search_db_for_match_history(request, region):
     try:
-        match_history = MatchHistory.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))
+        match_history = MatchHistory.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=region)
         match_history_serializer = MatchHistorySerializer(match_history)
         return Response(match_history_serializer.data['history'], status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     except MatchHistory.DoesNotExist:
@@ -62,15 +56,14 @@ def search_db_for_match_history(request):
 # URL: /summoner-overview/
 # requires "region", "gameName", "tagLine", "platform", "update" as URL parameters
 @api_view(['GET'])
-@convert_platform_to_region
-def get_summoner_overview(request, region):
+def get_summoner_overview(request):
     if request.query_params.get('update') == "false":
         database_response = search_db_for_summoner_overview(request)
         if database_response:
             return database_response
 
     try:
-        account_by_gameName_tagLine_url = f"https://{region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
+        account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
         response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
         puuid = response_account_details.json()['puuid']
 
