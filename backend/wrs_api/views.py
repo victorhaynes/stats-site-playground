@@ -1,5 +1,5 @@
-from .models import Car, SummonerOverview, MatchHistory
-from .serializers import CarSerializer, SummonerOverviewSerializer, MatchHistorySerializer
+from .models import Car, SummonerOverview, MatchHistory, RankedLpHistory
+from .serializers import CarSerializer, SummonerOverviewSerializer, MatchHistorySerializer, RankedLpHistorySerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -69,13 +69,14 @@ def get_summoner_overview(request):
 
         encrypted_summonerID_by_puuid_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}"
         response_summonerID = requests.get(encrypted_summonerID_by_puuid_url, headers=headers, verify=True)
-        summonerID, summoner_icon = response_summonerID.json()['id'], response_summonerID.json()['profileIconId']
-
+        summonerID = response_summonerID.json()['id']
+        summoner_icon = response_summonerID.json()['profileIconId']
+        
         league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerID}"
         response_overview = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
 
         if len(response_overview.json()) == 0:
-                overview = {"tier": "UNRANKED"}
+                overview = {"tier": "UNRANKED", "rank": "UNRANKED", "leaguePoints": 0}
         else:
             overview = response_overview.json()[0]
 
@@ -160,7 +161,7 @@ def get_match_history(request):
 # test http://localhost:8000/test/?region=americas&gameName=vanilli%20vanilli&tagLine=vv2&platform=na1&queue=420
 # need season/split start and end Epoch-seconds times
 @api_view(['GET'])
-def get_all_ranked_and_lp_gains(request):
+def basline_lp_and_ranked_history(request):
     epoch_season_start = 1689793200
     epoch_season_end = 1704873600
 
@@ -183,4 +184,41 @@ def get_all_ranked_and_lp_gains(request):
             else:
                 break
 
-    return Response(all_ranked_matches, status=status.HTTP_200_OK)
+    encrypted_summonerID_by_puuid_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}"
+    response_summonerID = requests.get(encrypted_summonerID_by_puuid_url, headers=headers, verify=True)
+    summonerID = response_summonerID.json()['id']
+    summoner_icon = response_summonerID.json()['profileIconId']
+    
+    league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerID}"
+    response_overview = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
+
+    # this means there is no ranked history
+    if len(response_overview.json()) == 0:
+            overview = {"tier": "UNRANKED", "rank": "UNRANKED", "leaguePoints": 0}
+    else:
+        overview = response_overview.json()[0]
+
+    per_game_lp = []
+    for match in all_ranked_matches:
+        per_game_lp.append(
+            {
+                "matchId": match,
+                "tier": overview["tier"],
+                "rank": overview["rank"],
+                "leaguePoints": overview["leaguePoints"],
+                "delta": None
+            })
+
+    baseline_lp_history = RankedLpHistory.objects.get_or_create(puuid=puuid)[0]
+    baseline_lp_history.gameName = request.query_params.get('gameName')
+    baseline_lp_history.tagLine = request.query_params.get('tagLine')
+    baseline_lp_history.region = request.query_params.get('region')
+    baseline_lp_history.lp_history = per_game_lp
+    baseline_lp_history.save()
+
+
+    lp_history_serializer = RankedLpHistorySerializer(baseline_lp_history)
+
+
+    return Response(lp_history_serializer.data['lp_history'], status=status.HTTP_200_OK)
+

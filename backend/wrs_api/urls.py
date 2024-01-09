@@ -22,5 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('summoner-overview/', views.get_summoner_overview),
     path('match-history/', views.get_match_history),
-    path('test/', views.get_all_ranked_and_lp_gains),
+    path('test/', views.basline_lp_and_ranked_history),
 ]

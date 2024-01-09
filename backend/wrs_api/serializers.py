@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Car, SummonerOverview, MatchHistory
+from .models import Car, SummonerOverview, MatchHistory, RankedLpHistory
 
 class CarSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,3 +18,9 @@ class MatchHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = MatchHistory
         fields = ['history']
+
+
+class RankedLpHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RankedLpHistory
+        fields = ['lp_history']

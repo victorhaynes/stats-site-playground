@@ -63,7 +63,8 @@ class RankedLpHistory(models.Model):
     puuid = models.CharField(max_length=200, unique=True)
     lp_history = models.JSONField(default=list)
 
-
+    class Meta:
+        unique_together = ('gameName', 'tagLine', 'region')
 
 # class SummonerOverview(models.Model):
 #     # leagueId = models.CharField(max_length=200, blank=True) 
