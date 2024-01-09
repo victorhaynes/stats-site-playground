@@ -56,8 +56,12 @@ class MatchHistory(models.Model):
         unique_together = ('gameName', 'tagLine', 'region')
 
 
-
-
+class RankedLpHistory(models.Model):
+    gameName = models.CharField(max_length=50)
+    tagLine = models.CharField(max_length=20)
+    region = models.CharField(max_length=50)
+    puuid = models.CharField(max_length=200, unique=True)
+    lp_history = models.JSONField(default=list)
 
 
 

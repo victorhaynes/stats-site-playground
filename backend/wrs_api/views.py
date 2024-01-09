@@ -155,3 +155,32 @@ def get_match_history(request):
         return Response({"message": "Failed to Fetch Match History."}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(match_history_serializer.data['history'], status=status.HTTP_200_OK)
+
+
+# test http://localhost:8000/test/?region=americas&gameName=vanilli%20vanilli&tagLine=vv2&platform=na1&queue=420
+# need season/split start and end Epoch-seconds times
+@api_view(['GET'])
+def get_all_ranked_and_lp_gains(request):
+    epoch_season_start = 1689793200
+    epoch_season_end = 1704873600
+
+    account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
+    response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
+    puuid = response_account_details.json()['puuid']
+
+    start = 0
+    count = 100 # must be <= 100
+    all_ranked_matches = []
+    while True:
+        matches_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&startTime={epoch_season_start}&endTime={epoch_season_end}&queue={request.query_params.get('queue')}"
+        response_matches = requests.get(matches_url, headers=headers, verify=True)
+        if response_matches.status_code == 200:
+            matches = response_matches.json()
+            if len(matches) > 0:
+                for match in matches:
+                    all_ranked_matches.append(match)
+                start+=len(matches)
+            else:
+                break
+
+    return Response(all_ranked_matches, status=status.HTTP_200_OK)
