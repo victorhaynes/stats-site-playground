@@ -30,10 +30,13 @@ class Season(models.Model):
     # split_3_start_date = models.DateField()
     # split_3_start_end = models.DateField()
 
+    def __str__(self):
+        return f"season: {self.season}, split: {self.split}"
+
 
 class SummonerOverview(models.Model):
-    season = models.ForeignKey(Season, on_delete=models.CASCADE)
-    summoner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="overviews")
+    summoner = models.ForeignKey(Summoner, on_delete=models.CASCADE, related_name="overviews")
     overview = models.JSONField(default=dict)
 
     def __str__(self):
@@ -42,9 +45,13 @@ class SummonerOverview(models.Model):
         except KeyError:
             return f"UNRANKED"
 
+    class Meta:
+        unique_together = ('season', 'summoner')
 
 class MatchHistory(models.Model):
-    season = models.ForeignKey(Season, on_delete=models.CASCADE)
-    summoner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="histories")
+    summoner = models.ForeignKey(Summoner, on_delete=models.CASCADE, related_name="histories")
     all_match_history = models.JSONField(default=list)
 
+    class Meta:
+        unique_together = ('season', 'summoner')

@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import Summoner, SummonerOverview, MatchHistory
+from .models import Season, Summoner, SummonerOverview, MatchHistory
 
 
 
-admin.site.register([Summoner, MatchHistory, SummonerOverview])
+admin.site.register([Season, Summoner, MatchHistory, SummonerOverview])
 
 # @admin.register(SummonerOverview)
 # class SummonerOverviewAdmin(admin.ModelAdmin):
