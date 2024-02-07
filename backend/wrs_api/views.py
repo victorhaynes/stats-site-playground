@@ -1,4 +1,4 @@
-from .models import Summoner, Season, SummonerOverview, MatchHistory
+from .models import Summoner, Season, SummonerOverview, MatchHistory, MatchDetails
 from .serializers import  SummonerSerializer, SummonerOverviewSerializer, MatchHistorySerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,6 +8,8 @@ import requests
 from requests.exceptions import HTTPError
 from dotenv import load_dotenv
 import os
+import ast
+import json
 import httpx
 import asyncio
 #### SWAP RESPONSE TO JSON RESPONSE FOR PRODUCTION
@@ -17,8 +19,13 @@ load_dotenv()
 riot_key = os.environ["RIOT_KEY"]
 headers = {'X-Riot-Token': riot_key}
 season = Season.objects.get(season=os.environ["CURRENT_SEASON"], split=os.environ["CURRENT_SPLIT"])
-# season = {}
+# test_dict = ast.literal_eval(os.environ["SEASON_SCHEDULE"])
+season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
+# new_dict = json.loads(test_dict)
+# print((new_dict))
+# print((new_dict.keys()))
 ##############
+
 
 # puuid: f649YxVWblcWTKMjnLYAZTKlbH6b3iNEZXf9-HXZhxxJRBSQ-Zws7v6jErBh0tzyVS9VNo50FHK3rA
 # encryptedSummonerId: 
@@ -60,18 +67,20 @@ def search_db_for_match_history(request):
 @api_view(['GET'])
 def get_summoner_externally(request):
     try:
+        # GET basic account details such as PUUID
         account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
         response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
 
         if response_account_details.status_code == 200:
 
             puuid = response_account_details.json()['puuid']
+            # GET Encrypted Summoner ID
             encrypted_summonerID_by_puuid_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}"
             response_summonerID = requests.get(encrypted_summonerID_by_puuid_url, headers=headers, verify=True)
             summonerID = response_summonerID.json()['id']
             profile_icon = response_summonerID.json()['profileIconId']
             
-            #NEED TEST
+            #NEED TEST 
             try:
                 summoner_searched = Summoner.objects.get(puuid=puuid)
                 if (request.query_params.get('region') != summoner_searched.region or request.query_params.get('gameName') != summoner_searched.gameName or request.query_params.get('tagLine') != summoner_searched.tagLine or profile_icon != summoner_searched.profileIconId or summonerID != summoner_searched.encryptedSummonerId):
@@ -85,7 +94,7 @@ def get_summoner_externally(request):
         else:
             return Response({"this was returned from Riot API": response_account_details.json()}, status=response_account_details.status_code)
         
-        # insert logic here to continue getting summoner overview inside this game request
+        # GET Summoner Overview / Ranked Stats / Elo
         league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerID}"
         response_overview = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
         
@@ -99,7 +108,7 @@ def get_summoner_externally(request):
             try:
 
                 players_summoner_overview = SummonerOverview.objects.get(summoner_id=summoner_searched.id)
-                players_summoner_overview.overview = overview
+                players_summoner_overview.json = overview
                 players_summoner_overview.season = season
                 players_summoner_overview.save()
             except SummonerOverview.DoesNotExist:
@@ -107,6 +116,40 @@ def get_summoner_externally(request):
         else:
             return Response({"this was returned from Riot API": response_account_details.json()}, status=response_account_details.status_code)
     
+        # Logic to get all match history for a player
+        # current_season = os.environ["CURRENT_SEASON"]
+        # current_split = os.environ["CURRENT_SPLIT"]
+        # # season_split_start_epoch_seconds = 1702898800
+        # season_split_start_epoch_seconds = season_schedule[request.query_params.get('platform')][f"season_{current_season}"][f"split_{current_split}"]["start"]
+        # season_split_end_epoch_seconds = season_schedule[request.query_params.get('platform')][f"season_{current_season}"][f"split_{current_split}"]["end"]
+
+
+        # start = 0
+        # count = 100 # must be <= 100
+        # all_matches_played = []
+        # while True:
+        #     matches_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&startTime={season_split_start_epoch_seconds}&endTime={season_split_end_epoch_seconds}"
+        #     response_matches = requests.get(matches_url, headers=headers, verify=True)
+        #     if response_matches.status_code == 200:
+        #         matches = response_matches.json()
+        #         if len(matches) > 0:
+        #             for match in matches:
+        #                 all_matches_played.append(match)
+        #             start+=len(matches)
+        #         else:
+        #             break
+        #     else:
+        #         return Response({"this was returned from Riot API": response_account_details.json()}, status=response_account_details.status_code)
+
+
+        # try:
+        #     players_match_history = MatchHistory.objects.get(summoner_id=summoner_searched.id)
+        #     players_match_history.json = all_matches_played
+        #     players_match_history.season = season
+        #     players_match_history.save()
+        # except MatchHistory.DoesNotExist:
+        #     players_match_history = MatchHistory.objects.create(summoner_id=summoner_searched.id, json=all_matches_played, season=season)
+
 
         # logic to get match history
         start = 0
@@ -118,32 +161,30 @@ def get_summoner_externally(request):
             matches_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}"
 
         response_matches = requests.get(matches_url, headers=headers, verify=True)
-        matches=[]
+        matches = []
         if response_account_details.status_code == 200:
             matches = response_matches.json()
         else:
             return Response({"this was returned from Riot API": response_account_details.json()}, status=response_account_details.status_code)
         
-        match_history = []
+        match_details = []
         for match in matches:
             match_detail_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/{match}"
             response_match_detail = requests.get(match_detail_url, headers=headers, verify=True)
             if response_match_detail.status_code != 200:
                 return Response({"this was returned from Riot API": response_match_detail.json()}, status=response_match_detail.status_code)
-            match_history.append(response_match_detail.json())
+            match_details.append(response_match_detail.json())
 
 
             try:
-
-                players_match_history = MatchHistory.objects.get(summoner_id=summoner_searched.id)
-                players_match_history.all_match_history = match_history
-                players_match_history.season = season
-                players_match_history.save()
-            except MatchHistory.DoesNotExist:
-                players_match_history = MatchHistory.objects.create(summoner_id=summoner_searched.id, all_match_history=match_history, season=season)
+                summoner_match_details = MatchDetails.objects.get(summoner_id=summoner_searched.id)
+                summoner_match_details.json = match_details
+                summoner_match_details.save()
+            except MatchDetails.DoesNotExist:
+                summoner_match_details = MatchDetails.objects.create(summoner_id=summoner_searched.id, json=match_details)
 
 
-
+            print(Summoner.objects.get(id=1))
             serialized_summoner = SummonerSerializer(summoner_searched)
 
     except HTTPError as error:
@@ -156,6 +197,13 @@ def get_summoner_externally(request):
     
     return Response(serialized_summoner.data, status=status.HTTP_200_OK)
 
+
+# FOR TESTING, takes ID only
+@api_view(['GET'])
+def get_any_overview(request):
+    searched_overview = MatchHistory.objects.get(id=1)
+    serialized_overview = MatchHistorySerializer(searched_overview)
+    return Response(serialized_overview.data, status=status.HTTP_200_OK)
 
 # URL: /summoner-overview/
 # requires "region", "gameName", "tagLine", "platform", "update" as URL parameters

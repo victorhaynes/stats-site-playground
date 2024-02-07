@@ -22,8 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('summoner/', views.get_summoner_externally),
     path('summoner-overview/', views.get_summoner_overview),
-    path('match-history/', views.get_match_history)
-    # path('test/', views.basline_lp_and_ranked_history),
-    # path('test2/', views.my_async_view),
-    # path('test2/', views.all_players)
+    path('match-history/', views.get_match_history),
+    path('test/', views.get_any_overview)
 ]
