@@ -112,7 +112,7 @@ def get_summoner_externally(request):
                 players_summoner_overview.season = season
                 players_summoner_overview.save()
             except SummonerOverview.DoesNotExist:
-                players_summoner_overview = SummonerOverview.objects.create(summoner_id=summoner_searched.id, overview=overview, season=season)
+                players_summoner_overview = SummonerOverview.objects.create(summoner_id=summoner_searched.id, json=overview, season=season)
         else:
             return Response({"this was returned from Riot API": response_account_details.json()}, status=response_account_details.status_code)
     
@@ -193,9 +193,63 @@ def get_summoner_externally(request):
     # except:
     #     return Response({"error": "Server error. System Admin to investigate trace log."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-    
-    
-    return Response(serialized_summoner.data, status=status.HTTP_200_OK)
+    return JsonResponse(serialized_summoner.data, status=status.HTTP_200_OK)
+
+
+# URL: /match-history/
+# requires "region", "gameName", "tagLine", "platform", "update" as URL parameters
+@api_view(['GET'])
+def get_match_history_externally(request):
+    # if request.query_params.get('update') == "false":
+    #     database_response = search_db_for_match_history(request)
+    #     if database_response:
+    #         return database_response
+    try:
+        account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
+        response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
+        puuid = response_account_details.json()['puuid']
+
+        start = 0
+        count = 4 # must be <= 100
+
+        if request.query_params.get('queue'):
+            matches_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&queue={request.query_params.get('queue')}"
+        else:
+            matches_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}"
+
+        response_matches = requests.get(matches_url, headers=headers, verify=True)
+        matches = response_matches.json()
+        
+        match_history = []
+        for match in matches:
+            match_detail_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/{match}"
+            response_match_detail = requests.get(match_detail_url, headers=headers, verify=True)
+            if response_match_detail.status_code != 200:
+                return Response(response_match_detail)
+            match_history.append(response_match_detail.json())
+        
+        # # .updated_or_create() returns a tuple
+        # updated_match_history = MatchHistory.objects.update_or_create(history=match_history, gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))[0]
+        # updated_match_history.puuid = puuid
+        # updated_match_history.save()
+        # match_history_serializer = MatchHistorySerializer(updated_match_history)
+
+        # .updated_or_create() returns a tuple
+        updated_match_history = MatchHistory.objects.get_or_create(puuid=puuid)[0]
+        updated_match_history.history = match_history
+        updated_match_history.gameName = request.query_params.get('gameName')
+        updated_match_history.tagLine = request.query_params.get('tagLine')
+        updated_match_history.region = request.query_params.get('region')
+        updated_match_history.history = match_history
+        updated_match_history.save()
+        match_history_serializer = MatchHistorySerializer(updated_match_history)
+        
+    except:
+        return Response({"message": "Failed to Fetch Match History."}, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response(match_history_serializer.data['history'], status=status.HTTP_200_OK)
+
+
 
 
 # FOR TESTING, takes ID only

@@ -2,13 +2,12 @@ import React from 'react'
 import { useParams, Link } from 'react-router-dom'
 import MatchDetails from './MatchDetails'
 
-const MatchHistory = ({matchHistory, setMatchHistory, summonerOverview, setSummonerOverview}) => {
+const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
 
     const params = useParams()
 
     function navAndSearchParticipant(){
-      setSummonerOverview({})
-      setMatchHistory([])
+      setSummonerData({})
      }
 
 
@@ -123,7 +122,7 @@ const MatchHistory = ({matchHistory, setMatchHistory, summonerOverview, setSummo
                         return (
                             <div key={index}>
                                 {renderChampionIcon(participant, "25", "25")}
-                                {participant.puuid === summonerOverview.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
+                                {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
                                 <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
                             </div>
                         )
@@ -133,7 +132,7 @@ const MatchHistory = ({matchHistory, setMatchHistory, summonerOverview, setSummo
                         return (
                             <div key={index}>
                                 {renderChampionIcon(participant, "25", "25")}
-                                {participant.puuid === summonerOverview.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
+                                {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
                                 <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
                             </div>
                         )
@@ -195,10 +194,10 @@ const MatchHistory = ({matchHistory, setMatchHistory, summonerOverview, setSummo
     }
 
     function renderMatchHistory(){
-        return matchHistory.map((match, index)=>{
+        return matchHistory?.map((match, index)=>{
             let individualStats = match?.info?.participants?.filter((player) => {
                 // return player.riotIdGameName?.toLowerCase() === (params.gameName).toLowerCase() && player.riotIdTagline?.toLowerCase() === params.tagLine.toLowerCase()
-                return player?.puuid === summonerOverview?.puuid && summonerOverview?.puuid
+                return player?.puuid === summonerData?.puuid && summonerData?.puuid
             })[0]
             return (
                     <div key={index}>

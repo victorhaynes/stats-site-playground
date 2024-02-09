@@ -7,43 +7,66 @@ import MatchHistory from './MatchHistory'
 const SummonerDetail = () => {
 
     const params = useParams()
-    const [summonerOverview, setSummonerOverview] = useState({})
-    const [matchHistory, setMatchHistory] = useState([])
+
+
+
+    const [summonerOverviewz, setSummonerOverview] = useState({})
+    const [matchHistoryz, setMatchHistory] = useState([])
+
+
+    const [summonerData, setSummonerData] = useState({})
     const location = useLocation()
 
     useEffect(() => {
-        fetchSummonerOverview()
-        fetchMatchHistory()
+        // fetchSummonerOverview()
+        // fetchMatchHistory()
+        getSummonerData()
     },[location.pathname])
 
 
-    async function fetchSummonerOverview(update=false){
+    async function getSummonerData(update=false){
         try {
-            let response = await axios.get(`http://127.0.0.1:8000/summoner-overview/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}&update=${update}`)
+            let response = await axios.get(`http://127.0.0.1:8000/summoner-data-external/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}&update=${update}`)
             console.log(response.data)
-            setSummonerOverview(response.data)
+            setSummonerData(response.data)
         } catch (error) {
             console.log({[error.response.request.status]: error.response.data})
         }
     }
 
 
-    async function fetchMatchHistory(queueId="", update=false){
+    // async function fetchSummonerOverview(update=false){
+    //     try {
+    //         let response = await axios.get(`http://127.0.0.1:8000/summoner-overview/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}&update=${update}`)
+    //         console.log(response.data)
+    //         setSummonerOverview(response.data)
+    //     } catch (error) {
+    //         console.log({[error.response.request.status]: error.response.data})
+    //     }
+    // }
+
+    // WORK ON THIS ----------------- MAKE A PIECE OF STATE THAT IS THE LENGTH OF THE MATCH HISTORY ARRAY
+    // WHEN USER WANTS MORE HISTORY ADD A BUTTON THAT WILL SEND A REQUEST AND INCLUDE THE COUNTER, SUCCESSFUL RESPONSE INCREMENT COUNTER, KEEP APPENDING TO HISTORY
+    async function getMoreMatchHistory(queueId="", update=false){
 
         let queueUrlParameter = queueId ? `&queue=${queueId}` : ""
         console.log(queueUrlParameter)
         try {
-            let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}&update=${update}`)
+            let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}&update=${update}$summonerId=${summonerData?.id}`)
             console.log(response.data)
-            setMatchHistory(response.data)
+            setSummonerData((oldSummonerData) => {
+                let copyOfSummonerData = oldSummonerData
+                copyOfSummonerData.match_details.json = copyOfSummonerData.match_details.json.append(response.data)
+                return copyOfSummonerData
+            })
         } catch (error) {
             console.log({[error.response.request.status]: error.response.data})
         }
     }
 
     function forceUpdatePage(){
-        fetchSummonerOverview(true)
-        fetchMatchHistory("", true)
+        // fetchSummonerOverview(true)
+        // fetchMatchHistory("", true)
     }
 
 
@@ -101,20 +124,31 @@ const SummonerDetail = () => {
     }
 
 
+    let summonerOverview = {}
+    try {
+        summonerOverview = summonerData?.summoner_overviews[0]?.json
+    } catch (error){
+        summonerOverview = {}
+    }
+
+    let matchHistory = summonerData?.match_details?.json
+
+
     return (
         <>
-            <button onClick={()=>fetchMatchHistory()}>All</button><button onClick={()=>fetchMatchHistory("420")}>Ranked Solo/Duo</button><button onClick={()=>fetchMatchHistory("400")}>Normal</button><button onClick={()=>fetchMatchHistory("490")}>Quick Play</button><button onClick={()=>fetchMatchHistory("450")}>ARAM</button><button onClick={()=>fetchMatchHistory("440")}>Flex</button>
-            <button onClick={()=>fetchMatchHistory("700")}>Clash</button><button onClick={()=>fetchMatchHistory("1300")}>Nexus Blitz</button><button onClick={()=>fetchMatchHistory("1700")}>Arena</button>
+            {/* Fix queue slicing once we implement match history updates alone */}
+            {/* <button onClick={()=>fetchMatchHistory()}>All</button><button onClick={()=>fetchMatchHistory("420")}>Ranked Solo/Duo</button><button onClick={()=>fetchMatchHistory("400")}>Normal</button><button onClick={()=>fetchMatchHistory("490")}>Quick Play</button><button onClick={()=>fetchMatchHistory("450")}>ARAM</button><button onClick={()=>fetchMatchHistory("440")}>Flex</button>
+            <button onClick={()=>fetchMatchHistory("700")}>Clash</button><button onClick={()=>fetchMatchHistory("1300")}>Nexus Blitz</button><button onClick={()=>fetchMatchHistory("1700")}>Arena</button> */}
             <h1>{params.gameName} #{params.tagLine}</h1>
-            <img width="75" height="75" alt="profile icon" src={process.env.PUBLIC_URL + `/assets/profile_icons/${summonerOverview?.profileIcon}.png`} /> 
+            <img width="75" height="75" alt="profile icon" src={process.env.PUBLIC_URL + `/assets/profile_icons/${summonerData?.profileIconId}.png`} /> 
             <h2>Ranked Solo Queue:</h2>
             <img width="100" height="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank${summonerOverview?.tier?.toLowerCase()}.png`} /> 
-            <plaintext>{summonerOverview.tier} {summonerOverview.rank}</plaintext>
-            <plaintext>Wins: {summonerOverview.wins} Losses:{summonerOverview.losses}</plaintext>
-            <plaintext>Win Rate {Math.round(summonerOverview.wins/(summonerOverview.wins + summonerOverview.losses)*100)}%</plaintext>
+            <plaintext>{summonerOverview?.tier} {summonerOverview?.rank}</plaintext>
+            <plaintext>Wins: {summonerOverview?.wins} Losses:{summonerOverview?.losses}</plaintext>
+            <plaintext>Win Rate {Math.round(summonerOverview?.wins/(summonerOverview?.wins + summonerOverview?.losses)*100)}%</plaintext>
             <plaintext>Last Updated {formatLastUpdateTime(summonerOverview)}</plaintext>
             <button onClick={()=>forceUpdatePage()}>Update</button>
-            <MatchHistory matchHistory={matchHistory} setMatchHistory={setMatchHistory} summonerOverview={summonerOverview} setSummonerOverview={setSummonerOverview}/>
+            <MatchHistory matchHistory={matchHistory} setSummonerData={setSummonerData} summonerData={summonerData}/>
         </>
     )
 }
