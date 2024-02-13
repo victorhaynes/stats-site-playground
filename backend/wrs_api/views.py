@@ -1,5 +1,5 @@
 from .models import Summoner, Season, SummonerOverview, MatchHistory, MatchDetails
-from .serializers import  SummonerSerializer, SummonerOverviewSerializer, MatchHistorySerializer
+from .serializers import  SummonerSerializer, SummonerOverviewSerializer, MatchHistorySerializer, MatchDetailsSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -27,45 +27,34 @@ season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
 ##############
 
 
-# puuid: f649YxVWblcWTKMjnLYAZTKlbH6b3iNEZXf9-HXZhxxJRBSQ-Zws7v6jErBh0tzyVS9VNo50FHK3rA
-# encryptedSummonerId: 
-
-# If you want to use this decorator on a function, add the below and include "region" has a parameter in func def
-# @convert_platform_to_region
-# def convert_platform_to_region(func):
-#     def wrapper(request, *args, **kwargs):
-#         region = ""
-#         if request.query_params.get('platform') == "na1" or request.query_params.get('platform') == "oc1":
-#             region+= "americas"
-#         elif request.query_params.get('platform') == "kr1" or request.query_params.get('platform') == "jp1":
-#             region+= "asia"
-#         elif request.query_params.get('platform') == "euw1" or request.query_params.get('platform') == "eun1":
-#             region+= "europe"
-#         return func(request, region)
-#     return wrapper
-
-# Helper Function to check database of existing summoner overviews before hitting Riot API
-def search_db_for_summoner_overview(request):
+# Helper Function to check database for existing summoner data before hitting Riot API
+def search_for_summoner_data_internally(request):
     try:
-        summoner_overview = SummonerOverview.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('tagLine'))
-        summoner_overview_serializer = SummonerOverviewSerializer(summoner_overview)
-        return Response(summoner_overview_serializer.data['overview'], status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        summoner = Summoner.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))
+        serialized_summoner = SummonerSerializer(summoner)
+        return Response(serialized_summoner.data, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     except SummonerOverview.DoesNotExist:
         return None
 
-
-# Helper Function to check database for existing match histories before hitting Riot API
-def search_db_for_match_history(request):
+def search_for_match_details_internally(request):
     try:
-        match_history = MatchHistory.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('tagLine'))
-        match_history_serializer = MatchHistorySerializer(match_history)
-        return Response(match_history_serializer.data['history'], status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-    except MatchHistory.DoesNotExist:
+        summoner = Summoner.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))
+        match_details = summoner.match_details
+        serialized_match_details = MatchDetailsSerializer(match_details)
+        return Response(serialized_match_details.data['json'], status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+    except SummonerOverview.DoesNotExist or MatchDetails.DoesNotExist:
         return None
+
 
 # takes region, gameName, tagLine, platform
 @api_view(['GET'])
-def get_summoner_externally(request):
+def get_summoner_details_from_riot(request):
+    if request.query_params.get('routeToRiot') == "false":
+        database_response = search_for_summoner_data_internally(request)
+        print("HELLO HERE")
+        if database_response:
+            return database_response
+        
     try:
         # GET basic account details such as PUUID
         account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
@@ -151,8 +140,8 @@ def get_summoner_externally(request):
         #     players_match_history = MatchHistory.objects.create(summoner_id=summoner_searched.id, json=all_matches_played, season=season)
 
 
-        # logic to get match history
-        start = 0
+        # logic to get recent match history
+        start = 0 # SET TO 15 in PRODUCTION
         count = 3 # must be <= 100
 
         if request.query_params.get('queue'):
@@ -184,7 +173,6 @@ def get_summoner_externally(request):
                 summoner_match_details = MatchDetails.objects.create(summoner_id=summoner_searched.id, json=match_details)
 
 
-            print(Summoner.objects.get(id=1))
             serialized_summoner = SummonerSerializer(summoner_searched)
 
     except HTTPError as error:
@@ -199,135 +187,21 @@ def get_summoner_externally(request):
 # URL: /match-history/
 # requires "region", "gameName", "tagLine", "platform", "update" as URL parameters
 @api_view(['GET'])
-def get_match_history_externally(request):
-    # if request.query_params.get('update') == "false":
-    #     database_response = search_db_for_match_history(request)
-    #     if database_response:
-    #         return database_response
-    try:
-        account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
-        response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
-        puuid = response_account_details.json()['puuid']
-
-        start = 0
-        count = 4 # must be <= 100
-
-        if request.query_params.get('queue'):
-            matches_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&queue={request.query_params.get('queue')}"
-        else:
-            matches_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}"
-
-        response_matches = requests.get(matches_url, headers=headers, verify=True)
-        matches = response_matches.json()
-        
-        match_history = []
-        for match in matches:
-            match_detail_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/{match}"
-            response_match_detail = requests.get(match_detail_url, headers=headers, verify=True)
-            if response_match_detail.status_code != 200:
-                return Response(response_match_detail)
-            match_history.append(response_match_detail.json())
-        
-        # # .updated_or_create() returns a tuple
-        # updated_match_history = MatchHistory.objects.update_or_create(history=match_history, gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))[0]
-        # updated_match_history.puuid = puuid
-        # updated_match_history.save()
-        # match_history_serializer = MatchHistorySerializer(updated_match_history)
-
-        # .updated_or_create() returns a tuple
-        updated_match_history = MatchHistory.objects.get_or_create(puuid=puuid)[0]
-        updated_match_history.history = match_history
-        updated_match_history.gameName = request.query_params.get('gameName')
-        updated_match_history.tagLine = request.query_params.get('tagLine')
-        updated_match_history.region = request.query_params.get('region')
-        updated_match_history.history = match_history
-        updated_match_history.save()
-        match_history_serializer = MatchHistorySerializer(updated_match_history)
-        
-    except:
-        return Response({"message": "Failed to Fetch Match History."}, status=status.HTTP_400_BAD_REQUEST)
-
-    return Response(match_history_serializer.data['history'], status=status.HTTP_200_OK)
-
-
-
-
-# FOR TESTING, takes ID only
-@api_view(['GET'])
-def get_any_overview(request):
-    searched_overview = MatchHistory.objects.get(id=1)
-    serialized_overview = MatchHistorySerializer(searched_overview)
-    return Response(serialized_overview.data, status=status.HTTP_200_OK)
-
-# URL: /summoner-overview/
-# requires "region", "gameName", "tagLine", "platform", "update" as URL parameters
-@api_view(['GET'])
-def get_summoner_overview(request):
-
-    searched_summoner = Summoner.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))
-
-    # if request.query_params.get('update') == "false":
-    #     database_response = search_db_for_summoner_overview(request)
-    #     if database_response:
-    #         return database_response
-
-    # try:
-    #     account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
-    #     response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
-    #     puuid = response_account_details.json()['puuid']
-
-    #     encrypted_summonerID_by_puuid_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}"
-    #     response_summonerID = requests.get(encrypted_summonerID_by_puuid_url, headers=headers, verify=True)
-    #     summonerID = response_summonerID.json()['id']
-    #     summoner_icon = response_summonerID.json()['profileIconId']
-        
-    #     league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerID}"
-    #     response_overview = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
-
-    #     if len(response_overview.json()) == 0:
-    #             overview = {"tier": "UNRANKED", "rank": "UNRANKED", "leaguePoints": 0}
-    #     else:
-    #         overview = response_overview.json()[0]
-
-    #     overview["puuid"] = puuid
-    #     overview["profileIcon"] = summoner_icon
-    #     overview["gameName"] = request.query_params.get('gameName')
-    #     overview["tagLine"] = request.query_params.get('tagLine')
-    #     overview["region"] = request.query_params.get('region')
-
-    #     # .updated_or_create() returns a tuple
-    #     # .update() only works on QuerySets
-    #     updated_sum_overview = SummonerOverview.objects.get_or_create(puuid=puuid)[0]
-    #     updated_sum_overview.gameName = request.query_params.get('gameName')
-    #     updated_sum_overview.tagLine = request.query_params.get('tagLine')
-    #     updated_sum_overview.region = request.query_params.get('region')
-    #     updated_sum_overview.overview = overview
-    #     updated_sum_overview.save()
-    #     summoner_overview_serializer = SummonerOverviewSerializer(updated_sum_overview)
-
-    # except HTTPError as error:
-    #     return Response(error.response.text, status=status.HTTP_400_BAD_REQUEST)
-    # # except:
-    # #     return Response({"message": "Server Error. Failed to Fetch Summoner Overview."}, status=status.HTTP_400_BAD_REQUEST)
-
-    # return Response(summoner_overview_serializer.data['overview'], status=status.HTTP_200_OK)
-
-
-# URL: /match-history/
-# requires "region", "gameName", "tagLine", "platform", "update" as URL parameters
-@api_view(['GET'])
-def get_match_history(request):
-    if request.query_params.get('update') == "false":
-        database_response = search_db_for_match_history(request)
+def get_more_match_details_from_riot(request):
+    if request.query_params.get('routeToRiot') == "false":
+        database_response = search_for_match_details_internally(request)
+        print("HELLO HERE")
         if database_response:
             return database_response
+        
     try:
+        # Get recent match IDs from Riot
         account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
         response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
         puuid = response_account_details.json()['puuid']
 
-        start = 0
-        count = 3 # must be <= 100
+        start = request.query_params.get('start')
+        count = request.query_params.get('count')
 
         if request.query_params.get('queue'):
             matches_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}&queue={request.query_params.get('queue')}"
@@ -336,33 +210,36 @@ def get_match_history(request):
 
         response_matches = requests.get(matches_url, headers=headers, verify=True)
         matches = response_matches.json()
-        
-        match_history = []
+
+        # Get details for list of matches from Riot
+        match_details = []
         for match in matches:
             match_detail_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/{match}"
             response_match_detail = requests.get(match_detail_url, headers=headers, verify=True)
             if response_match_detail.status_code != 200:
+                print("ERROR!!!!!!!!!!")
                 return Response(response_match_detail)
-            match_history.append(response_match_detail.json())
+            match_details.append(response_match_detail.json())
         
-        # # .updated_or_create() returns a tuple
-        # updated_match_history = MatchHistory.objects.update_or_create(history=match_history, gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))[0]
-        # updated_match_history.puuid = puuid
-        # updated_match_history.save()
-        # match_history_serializer = MatchHistorySerializer(updated_match_history)
+        # If queue is not included in query parameters, updated database /w Riot response to store ALL recent match details as JSON
+        if not request.query_params.get('queue'):
+            recent_details = MatchDetails.objects.get(summoner_id=request.query_params.get('summonerId'))
+            updated_recent_details = recent_details.json
+            for match in match_details:
+                updated_recent_details.append(match)
+            recent_details.json = updated_recent_details
+            recent_details.save()
+            serialized_recent_history = MatchDetailsSerializer(recent_details)
+        # If queue is included, pass Riot response directly to client without updating database with queue-specific JSON
+        else:
+            return JsonResponse(match_details, status=status.HTTP_200_OK, safe=False)
 
-        # .updated_or_create() returns a tuple
-        updated_match_history = MatchHistory.objects.get_or_create(puuid=puuid)[0]
-        updated_match_history.history = match_history
-        updated_match_history.gameName = request.query_params.get('gameName')
-        updated_match_history.tagLine = request.query_params.get('tagLine')
-        updated_match_history.region = request.query_params.get('region')
-        updated_match_history.history = match_history
-        updated_match_history.save()
-        match_history_serializer = MatchHistorySerializer(updated_match_history)
-        
+        # print(type(serialized_recent_history))
+        # print(serialized_recent_history)
     except:
         return Response({"message": "Failed to Fetch Match History."}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response(match_history_serializer.data['history'], status=status.HTTP_200_OK)
+    return JsonResponse(serialized_recent_history.data['json'], status=status.HTTP_200_OK, safe=False)
+
+
 

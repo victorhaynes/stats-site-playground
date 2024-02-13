@@ -20,8 +20,6 @@ from wrs_api import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('summoner-data-external/', views.get_summoner_externally),
-    path('summoner-overview/', views.get_summoner_overview),
-    path('match-history/', views.get_match_history),
-    path('test/', views.get_any_overview)
+    path('summoner-data-external/', views.get_summoner_details_from_riot),
+    path('match-history/', views.get_more_match_details_from_riot)
 ]
