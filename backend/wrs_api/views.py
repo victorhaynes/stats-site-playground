@@ -190,7 +190,6 @@ def get_summoner_details_from_riot(request):
 def get_more_match_details_from_riot(request):
     if request.query_params.get('routeToRiot') == "false":
         database_response = search_for_match_details_internally(request)
-        print("HELLO HERE")
         if database_response:
             return database_response
         

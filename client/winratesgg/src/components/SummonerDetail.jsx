@@ -21,8 +21,6 @@ const SummonerDetail = () => {
     const location = useLocation()
 
     useEffect(() => {
-        // fetchSummonerOverview()
-        // fetchMatchHistory()
         getSummonerData()
     },[location.pathname])
 
@@ -39,22 +37,13 @@ const SummonerDetail = () => {
     }
 
 
-    // async function fetchSummonerOverview(routeToRiot=false){
-    //     try {
-    //         let response = await axios.get(`http://127.0.0.1:8000/summoner-overview/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}&routeToRiot=${routeToRiot}`)
-    //         console.log(response.data)
-    //         setSummonerOverview(response.data)
-    //     } catch (error) {
-    //         console.log({[error.response.request.status]: error.response.data})
-    //     }
-    // }
-
     // WORK ON THIS ----------------- MAKE A PIECE OF STATE THAT IS THE LENGTH OF THE MATCH HISTORY ARRAY
     // WHEN USER WANTS MORE HISTORY ADD A BUTTON THAT WILL SEND A REQUEST AND INCLUDE THE COUNTER, SUCCESSFUL RESPONSE INCREMENT COUNTER, KEEP APPENDING TO HISTORY
     async function getMoreMatchDetails(queueId="", routeToRiot=false){
         // console.log(riotAPIstartIndex)
         let queueUrlParameter = queueId ? `&queue=${queueId}` : ""
         console.log(queueUrlParameter)
+
         try {
             let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}&routeToRiot=${routeToRiot}&summonerId=${summonerData?.id}&start=${riotAPIstartIndex}&count=${numberOfMatchesToAdd}`)
             console.log(response.data)
@@ -71,29 +60,35 @@ const SummonerDetail = () => {
     }
 
 
-    // async function getMoreMatchDetails(queueId=null, routeToRiot=false){
-    //     // console.log(riotAPIstartIndex)
-    //     let queueUrlParameter = queueId ? `&queue=${queueId}` : ""
-    //     console.log(queueUrlParameter)
-    //     try {
-    //         let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}&routeToRiot=${routeToRiot}&summonerId=${summonerData?.id}&start=${riotAPIstartIndex}&count=${numberOfMatchesToAdd}`)
-    //         console.log(response.data)
-    //         setSummonerData((oldSummonerData) => {
-    //             let copyOfSummonerData = oldSummonerData
-    //             copyOfSummonerData.match_details.json = response.data
-    //             return copyOfSummonerData
-    //         })
-    //         // setRiotAPIstartIndex((oldValue) => oldValue + numberOfMatchesToAdd)
-    //         setRiotAPIstartIndex(response.data.length)
-    //     } catch (error) {
-    //         console.log({[error.response.request.status]: error.response.data})
-    //     }
-    // }
-    
+    // WORK ON THIS!!!!!!!! this is working for ARAM. 
+    // TODO: determine starting index dynamically, make sure subsequent add-ons work, make sure works for all game modes
+    // TODO: consider getting rid of queueID from abvove function & renaming to getMoreGeneralMatchDetails
+    // TODO: look at the way state is being updated above and consider if that is best practice
+    async function getMoreMatchDetailsQueueSpecific(queueId="", routeToRiot=false){
+        // console.log(riotAPIstartIndex)
+        let queueUrlParameter = queueId ? `&queue=${queueId}` : ""
+        console.log(queueUrlParameter)
+        try {
+            let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}&routeToRiot=${routeToRiot}&summonerId=${summonerData?.id}&start=${riotAPIstartIndex}&count=${numberOfMatchesToAdd}`)
+            console.log(response.data)
+            let copyOfSummonerData = {...summonerData}
+            // for (let i = 0; i < response.data.length; i++){
+            //     copyOfSummonerData.match_details.json.push(response.data[i])
+            // }
+            // copyOfSummonerData.match_details.json.push({})
+
+            let updatedMatchDetails = copyOfSummonerData.match_details.json.concat(response.data)
+            copyOfSummonerData.match_details.json = updatedMatchDetails
+            setSummonerData(copyOfSummonerData)
+            setRiotAPIstartIndex((oldValue) => oldValue + numberOfMatchesToAdd)
+            setRiotAPIstartIndex(response.data.length)
+        } catch (error) {
+            console.log({[error.response.request.status]: error.response.data})
+        }
+    }
+
 
     function forceUpdatePage(){
-        // fetchSummonerOverview(true)
-        // fetchMatchHistory("", true)
         getSummonerData(true)
     }
 
@@ -168,6 +163,16 @@ const SummonerDetail = () => {
         }
     })
 
+    function undoFilterAndGetRecentMatchDetails(){
+        setQueueType("")
+        getMoreMatchDetails("", false)
+    }
+
+    function filterAndResetRiotStartIndex(queueId){
+        setQueueType(queueId)
+        setRiotAPIstartIndex(1)
+    }
+
 
 
     return (
@@ -175,7 +180,7 @@ const SummonerDetail = () => {
             {/* Fix queue slicing once we implement match history updates alone */}
             {/* <button onClick={()=>getMoreMatchDetails("", false)}>All</button><button onClick={()=>getMoreMatchDetails(420, true)}>Ranked Solo/Duo</button><button onClick={()=>getMoreMatchDetails(400, true)}>Normal</button><button onClick={()=>getMoreMatchDetails(490, true)}>Quick Play</button><button onClick={()=>getMoreMatchDetails(450, true)}>ARAM</button><button onClick={()=>getMoreMatchDetails(440, true)}>Flex</button>
             <button onClick={()=>getMoreMatchDetails(700, true)}>Clash</button><button onClick={()=>getMoreMatchDetails(1300, true)}>Nexus Blitz</button><button onClick={()=>getMoreMatchDetails(1700, true)}>Arena</button> */}
-            <button onClick={()=>setQueueType("")}>All</button><button onClick={()=>setQueueType(450)}>ARAM</button>
+            <button onClick={()=>undoFilterAndGetRecentMatchDetails()}>All</button><button onClick={()=>filterAndResetRiotStartIndex(450)}>ARAM</button>
             <button onClick={()=>setQueueType(420)}>Ranked Solo/Duo</button><button onClick={()=>setQueueType(400)}>Normal</button><button onClick={()=>setQueueType(490)}>Quick Play</button><button onClick={()=>setQueueType(440)}>Flex</button>
             <button onClick={()=>setQueueType(700)}>Clash</button><button onClick={()=>setQueueType(1300)}>Nexus Blitz</button><button onClick={()=>setQueueType(1700)}>Arena</button>
             <h1>{params.gameName} #{params.tagLine}</h1>
@@ -188,7 +193,8 @@ const SummonerDetail = () => {
             <plaintext>Last Updated {formatLastUpdateTime(summonerOverview)}</plaintext>
             <button onClick={()=>forceUpdatePage()}>Update</button>
             <MatchHistory matchHistory={matchHistory} setSummonerData={setSummonerData} summonerData={summonerData}/>
-            <button onClick={()=>getMoreMatchDetails("",false)}>Fetch More Games</button>
+            <button onClick={()=>getMoreMatchDetails(queueType, true)}>Fetch More Games</button>
+            <button onClick={()=>getMoreMatchDetailsQueueSpecific(queueType, true)}>Fetch More ARAM</button>
         </>
     )
 }
