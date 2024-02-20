@@ -32,7 +32,7 @@ def search_for_summoner_data_internally(request):
     try:
         summoner = Summoner.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))
         serialized_summoner = SummonerSerializer(summoner)
-        return Response(serialized_summoner.data, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        return JsonResponse(serialized_summoner.data, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     except SummonerOverview.DoesNotExist:
         return None
 
@@ -220,7 +220,7 @@ def get_more_match_details_from_riot(request):
                 return Response(response_match_detail)
             match_details.append(response_match_detail.json())
         
-        # If queue is not included in query parameters, updated database /w Riot response to store ALL recent match details as JSON
+        # If queue is NOT included in query parameters, update database /w Riot response to store ALL recent match details as JSON
         if not request.query_params.get('queue'):
             recent_details = MatchDetails.objects.get(summoner_id=request.query_params.get('summonerId'))
             updated_recent_details = recent_details.json
@@ -229,7 +229,7 @@ def get_more_match_details_from_riot(request):
             recent_details.json = updated_recent_details
             recent_details.save()
             serialized_recent_history = MatchDetailsSerializer(recent_details)
-        # If queue is included, pass Riot response directly to client without updating database with queue-specific JSON
+        # If queue IS included, pass Riot response directly to client without updating database with queue-specific JSON
         else:
             return JsonResponse(match_details, status=status.HTTP_200_OK, safe=False)
 
