@@ -4,9 +4,16 @@ from .models import Season, Summoner, SummonerOverview, MatchHistory, MatchDetai
 
 
 class SeasonSerializer(serializers.ModelSerializer):
+    # extra_info = serializers.SerializerMethodField()
+    # def get_extra_info(self, obj):
+    #     return obj.season
+    # class Meta:
+    #     model = Season
+    #     fields = ['season', 'split', 'extra_info']
+
     class Meta:
         model = Season
-        fields = '__all__'
+        fields = ['season', 'split']
 
 
 class MatchHistorySerializer(serializers.ModelSerializer):
@@ -28,7 +35,7 @@ class SummonerOverviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = SummonerOverview
         # fields = '__all__'
-        fields = ['json', 'season']
+        fields = ['json', 'season', 'updated_at']
 
 # class SummonerOverviewField(serializers.RelatedField):
 #     def to_representation(self, value):
@@ -50,6 +57,6 @@ class SummonerSerializer(serializers.ModelSerializer):
     match_details = MatchDetailsSerializer()
     class Meta:
         model = Summoner
-        fields = ['id', 'puuid', 'gameName', 'tagLine', 'region', 'profileIconId', 'encryptedSummonerId', 'summonerName', 'summoner_overviews', 'match_details'] 
+        fields = ['id', 'puuid', 'gameName', 'tagLine', 'region', 'profileIconId', 'encryptedSummonerId', 'summonerName', 'summoner_overviews', 'match_details', 'updated_at'] 
                 #   'histories']
         # fields = '__all__'

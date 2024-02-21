@@ -8,70 +8,47 @@ const SummonerDetail = () => {
 
     const params = useParams()
 
-
-
-    // const [summonerOverviewz, setSummonerOverview] = useState({})
-    // const [matchHistoryz, setMatchHistory] = useState([])
-
-
     const [summonerData, setSummonerData] = useState({})
-    const [riotAPIstartIndex, setRiotAPIstartIndex] = useState(0)
-    const [numberOfMatchesToAdd, setNumberOfMatchesToAdd] = useState(2) // SET TO 15 in PRODUCTION
     const [queueType, setQueueType] = useState("")
     const location = useLocation()
+    const numberOfMatchesToAdd = 2
 
+
+    // On URL change (clicking on Game Name hyperlink) re-fetch summoner data
     useEffect(() => {
         getSummonerData()
     },[location.pathname])
 
 
+    // Get summoner data, including match details nested as json
     async function getSummonerData(routeToRiot=false){
-        // setQueueType("")
         try {
             let response = await axios.get(`http://127.0.0.1:8000/summoner-data-external/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}&routeToRiot=${routeToRiot}`)
             console.log(response.data)
             setSummonerData(response.data)
-            setRiotAPIstartIndex(response.data.match_details.json.length)
         } catch (error) {
             console.log({[error.response.request.status]: error.response.data})
         }
     }
 
-    // WORK ON THIS ----------------- MAKE A PIECE OF STATE THAT IS THE LENGTH OF THE MATCH HISTORY ARRAY
-    // WHEN USER WANTS MORE HISTORY ADD A BUTTON THAT WILL SEND A REQUEST AND INCLUDE THE COUNTER, SUCCESSFUL RESPONSE INCREMENT COUNTER, KEEP APPENDING TO HISTORY
-    async function getMoreMatchDetails(routeToRiot=false){
-        // let startIndex = start? start : matchHistory?.length
-        const start = matchHistory?.length
-        console.log(start)
-        // let queueUrlParameter = queueId ? `&queue=${queueId}` : ""
-        // console.log(queueUrlParameter)
 
+    // Fetch additional games /w no filter, =false get from databse & no update, =true get from riot API & update databse
+    async function getMoreMatchDetails(routeToRiot=false){
+        const start = matchHistory?.length
         try {
-            // let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}&routeToRiot=${routeToRiot}&summonerId=${summonerData?.id}&start=${riotAPIstartIndex}&count=${numberOfMatchesToAdd}`)
             let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}&routeToRiot=${routeToRiot}&summonerId=${summonerData?.id}&start=${start}&count=${numberOfMatchesToAdd}`)
-            console.log(response.data)
             let copyOfSummonerData = {...summonerData}
             copyOfSummonerData.match_details.json = response.data
             setSummonerData(copyOfSummonerData)
-            // setSummonerData((oldSummonerData) => {
-            //     let copyOfSummonerData = oldSummonerData
-            //     copyOfSummonerData.match_details.json = response.data
-            //     return copyOfSummonerData
-            // })
-            // setRiotAPIstartIndex(response.data.length)
         } catch (error) {
             console.log({[error.response.request.status]: error.response.data})
         }
     }
 
 
-    // WORK ON THIS!!!!!!!! this is working for ARAM. 
-    // TODO: determine starting index dynamically, make sure subsequent add-ons work, make sure works for all game modes
-    // TODO: consider getting rid of queueID from abvove function & renaming to getMoreGeneralMatchDetails
-    // TODO: look at the way state is being updated above and consider if that is best practice
+    // Fetch additional games of a specific type, queueId = game mode
+    // routeToRiot=true will retrieve response directly from API, no database updates
     async function getMoreMatchDetailsQueueSpecific(queueId="", routeToRiot=false){
-        // this start index needs to be synchronous/not in state because we have to filter the response (in state) and access its length immediately
-        // unlike theriotAPIstartIndex ? state variable which is just the length of the response /w no manipulation
         const start = matchHistory?.length
         let queueUrlParameter = queueId ? `&queue=${queueId}` : ""
         console.log(queueUrlParameter)
@@ -79,31 +56,26 @@ const SummonerDetail = () => {
             let response = await axios.get(`http://127.0.0.1:8000/match-history/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}${queueUrlParameter}&routeToRiot=${routeToRiot}&summonerId=${summonerData?.id}&start=${start}&count=${numberOfMatchesToAdd}`)
             console.log(response.data)
             let copyOfSummonerData = {...summonerData}
-            // for (let i = 0; i < response.data.length; i++){
-            //     copyOfSummonerData.match_details.json.push(response.data[i])
-            // }
-            // copyOfSummonerData.match_details.json.push({})
-
             let updatedMatchDetails = copyOfSummonerData.match_details.json.concat(response.data)
             copyOfSummonerData.match_details.json = updatedMatchDetails
             setSummonerData(copyOfSummonerData)
-            // setRiotAPIstartIndex((oldValue) => oldValue + numberOfMatchesToAdd)
-            // setRiotAPIstartIndex(response.data.length)
         } catch (error) {
             console.log({[error.response.request.status]: error.response.data})
         }
     }
 
 
+    // Get latest date for the summoner being viewed /w update button
     function forceUpdatePage(){
         getSummonerData(true)
     }
 
 
+    // Calculate and display time since last update
     function formatLastUpdateTime(summonerOverview){
         let lastUpdatedText = "time unknown"
         try {
-            let lastUpdated = summonerOverview?.updated_at
+            let lastUpdated = summonerOverview?.summoner_overviews[0]?.updated_at
             console.log(lastUpdated)
             let yearUpdated = lastUpdated.split("-")[0]
             let monthUpdated = lastUpdated.split("-")[1]
@@ -153,7 +125,7 @@ const SummonerDetail = () => {
         return lastUpdatedText
     }
 
-
+    // Isolate the summoner overview from summoner data, handle index error if nothing is there
     let summonerOverview = {}
     try {
         summonerOverview = summonerData?.summoner_overviews[0]?.json
@@ -161,7 +133,15 @@ const SummonerDetail = () => {
         summonerOverview = {}
     }
 
+    // Isolate the updated_at field from summoner data.summoner overview, handle index error if nothing is there
+    let lastUpdated = ""
+    try {
+        lastUpdated = summonerData?.summoner_overviews[0]?.updated_at
+    } catch (error){
+        lastUpdated = "Unknown"
+    }
 
+    // Isolate match history from summoner data
     let matchHistory = summonerData?.match_details?.json?.filter((match) => {
         if(queueType === ""){
             return match
@@ -170,35 +150,35 @@ const SummonerDetail = () => {
         }
     })
 
-
+    // When clicking on "All Queues" filter undo filtering and re-run fetch match details
     function undoFilterAndGetRecentMatchDetails(){
         setQueueType("")
         getMoreMatchDetails(false)
     }
 
-    // function filterAndResetRiotStartIndex(queueId){
-    //     setRiotAPIstartIndex(matchHistory.length)
-    //     setQueueType(queueId)
-    // }
+    function formatRank(summonerOverview){
+        const capitalizedFirstLetter = summonerOverview?.tier?.charAt(0)?.toUpperCase()
+        const remainingLetters = summonerOverview?.tier?.slice(1).toLowerCase()
+        return capitalizedFirstLetter + remainingLetters
 
+    }
 
 
     return (
         <>
-            {/* Fix queue slicing once we implement match history updates alone */}
-            {/* <button onClick={()=>getMoreMatchDetails("", false)}>All</button><button onClick={()=>getMoreMatchDetails(420, true)}>Ranked Solo/Duo</button><button onClick={()=>getMoreMatchDetails(400, true)}>Normal</button><button onClick={()=>getMoreMatchDetails(490, true)}>Quick Play</button><button onClick={()=>getMoreMatchDetails(450, true)}>ARAM</button><button onClick={()=>getMoreMatchDetails(440, true)}>Flex</button>
-            <button onClick={()=>getMoreMatchDetails(700, true)}>Clash</button><button onClick={()=>getMoreMatchDetails(1300, true)}>Nexus Blitz</button><button onClick={()=>getMoreMatchDetails(1700, true)}>Arena</button> */}
             <button onClick={()=>undoFilterAndGetRecentMatchDetails()}>All</button><button onClick={()=>setQueueType(450)}>ARAM</button>
             <button onClick={()=>setQueueType(420)}>Ranked Solo/Duo</button><button onClick={()=>setQueueType(400)}>Normal</button><button onClick={()=>setQueueType(490)}>Quick Play</button><button onClick={()=>setQueueType(440)}>Flex</button>
             <button onClick={()=>setQueueType(700)}>Clash</button><button onClick={()=>setQueueType(1300)}>Nexus Blitz</button><button onClick={()=>setQueueType(1700)}>Arena</button>
             <h1>{params.gameName} #{params.tagLine}</h1>
             <img width="75" height="75" alt="profile icon" src={process.env.PUBLIC_URL + `/assets/profile_icons/${summonerData?.profileIconId}.png`} /> 
             <h2>Ranked Solo Queue:</h2>
-            <img width="100" height="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank${summonerOverview?.tier?.toLowerCase()}.png`} /> 
+            {/* <img width="100" height="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank=${summonerOverview?.tier?.toLowerCase()}.png`} />  */}
+            <img width="100" height="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank=${formatRank(summonerOverview)}.png`} /> 
             <plaintext>{summonerOverview?.tier} {summonerOverview?.rank}</plaintext>
             <plaintext>Wins: {summonerOverview?.wins} Losses:{summonerOverview?.losses}</plaintext>
             <plaintext>Win Rate {Math.round(summonerOverview?.wins/(summonerOverview?.wins + summonerOverview?.losses)*100)}%</plaintext>
-            <plaintext>Last Updated {formatLastUpdateTime(summonerOverview)}</plaintext>
+            {/* <plaintext>Last Updated {formatLastUpdateTime(summonerOverview)}</plaintext> */}
+            <plaintext>Last Updated {lastUpdated}</plaintext>
             <button onClick={()=>forceUpdatePage()}>Update</button>
             <MatchHistory matchHistory={matchHistory} setSummonerData={setSummonerData} summonerData={summonerData}/>
             {queueType? <button onClick={()=>getMoreMatchDetailsQueueSpecific(queueType, true)}>Fetch More Games (specific, remove this text)</button> :

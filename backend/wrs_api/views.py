@@ -1,5 +1,5 @@
 from .models import Summoner, Season, SummonerOverview, MatchHistory, MatchDetails
-from .serializers import  SummonerSerializer, SummonerOverviewSerializer, MatchHistorySerializer, MatchDetailsSerializer
+from .serializers import  SummonerSerializer, SummonerOverviewSerializer, MatchHistorySerializer, MatchDetailsSerializer, SeasonSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,17 +14,16 @@ import httpx
 import asyncio
 #### SWAP RESPONSE TO JSON RESPONSE FOR PRODUCTION
 
-### Config ###
+### Config #####################################################################
 load_dotenv()
 riot_key = os.environ["RIOT_KEY"]
 headers = {'X-Riot-Token': riot_key}
-season = Season.objects.get(season=os.environ["CURRENT_SEASON"], split=os.environ["CURRENT_SPLIT"])
-# test_dict = ast.literal_eval(os.environ["SEASON_SCHEDULE"])
+try:
+    season = Season.objects.get(season=os.environ["CURRENT_SEASON"], split=os.environ["CURRENT_SPLIT"])
+except Exception as error:
+    print("Admin must create season records in database." + repr(error))
 season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
-# new_dict = json.loads(test_dict)
-# print((new_dict))
-# print((new_dict.keys()))
-##############
+#################################################################################
 
 
 # Helper Function to check database for existing summoner data before hitting Riot API
@@ -33,7 +32,7 @@ def search_for_summoner_data_internally(request):
         summoner = Summoner.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'))
         serialized_summoner = SummonerSerializer(summoner)
         return JsonResponse(serialized_summoner.data, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-    except SummonerOverview.DoesNotExist:
+    except Summoner.DoesNotExist:
         return None
 
 def search_for_match_details_internally(request):
@@ -51,7 +50,6 @@ def search_for_match_details_internally(request):
 def get_summoner_details_from_riot(request):
     if request.query_params.get('routeToRiot') == "false":
         database_response = search_for_summoner_data_internally(request)
-        print("HELLO HERE")
         if database_response:
             return database_response
         
@@ -242,3 +240,8 @@ def get_more_match_details_from_riot(request):
 
 
 
+@api_view(['GET'])
+def get_season(request):
+    s = Season.objects.first()
+    serailized_s = SeasonSerializer(s)
+    return JsonResponse(serailized_s.data, status=status.HTTP_200_OK, safe=False)

@@ -21,5 +21,6 @@ from wrs_api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('summoner-data-external/', views.get_summoner_details_from_riot),
-    path('match-history/', views.get_more_match_details_from_riot)
+    path('match-history/', views.get_more_match_details_from_riot),
+    path('season/', views.get_season)
 ]

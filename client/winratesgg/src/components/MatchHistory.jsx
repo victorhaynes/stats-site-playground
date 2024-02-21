@@ -29,7 +29,7 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
     }
 
     function renderChampionIcon(individualStats, width="40", height="40"){
-        return <img width={width} height={height} alt="champion icon" src={process.env.PUBLIC_URL + `/assets/champ_icons/champion_img/${individualStats?.championName}.png`} />
+        return <img width={width} height={height} alt="champion icon" src={process.env.PUBLIC_URL + `/assets/champion/${individualStats?.championName}.png`} />
     }
 
     function renderSummonerSpells(individualStats){

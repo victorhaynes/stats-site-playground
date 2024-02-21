@@ -9,7 +9,8 @@ class Summoner(models.Model):
     profileIconId = models.IntegerField(blank=True)
     encryptedSummonerId = models.CharField(max_length=100)
     summonerName = models.CharField(max_length=100, blank=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     # class Meta:
     #     unique_together = ('gameName', 'tagLine', 'region')
 
@@ -23,6 +24,8 @@ class Summoner(models.Model):
 class Season(models.Model):
     season = models.IntegerField()
     split = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     # split_1_start_date = models.DateField()
     # split_1_start_end = models.DateField()
     # split_2_start_date = models.DateField()
@@ -39,6 +42,8 @@ class SummonerOverview(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="summoner_overviews")
     summoner = models.ForeignKey(Summoner, on_delete=models.CASCADE, related_name="summoner_overviews")
     json = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         try:
@@ -54,6 +59,8 @@ class SummonerOverview(models.Model):
 class MatchDetails(models.Model):
     summoner = models.OneToOneField(Summoner, on_delete=models.CASCADE, related_name="match_details")
     json = models.JSONField(default=list)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 # Persistent and will be complete history per season (necessary for LP +/- gains, feature unimplemented)
@@ -61,6 +68,8 @@ class MatchHistory(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="histories")
     summoner = models.ForeignKey(Summoner, on_delete=models.CASCADE, related_name="histories")
     json = models.JSONField(default=list)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ('season', 'summoner')
