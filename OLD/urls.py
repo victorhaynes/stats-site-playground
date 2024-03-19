@@ -20,9 +20,8 @@ from wrs_api import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('summoner-overview/', views.get_summoner_overview),
-    path('match-history/', views.get_match_history),
-    path('test/', views.basline_lp_and_ranked_history),
-    # path('test2/', views.my_async_view),
-    path('test2/', views.all_players)
+    path('summoner-data-external/', views.get_summoner_details_from_riot),
+    path('match-history/', views.get_more_match_details_from_riot),
+    path('get-one/', views.get_one_game),
+    path('get-timeline/', views.get_one_timeline)
 ]

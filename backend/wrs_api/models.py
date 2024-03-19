@@ -1,18 +1,70 @@
 from django.db import models
-    
+# from psqlextra.types import PostgresPartitioningMethod
+# from psqlextra.models import PostgresPartitionedModel, PostgresModel
+
+
+# thought process:
+# make sure the model that needs partitioning is unmanaged, give it a name that fits name convention
+# then add raw runSQL() in the appropriate place in the migration
+
+class Season(models.Model):    
+    season = models.IntegerField()
+    split = models.IntegerField()
+
+class Patch(models.Model):
+    full_version = models.CharField(max_length=25, primary_key=True)
+    version = models.CharField(max_length=6)
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, db_column="season")
+
+
+class Region(models.Model):
+    name_optons = [("americas", "americas"), ("asia", "asia"), ("europe", "europe"), ("sea", "sea")]
+    name = models.CharField(choices=name_optons, primary_key=True)
+
+
+class Platform(models.Model):
+    code_options = [("na1","na1"), ("euw1","euw1"), ("br1","br1")]
+    code = models.CharField(choices=code_options, primary_key=True)   
+
+    def __str__(self):
+        return self.code
+
+class GameMode(models.Model):
+    queueId = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=30)
+
+
+class Champion(models.Model):
+    championId = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=30)
+
+
+class LegendaryItem(models.Model):
+    itemId = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=30)
+
+
+class TierTwoBoot(models.Model):
+    itemId = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=30)
+
 
 class Summoner(models.Model):
     puuid = models.CharField(max_length=100)
     gameName = models.CharField(max_length=50)
     tagLine = models.CharField(max_length=10)
-    region = models.CharField(max_length=40)
-    profileIconId = models.IntegerField(blank=True)
+    platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
+    profileIconId = models.IntegerField()
     encryptedSummonerId = models.CharField(max_length=100)
-    summonerName = models.CharField(max_length=100, blank=True)
+    most_recent_game = models.CharField(max_length=25, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # class Meta:
-    #     unique_together = ('gameName', 'tagLine', 'region')
+
+
+    class Meta:
+        unique_together = ["puuid", "platform"]
+        db_table = "wrs_api_summoner"
+        managed = False
 
     def __str__(self):
         try:
@@ -21,60 +73,142 @@ class Summoner(models.Model):
             return "MISSING INFO"
 
 
-class Season(models.Model):
-    season = models.IntegerField()
-    split = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    # split_1_start_date = models.DateField()
-    # split_1_start_end = models.DateField()
-    # split_2_start_date = models.DateField()
-    # split_2_start_end = models.DateField()
-    # split_3_start_date = models.DateField()
-    # split_3_start_end = models.DateField()
+# class SummonerOverview(models.Model):
+#     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="summoner_overviews")
+#     summoner = models.ForeignKey(Summoner, on_delete=models.CASCADE, related_name="summoner_overviews", to_field="puuid")
+#     metadata = models.JSONField(default=dict)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"season: {self.season}, split: {self.split}"
+#     def __str__(self):
+#         try:
+#             return f"{self.overview['tier']}"
+#         except KeyError:
+#             return f"UNRANKED"
 
-
-# Persistent and will match source of truth when updated
-class SummonerOverview(models.Model):
-    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="summoner_overviews")
-    summoner = models.ForeignKey(Summoner, on_delete=models.CASCADE, related_name="summoner_overviews")
-    json = models.JSONField(default=dict)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        try:
-            return f"{self.overview['tier']}"
-        except KeyError:
-            return f"UNRANKED"
-
-    class Meta:
-        unique_together = ('season', 'summoner')
+#     class Meta:
+#         constraints = [
+#             models.UniqueConstraint(
+#                 fields=['season', 'summoner'], name='unique_overview_per_season'
+#             )
+#         ]
 
 
-# Persistent but will not keep track of complete history, only recent games so client has something to display
-class MatchDetails(models.Model):
-    summoner = models.OneToOneField(Summoner, on_delete=models.CASCADE, related_name="match_details")
-    json = models.JSONField(default=list)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+# class Match(models.Model):
+#     matchId = models.CharField(max_length=20)
+#     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="matches")
+#     patch = models.ForeignKey(Patch, on_delete=models.CASCADE, related_name="matches", to_field="full_version")
+#     queueId = models.ForeignKey(GameMode, on_delete=models.CASCADE, to_field="queueId")
+#     summoners = models.ManyToManyField(Summoner)
+#     platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
+#     metadata = models.JSONField(default=dict)
+
+# class ChampionStat(models.Model):    
+#     champion = models.ForeignKey(Champion, on_delete=models.CASCADE, to_field="championId")
+#     wins = models.IntegerField()
+#     losses = models.IntegerField()
+#     picked = models.IntegerField()
+#     banned = models.IntegerField()
+#     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+#     patch = models.ForeignKey(Patch, on_delete=models.CASCADE, to_field="full_version")
+#     platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
 
 
-# Persistent and will be complete history per season (necessary for LP +/- gains, feature unimplemented)
-class MatchHistory(models.Model):
-    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="histories")
-    summoner = models.ForeignKey(Summoner, on_delete=models.CASCADE, related_name="histories")
-    json = models.JSONField(default=list)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+# class BuiltFirstStat(models.Model):
+#     legendary_item = models.ForeignKey(LegendaryItem, on_delete=models.CASCADE)
+#     champion = models.ForeignKey(Champion, on_delete=models.CASCADE, to_field="championId")
+#     wins = models.IntegerField()
+#     losses = models.IntegerField()
+#     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+#     patch = models.ForeignKey(Patch, on_delete=models.CASCADE, to_field="full_version")
+#     platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
 
-    class Meta:
-        unique_together = ('season', 'summoner')
 
-    # def __str__(self):
-    #     return self.season.split
-        
+# class BuiltSecondStat(models.Model):
+#     legendary_item = models.ForeignKey(LegendaryItem, on_delete=models.CASCADE)
+#     champion = models.ForeignKey(Champion, on_delete=models.CASCADE, to_field="championId")
+#     wins = models.IntegerField()
+#     losses = models.IntegerField()
+#     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+#     patch = models.ForeignKey(Patch, on_delete=models.CASCADE, to_field="full_version")
+#     platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
+
+
+# class BuiltThirdStat(models.Model):
+#     legendary_item = models.ForeignKey(LegendaryItem, on_delete=models.CASCADE)
+#     champion = models.ForeignKey(Champion, on_delete=models.CASCADE, to_field="championId")
+#     wins = models.IntegerField()
+#     losses = models.IntegerField()
+#     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+#     patch = models.ForeignKey(Patch, on_delete=models.CASCADE, to_field="full_version")
+#     platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
+
+
+# class BuiltForthStat(models.Model):
+#     legendary_item = models.ForeignKey(LegendaryItem, on_delete=models.CASCADE)
+#     champion = models.ForeignKey(Champion, on_delete=models.CASCADE, to_field="championId")
+#     wins = models.IntegerField()
+#     losses = models.IntegerField()
+#     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+#     patch = models.ForeignKey(Patch, on_delete=models.CASCADE, to_field="full_version")
+#     platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
+
+
+# class BuiltFifthStat(models.Model):
+#     legendary_item = models.ForeignKey(LegendaryItem, on_delete=models.CASCADE)
+#     champion = models.ForeignKey(Champion, on_delete=models.CASCADE, to_field="championId")
+#     wins = models.IntegerField()
+#     losses = models.IntegerField()
+#     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+#     patch = models.ForeignKey(Patch, on_delete=models.CASCADE, to_field="full_version")
+#     platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
+
+
+# class BuiltSixthStat(models.Model):
+#     legendary_item = models.ForeignKey(LegendaryItem, on_delete=models.CASCADE)
+#     champion = models.ForeignKey(Champion, on_delete=models.CASCADE, to_field="championId")
+#     wins = models.IntegerField()
+#     losses = models.IntegerField()
+#     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+#     patch = models.ForeignKey(Patch, on_delete=models.CASCADE, to_field="full_version")
+#     platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
+
+
+# class BuiltTierTwoBootStat(models.Model):
+#     name = models.ForeignKey(TierTwoBoot, on_delete=models.CASCADE)
+#     champion = models.ForeignKey(Champion, on_delete=models.CASCADE, to_field="championId")
+#     wins = models.IntegerField()
+#     losses = models.IntegerField()
+#     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+#     patch = models.ForeignKey(Patch, on_delete=models.CASCADE, to_field="full_version")
+#     platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

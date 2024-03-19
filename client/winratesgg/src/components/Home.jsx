@@ -10,7 +10,7 @@ const Home = ({handleSummonerSearchChange, summonerSearchFormData,region}) => {
         navigate(`/summoners/${region}/${summonerSearchFormData.platform}/${summonerSearchFormData.gameName}/${summonerSearchFormData.tagLine}`)
     }
 
-
+    
     return (
         <div>
             <h1>WINRATES.GG</h1>
@@ -31,6 +31,9 @@ const Home = ({handleSummonerSearchChange, summonerSearchFormData,region}) => {
             <input onChange={handleSummonerSearchChange} name="tagLine"type="text"></input>
             <input type="submit" value ="Search"></input>
             </form>
+
+
+
         </div>
     )
 }

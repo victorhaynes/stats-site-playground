@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import Home from './components/Home';
 import SummonerDetail from './components/SummonerDetail';
+import Header from './components/Header';
+import Test from './components/Test';
 
 
 
@@ -45,14 +47,19 @@ function App() {
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" exact
-          element={<Home handleSummonerSearchChange={handleSummonerSearchChange} summonerSearchFormData={summonerSearchFormData} setSummonerSearchFormData={setSummonerSearchFormData} region={region}/>}/>
-        <Route path="/summoners/:region/:platform/:gameName/:tagLine"
-          element={<SummonerDetail summonerSearchFormData={summonerSearchFormData}/>}/>
-      </Routes>
-    </Router>
+    <>
+      <Router>
+      <Header handleSummonerSearchChange={handleSummonerSearchChange} summonerSearchFormData={summonerSearchFormData} setSummonerSearchFormData={setSummonerSearchFormData} region={region}/>
+        <Routes>
+          <Route path="/test" 
+            element={<Test/>}/>
+          <Route path="/" exact
+            element={<Home handleSummonerSearchChange={handleSummonerSearchChange} summonerSearchFormData={summonerSearchFormData} setSummonerSearchFormData={setSummonerSearchFormData} region={region}/>}/>
+          <Route path="/summoners/:region/:platform/:gameName/:tagLine"
+            element={<SummonerDetail summonerSearchFormData={summonerSearchFormData}/>}/>
+        </Routes>
+      </Router>
+    </>
   );
 }
 

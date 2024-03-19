@@ -46,10 +46,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Name of App
     'wrs_api',
+    # Django DRF
     'rest_framework',
-    ## CORS
-    "corsheaders"
+    # CORS Config
+    "corsheaders",
+    # PSQL Extras--support table partitioning
+    # "django.contrib.postgres",
+    # "psqlextra",
 ]
 
 MIDDLEWARE = [
@@ -104,6 +109,7 @@ WSGI_APPLICATION = 'wrs_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
+        # 'ENGINE': "psqlextra.backend",
         'NAME': os.environ["DB_NAME"],
         'USER': os.environ["DB_USERNAME"],
         'PASSWORD': os.environ["DB_PASSWORD"],
