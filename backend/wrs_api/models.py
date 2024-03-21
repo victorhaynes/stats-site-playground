@@ -73,25 +73,25 @@ class Summoner(models.Model):
             return "MISSING INFO"
 
 
-# class SummonerOverview(models.Model):
-#     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="summoner_overviews")
-#     summoner = models.ForeignKey(Summoner, on_delete=models.CASCADE, related_name="summoner_overviews", to_field="puuid")
-#     metadata = models.JSONField(default=dict)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
+class SummonerOverview(models.Model):
+    season_id = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="summoner_overviews")
+    # Got rid of to_field="puuid" since technically it is not a PK to Django, but it is part of a composite PK in PSQL
+    puuid = models.ForeignKey(Summoner, on_delete=models.CASCADE, related_name="summoner_overviews")
+    platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
+    metadata = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-#     def __str__(self):
-#         try:
-#             return f"{self.overview['tier']}"
-#         except KeyError:
-#             return f"UNRANKED"
-
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=['season', 'summoner'], name='unique_overview_per_season'
-#             )
-#         ]
+    def __str__(self):
+        try:
+            return f"{self.overview['tier']}"
+        except KeyError:
+            return f"UNRANKED"
+    
+    class Meta:
+        unique_together = ["season_id", "puuid", "platform"]
+        db_table = "wrs_api_summoneroverview"
+        managed = False
 
 
 # class Match(models.Model):

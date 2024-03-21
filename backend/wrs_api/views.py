@@ -1,6 +1,7 @@
 # from .models import Summoner, Season, SummonerOverview, MatchHistory, MatchDetails
 # from .serializers import  SummonerSerializer, SummonerOverviewSerializer, MatchHistorySerializer, MatchDetailsSerializer, SeasonSerializer
 from .models import Summoner
+from .serializers import SummonerSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -21,15 +22,28 @@ riot_key = os.environ["RIOT_KEY"]
 headers = {'X-Riot-Token': riot_key}
 try:
     # season = Season.objects.get(season=os.environ["CURRENT_SEASON"], split=os.environ["CURRENT_SPLIT"])
-    print("hello")
+    print("!!!!!!!change this when refactor done!!!!!!!!!!!")
 except Exception as error:
     print("Admin must create season records in database." + repr(error))
 season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
 #################################################################################
 
 
-@api_view(['POST'])
-def create_sum(request):
+# Consider ordering the table
+# apparently django will what partition to look at
+# : https://github.com/maxtepkeev/architect/issues/34
+# see if you can figure out how to view the SQL generated from the ORM methods
+# check on the speed of this, am I going directly to partitions? or am I doing something jank
+# if my queries aren't getting routed automatically-well, then use params to figure out what partition to query directly
+# https://docs.djangoproject.com/en/5.0/topics/db/sql/#:~:text=If%20you%20use%20string%20interpolation,at%20risk%20for%20SQL%20injection.
+@api_view(['GET'])
+def test_func(request):
+    players = Summoner.objects.filter(platform="na1")
+    # print(players.query)
+    print(players.explain())
+    serialized_players = SummonerSerializer(players, many=True)
+    
+    return Response(serialized_players.data, status=status.HTTP_202_ACCEPTED)
     try:
         Summoner.objects.create(puuid=request.query_params.get('puuid'), gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'), profileIconId=request.query_params.get('profileIconId'), encryptedSummonerId=request.query_params.get('encryptedSummonerId'))
         return JsonResponse("It worked!!!", safe=False, status=status.HTTP_200_OK)
