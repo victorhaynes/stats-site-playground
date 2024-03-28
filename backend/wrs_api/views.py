@@ -1,7 +1,9 @@
 # from .models import Summoner, Season, SummonerOverview, MatchHistory, MatchDetails
 # from .serializers import  SummonerSerializer, SummonerOverviewSerializer, MatchHistorySerializer, MatchDetailsSerializer, SeasonSerializer
-from .models import Summoner
-from .serializers import SummonerSerializer
+from .models import Summoner, SummonerOverview, Platform, Season
+from django.db import connection
+from .serializers import SummonerSerializer, SummonerOverviewSerializer
+import pprint
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -29,6 +31,84 @@ season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
 #################################################################################
 
 
+
+
+
+def dictfetchall(cursor):
+    """
+    Return all rows from a cursor as a dict.
+    Assume the column names are unique.
+    """
+    columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+
+
+
+@api_view(['GET'])
+def test_seed(request):
+    platform1 = Platform.objects.get_or_create(code="na1")[0]
+    platform2 = Platform.objects.get_or_create(code="euw1")[0]
+    platform3 = Platform.objects.get_or_create(code="br1")[0]
+
+    summoner1 = Summoner.objects.get_or_create(
+        puuid='abc123',
+        gameName='Summoner1',
+        tagLine='#1234',
+        platform=platform1,
+        profileIconId=123,
+        encryptedSummonerId='xyz789',
+        most_recent_game='Ranked Solo',
+    )[0]
+
+    summoner2 = Summoner.objects.get_or_create(
+        puuid='def456',
+        gameName='Summoner2',
+        tagLine='#5678',
+        platform=platform2,
+        profileIconId=456,
+        encryptedSummonerId='uvw012',
+        most_recent_game='Flex Queue',
+    )[0]
+
+    summoner3 = Summoner.objects.get_or_create(
+        puuid='ghi789',
+        gameName='Summoner3',
+        tagLine='#9012',
+        platform=platform3,
+        profileIconId=789,
+        encryptedSummonerId='rst345',
+        most_recent_game='ARAM',
+    )[0]
+
+    season1 = Season.objects.get_or_create(
+        season=14,
+        split=1
+    )[0]
+
+    season2 = Season.objects.get_or_create(
+        season=14,
+        split=2
+    )[0]
+    season3 = Season.objects.get_or_create(
+        season=14,
+        split=3
+    )[0]
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+                INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
+                VALUES ('abc123', 'na1', 1, '{"wins": 70, "losses": 30}', NOW(), NOW());
+            """
+        )
+
+
+    return Response("seeded", status=status.HTTP_202_ACCEPTED)
+
+
+
+
 # Consider ordering the table
 # apparently django will what partition to look at
 # : https://github.com/maxtepkeev/architect/issues/34
@@ -38,11 +118,27 @@ season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
 # https://docs.djangoproject.com/en/5.0/topics/db/sql/#:~:text=If%20you%20use%20string%20interpolation,at%20risk%20for%20SQL%20injection.
 @api_view(['GET'])
 def test_func(request):
-    players = Summoner.objects.filter(platform="na1")
+    players = Summoner.objects.first()
+    print(players.summoner_overviews)
     # print(players.query)
-    print(players.explain())
-    serialized_players = SummonerSerializer(players, many=True)
-    
+    # print(players.explain())
+    serialized_players = SummonerSerializer(players)
+
+    puuid = 'abc123'
+    sql = """
+            SELECT *  FROM wrs_api_summoneroverview WHERE puuid = %s;
+        """
+    with connection.cursor() as cursor:
+        cursor.execute(sql,[puuid])
+        test = dictfetchall(cursor)
+
+
+    # test = test[0]
+    # pprint.pprint(test)
+    # serialized_overview = SummonerOverviewSerializer(test)
+    # return Response(test, status=status.HTTP_202_ACCEPTED)
+    # return Response("It worked!!!", status=status.HTTP_200_OK)
+
     return Response(serialized_players.data, status=status.HTTP_202_ACCEPTED)
     try:
         Summoner.objects.create(puuid=request.query_params.get('puuid'), gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'), profileIconId=request.query_params.get('profileIconId'), encryptedSummonerId=request.query_params.get('encryptedSummonerId'))

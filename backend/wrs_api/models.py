@@ -11,6 +11,7 @@ class Season(models.Model):
     season = models.IntegerField()
     split = models.IntegerField()
 
+
 class Patch(models.Model):
     full_version = models.CharField(max_length=25, primary_key=True)
     version = models.CharField(max_length=6)
@@ -72,7 +73,8 @@ class Summoner(models.Model):
         except KeyError:
             return "MISSING INFO"
 
-
+# Unmanaged - custom PSQL table definition, composite PK (season_id, puuid, platform)
+# Partitioned
 class SummonerOverview(models.Model):
     season_id = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="summoner_overviews")
     # Got rid of to_field="puuid" since technically it is not a PK to Django, but it is part of a composite PK in PSQL
