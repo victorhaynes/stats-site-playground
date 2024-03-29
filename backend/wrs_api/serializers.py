@@ -7,12 +7,13 @@ from .utilities import dictfetchall
 class SummonerSerializer(serializers.ModelSerializer):
     overviews = serializers.SerializerMethodField('get_related_overviews')
 
+
     def get_related_overviews(self, instance):
         sql = """
-            SELECT *  FROM wrs_api_summoneroverview WHERE puuid = %s;
+            SELECT * FROM wrs_api_summoneroverview WHERE puuid = %s AND platform = %s;
         """
         with connection.cursor() as cursor:
-            cursor.execute(sql,[instance.puuid])
+            cursor.execute(sql,[instance.puuid, str(instance.platform)])
             results = dictfetchall(cursor)
 
         return results

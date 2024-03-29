@@ -1,8 +1,10 @@
 # from .models import Summoner, Season, SummonerOverview, MatchHistory, MatchDetails
 # from .serializers import  SummonerSerializer, SummonerOverviewSerializer, MatchHistorySerializer, MatchDetailsSerializer, SeasonSerializer
-from .models import Summoner, SummonerOverview, Platform, Season
+from .models import Summoner, SummonerOverview, Platform, Season, Patch, Region, GameMode, Champion, LegendaryItem, TierTwoBoot 
 from django.db import connection
+from django.db.utils import DatabaseError
 from .serializers import SummonerSerializer, SummonerOverviewSerializer
+from .utilities import dictfetchall
 import pprint
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -34,74 +36,88 @@ season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
 
 
 
-def dictfetchall(cursor):
-    """
-    Return all rows from a cursor as a dict.
-    Assume the column names are unique.
-    """
-    columns = [col[0] for col in cursor.description]
-    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+# def dictfetchall(cursor):
+#     """
+#     Return all rows from a cursor as a dict.
+#     Assume the column names are unique.
+#     """
+#     columns = [col[0] for col in cursor.description]
+#     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
 
 
 @api_view(['GET'])
 def test_seed(request):
-    platform1 = Platform.objects.get_or_create(code="na1")[0]
-    platform2 = Platform.objects.get_or_create(code="euw1")[0]
-    platform3 = Platform.objects.get_or_create(code="br1")[0]
+    # platform1 = Platform.objects.get_or_create(code="na1")[0]
+    # platform2 = Platform.objects.get_or_create(code="euw1")[0]
+    # platform3 = Platform.objects.get_or_create(code="br1")[0]
 
-    summoner1 = Summoner.objects.get_or_create(
-        puuid='abc123',
-        gameName='Summoner1',
-        tagLine='#1234',
-        platform=platform1,
-        profileIconId=123,
-        encryptedSummonerId='xyz789',
-        most_recent_game='Ranked Solo',
+    # summoner1 = Summoner.objects.get_or_create(
+    #     puuid='abc123',
+    #     gameName='Summoner1',
+    #     tagLine='#1234',
+    #     platform=platform1,
+    #     profileIconId=123,
+    #     encryptedSummonerId='xyz789',
+    #     most_recent_game='Ranked Solo',
+    # )[0]
+
+    # summoner2 = Summoner.objects.get_or_create(
+    #     puuid='xyz123',
+    #     gameName='Summoner2',
+    #     tagLine='#5678',
+    #     platform=platform2,
+    #     profileIconId=456,
+    #     encryptedSummonerId='uvw012',
+    #     most_recent_game='Flex Queue',
+    # )[0]
+
+    # summoner3 = Summoner.objects.get_or_create(
+    #     puuid='ghi789',
+    #     gameName='Summoner3',
+    #     tagLine='#9012',
+    #     platform=platform3,
+    #     profileIconId=789,
+    #     encryptedSummonerId='rst345',
+    #     most_recent_game='ARAM',
+    # )[0]
+
+    # season1 = Season.objects.get_or_create(
+    #     season=14,
+    #     split=1
+    # )[0]
+
+    # season2 = Season.objects.get_or_create(
+    #     season=14,
+    #     split=2
+    # )[0]
+    # season3 = Season.objects.get_or_create(
+    #     season=14,
+    #     split=3
+    # )[0]
+
+    patch = Patch.objects.get_or_create(
+        full_version=14.123,
+        version=14.1,
     )[0]
 
-    summoner2 = Summoner.objects.get_or_create(
-        puuid='def456',
-        gameName='Summoner2',
-        tagLine='#5678',
-        platform=platform2,
-        profileIconId=456,
-        encryptedSummonerId='uvw012',
-        most_recent_game='Flex Queue',
-    )[0]
+    # try:
+    #     with connection.cursor() as cursor:
+    #         cursor.execute(
+    #             """
+    #                 INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
+    #                 VALUES ('abc123', 'na1', 1, '{"wins": 70, "losses": 30}', NOW(), NOW());
 
-    summoner3 = Summoner.objects.get_or_create(
-        puuid='ghi789',
-        gameName='Summoner3',
-        tagLine='#9012',
-        platform=platform3,
-        profileIconId=789,
-        encryptedSummonerId='rst345',
-        most_recent_game='ARAM',
-    )[0]
+    #                 INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
+    #                 VALUES ('xyz123', 'euw1', 1, '{"wins": 70, "losses": 30}', NOW(), NOW());
+    #             """
+    #         )
 
-    season1 = Season.objects.get_or_create(
-        season=14,
-        split=1
-    )[0]
-
-    season2 = Season.objects.get_or_create(
-        season=14,
-        split=2
-    )[0]
-    season3 = Season.objects.get_or_create(
-        season=14,
-        split=3
-    )[0]
-
-    with connection.cursor() as cursor:
-        cursor.execute(
-            """
-                INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
-                VALUES ('abc123', 'na1', 1, '{"wins": 70, "losses": 30}', NOW(), NOW());
-            """
-        )
+    #         query_plan = cursor.fetchall()
+    #         print(query_plan)
+    # except DatabaseError as error:
+    #     raise DatabaseError(error)
 
 
     return Response("seeded", status=status.HTTP_202_ACCEPTED)
@@ -126,10 +142,12 @@ def test_func(request):
 
     puuid = 'abc123'
     sql = """
-            SELECT *  FROM wrs_api_summoneroverview WHERE puuid = %s;
+            EXPLAIN SELECT *  FROM wrs_api_summoneroverview WHERE puuid = %s and platform = 'na1';
         """
     with connection.cursor() as cursor:
         cursor.execute(sql,[puuid])
+        query_plan = cursor.fetchall()
+        pprint.pprint(query_plan)
         test = dictfetchall(cursor)
 
 
@@ -137,9 +155,9 @@ def test_func(request):
     # pprint.pprint(test)
     # serialized_overview = SummonerOverviewSerializer(test)
     # return Response(test, status=status.HTTP_202_ACCEPTED)
-    # return Response("It worked!!!", status=status.HTTP_200_OK)
+    return Response("It worked!!!", status=status.HTTP_200_OK)
 
-    return Response(serialized_players.data, status=status.HTTP_202_ACCEPTED)
+    # return Response(serialized_players.data, status=status.HTTP_202_ACCEPTED)
     try:
         Summoner.objects.create(puuid=request.query_params.get('puuid'), gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), region=request.query_params.get('region'), profileIconId=request.query_params.get('profileIconId'), encryptedSummonerId=request.query_params.get('encryptedSummonerId'))
         return JsonResponse("It worked!!!", safe=False, status=status.HTTP_200_OK)

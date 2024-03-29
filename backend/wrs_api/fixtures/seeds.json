@@ -1,0 +1,1339 @@
+[
+    {
+      "model": "wrs_api.Season",
+      "fields": {
+        "season": 14,
+        "split": 1
+      }
+    },
+    {
+      "model": "wrs_api.Season",
+      "fields": {
+        "season": 14,
+        "split": 2
+      }
+    },
+    {
+      "model": "wrs_api.Season",
+      "fields": {
+        "season": 14,
+        "split": 3
+      }
+    },
+    {
+      "model": "wrs_api.Patch",
+      "fields": {
+        "full_version": "14.123",
+        "version": "14.1",
+        "season_id": 1
+      }
+    },
+    {
+      "model": "wrs_api.Region",
+      "fields": {
+        "name": "americas"
+      }
+    },
+    {
+      "model": "wrs_api.Region",
+      "fields": {
+        "name": "asia"
+      }
+    },
+    {
+      "model": "wrs_api.Region",
+      "fields": {
+        "name": "europe"
+      }
+    },
+    {
+      "model": "wrs_api.Region",
+      "fields": {
+        "name": "sea"
+      }
+    },
+    {
+      "model": "wrs_api.Region",
+      "fields": {
+        "name": "esports"
+      }
+    },
+    {
+      "model": "wrs_api.Platform",
+      "fields": {
+        "code": "na1"
+      }
+    },
+    {
+      "model": "wrs_api.Platform",
+      "fields": {
+        "code": "euw1"
+      }
+    },
+    {
+      "model": "wrs_api.Platform",
+      "fields": {
+        "code": "br1"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 420,
+        "name": "Solo Ranked"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 400,
+        "name": "Normal"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 490,
+        "name": "Quick Play"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 450,
+        "name": "ARAM"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 1300,
+        "name": "Nexus Blitz"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 1700,
+        "name": "Arena"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 440,
+        "name": "Flex"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 700,
+        "name": "Clash"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 900,
+        "name": "ARUF"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 1900,
+        "name": "Pick URF"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 1020,
+        "name": "One For All"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 470,
+        "name": "(N) Twisted Treeline"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 720,
+        "name": "ARAM Clash"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 1,
+        "name": "Annie"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 2,
+        "name": "Olaf"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 3,
+        "name": "Galio"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 4,
+        "name": "Twisted Fate"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 5,
+        "name": "Xin Zhao"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 6,
+        "name": "Urgot"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 7,
+        "name": "LeBlanc"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 8,
+        "name": "Vladimir"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 9,
+        "name": "Fiddlesticks"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 10,
+        "name": "Kayle"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 11,
+        "name": "Master Yi"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 12,
+        "name": "Alistar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 13,
+        "name": "Ryze"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 14,
+        "name": "Sion"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 15,
+        "name": "Sivir"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 16,
+        "name": "Soraka"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 17,
+        "name": "Teemo"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 18,
+        "name": "Tristana"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 19,
+        "name": "Warwick"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 20,
+        "name": "Nunu & Willump"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 21,
+        "name": "Miss Fortune"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 22,
+        "name": "Ashe"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 23,
+        "name": "Tryndamere"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 24,
+        "name": "Jax"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 25,
+        "name": "Morgana"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 26,
+        "name": "Zilean"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 27,
+        "name": "Singed"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 28,
+        "name": "Evelynn"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 29,
+        "name": "Twitch"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 30,
+        "name": "Karthus"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 31,
+        "name": "Cho'Gath"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 32,
+        "name": "Amumu"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 33,
+        "name": "Rammus"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 34,
+        "name": "Anivia"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 35,
+        "name": "Shaco"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 36,
+        "name": "Dr. Mundo"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 37,
+        "name": "Sona"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 38,
+        "name": "Kassadin"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 39,
+        "name": "Irelia"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 40,
+        "name": "Janna"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 41,
+        "name": "Gangplank"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 42,
+        "name": "Corki"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 43,
+        "name": "Karma"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 44,
+        "name": "Taric"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 45,
+        "name": "Veigar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 48,
+        "name": "Trundle"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 50,
+        "name": "Swain"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 51,
+        "name": "Caitlyn"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 53,
+        "name": "Blitzcrank"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 54,
+        "name": "Malphite"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 55,
+        "name": "Katarina"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 56,
+        "name": "Nocturne"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 57,
+        "name": "Maokai"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 58,
+        "name": "Renekton"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 59,
+        "name": "Jarvan IV"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 60,
+        "name": "Elise"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 61,
+        "name": "Orianna"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 62,
+        "name": "Wukong"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 63,
+        "name": "Brand"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 64,
+        "name": "Lee Sin"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 67,
+        "name": "Vayne"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 68,
+        "name": "Rumble"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 69,
+        "name": "Cassiopeia"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 72,
+        "name": "Skarner"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 74,
+        "name": "Heimerdinger"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 75,
+        "name": "Nasus"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 76,
+        "name": "Nidalee"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 77,
+        "name": "Udyr"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 78,
+        "name": "Poppy"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 79,
+        "name": "Gragas"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 80,
+        "name": "Pantheon"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 81,
+        "name": "Ezreal"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 82,
+        "name": "Mordekaiser"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 83,
+        "name": "Yorick"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 84,
+        "name": "Akali"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 85,
+        "name": "Kennen"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 86,
+        "name": "Garen"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 89,
+        "name": "Leona"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 90,
+        "name": "Malzahar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 91,
+        "name": "Talon"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 92,
+        "name": "Riven"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 96,
+        "name": "Kog'Maw"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 98,
+        "name": "Shen"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 99,
+        "name": "Lux"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 101,
+        "name": "Xerath"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 102,
+        "name": "Shyvana"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 103,
+        "name": "Ahri"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 104,
+        "name": "Graves"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 105,
+        "name": "Fizz"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 106,
+        "name": "Volibear"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 107,
+        "name": "Rengar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 110,
+        "name": "Varus"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 111,
+        "name": "Nautilus"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 112,
+        "name": "Viktor"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 113,
+        "name": "Sejuani"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 114,
+        "name": "Fiora"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 115,
+        "name": "Ziggs"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 117,
+        "name": "Lulu"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 119,
+        "name": "Draven"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 120,
+        "name": "Hecarim"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 121,
+        "name": "Kha'Zix"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 122,
+        "name": "Darius"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 126,
+        "name": "Jayce"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 127,
+        "name": "Lissandra"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 131,
+        "name": "Diana"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 133,
+        "name": "Quinn"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 134,
+        "name": "Syndra"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 136,
+        "name": "Aurelion Sol"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 141,
+        "name": "Kayn"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 142,
+        "name": "Zoe"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 143,
+        "name": "Zyra"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 145,
+        "name": "Kai'Sa"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 147,
+        "name": "Seraphine"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 150,
+        "name": "Gnar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 154,
+        "name": "Zac"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 157,
+        "name": "Yasuo"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 161,
+        "name": "Vel'Koz"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 163,
+        "name": "Taliyah"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 164,
+        "name": "Camille"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 166,
+        "name": "Akshan"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 200,
+        "name": "Bel'Veth"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 201,
+        "name": "Braum"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 202,
+        "name": "Jhin"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 203,
+        "name": "Kindred"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 221,
+        "name": "Zeri"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 222,
+        "name": "Jinx"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 223,
+        "name": "Tahm Kench"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 233,
+        "name": "Briar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 234,
+        "name": "Viego"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 235,
+        "name": "Senna"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 236,
+        "name": "Lucian"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 238,
+        "name": "Zed"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 240,
+        "name": "Kled"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 245,
+        "name": "Ekko"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 246,
+        "name": "Qiyana"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 254,
+        "name": "Vi"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 266,
+        "name": "Aatrox"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 267,
+        "name": "Nami"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 268,
+        "name": "Azir"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 350,
+        "name": "Yuumi"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 360,
+        "name": "Samira"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 412,
+        "name": "Thresh"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 420,
+        "name": "Illaoi"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 421,
+        "name": "Rek'Sai"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 427,
+        "name": "Ivern"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 429,
+        "name": "Kalista"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 432,
+        "name": "Bard"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 497,
+        "name": "Rakan"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 498,
+        "name": "Xayah"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 516,
+        "name": "Ornn"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 517,
+        "name": "Sylas"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 518,
+        "name": "Neeko"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 523,
+        "name": "Aphelios"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 526,
+        "name": "Rell"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 555,
+        "name": "Pyke"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 711,
+        "name": "Vex"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 777,
+        "name": "Yone"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 875,
+        "name": "Sett"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 876,
+        "name": "Lillia"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 887,
+        "name": "Gwen"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 888,
+        "name": "Renata Glasc"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 895,
+        "name": "Nilah"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 897,
+        "name": "K'Sante"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 901,
+        "name": "Smolder"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 902,
+        "name": "Milio"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 910,
+        "name": "Hwei"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 950,
+        "name": "Naafiri"
+      }
+    }
+  ]
