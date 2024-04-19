@@ -1,0 +1,38 @@
+[
+    {
+      "model": "wrs_api.SummonerMatch",
+      "pk": null,
+      "fields": {
+        "matchId": "NA1_4887039076",
+        "queueId": 400,
+        "puuid": "f649YxVWblcWTKMjnLYAZTKlbH6b3iNEZXf9-HXZhxxJRBSQ-Zws7v6jErBh0tzyVS9VNo50FHK3rA",
+        "patch": "14.1.552.7117",
+        "season_id": 1,
+        "platform": "na1"
+      }
+    },
+    {
+      "model": "wrs_api.SummonerMatch",
+      "pk": null,
+      "fields": {
+        "matchId": "NA1_4889736532",
+        "queueId": 450,
+        "puuid": "aYWKw--LdXozLfm-HJ8OFiHW9vKVUZLzwnsLvJFufYsmr4Xdjnac-3-u_2lRJPQZ6Z2Eop0EbJdOwQ",
+        "patch": "14.1.553.2414",
+        "season_id": 1,
+        "platform": "na1"
+      }
+    },
+    {
+      "model": "wrs_api.SummonerMatch",
+      "pk": null,
+      "fields": {
+        "matchId": "EUW1_6759658609",
+        "queueId": 420,
+        "puuid": "xadTQjqNKZuYdjt4vMi5hWVemmsjCZZBeVtSaJ-EXPZsZ2UaAHyYJqw_aTzXdA672f5ZyfQqCL9uqQ",
+        "patch": "14.1.552.7117",
+        "season_id": 1,
+        "platform": "euw1"
+      }
+    }
+]

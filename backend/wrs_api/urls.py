@@ -17,14 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from wrs_api import views
+from wrs_api import seed_functions
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('test/', views.test_func),
-    path('seed/', views.test_seed),
-
+    path('seed-summoner-overviews/', seed_functions.seed_summoner_overviews),
+    path('seed-summoner-matches/', seed_functions.seed_summoner_matches),
+    path('summoner/', views.get_summoner),
+    path('summoner-update/', views.get_summoner_update),
+    path('match-history/', views.get_match_history),
+    path('test-dup-match/', seed_functions.test_repeat_match),
+    path('test-all-matches/', views.test_all_matches),
+    path('test/', views.xxx),
     # path('summoner-data-external/', views.get_summoner_details_from_riot),
     # path('match-history/', views.get_more_match_details_from_riot),
     # path('get-one/', views.get_one_game),
-    # path('get-timeline/', views.get_one_timeline)
+    path('get-timeline/', views.get_one_timeline)
 ]

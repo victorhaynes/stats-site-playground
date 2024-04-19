@@ -1,0 +1,52 @@
+[
+  {
+    "model": "wrs_api.SummonerOverview",
+    "fields": {
+      "puuid": "f649YxVWblcWTKMjnLYAZTKlbH6b3iNEZXf9-HXZhxxJRBSQ-Zws7v6jErBh0tzyVS9VNo50FHK3rA",
+      "platform": "na1",
+      "season_id": 1,
+       "metadata": [
+        {
+            "tier": "PLATINUM",
+            "rank": "IV",
+            "leaguePoints": 1,
+            "wins": 11,
+            "losses": 7
+        }
+    ],
+      "created_at": "2024-04-01T18:20:07Z",
+      "updated_at": "2024-04-01T18:20:07Z"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerOverview",
+    "fields": {
+      "puuid": "aYWKw--LdXozLfm-HJ8OFiHW9vKVUZLzwnsLvJFufYsmr4Xdjnac-3-u_2lRJPQZ6Z2Eop0EbJdOwQ",
+      "platform": "na1",
+      "season_id": 1,
+      "metadata": [
+    ],
+      "created_at": "2024-04-01T18:20:07Z",
+      "updated_at": "2024-04-01T18:20:07Z"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerOverview",
+    "fields": {
+      "puuid": "xadTQjqNKZuYdjt4vMi5hWVemmsjCZZBeVtSaJ-EXPZsZ2UaAHyYJqw_aTzXdA672f5ZyfQqCL9uqQ",
+      "platform": "euw1",
+      "season_id": 1,
+      "metadata": [
+        {
+            "tier": "MASTER",
+            "rank": "I",
+            "leaguePoints": 72,
+            "wins": 27,
+            "losses": 14
+        }
+    ],
+      "created_at": "2024-04-01T18:20:07Z",
+      "updated_at": "2024-04-01T18:20:07Z"
+    }
+  }
+]
