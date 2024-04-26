@@ -25,12 +25,12 @@ urlpatterns = [
     path('seed-summoner-matches/', seed_functions.seed_summoner_matches),
     path('summoner/', views.get_summoner),
     path('summoner-update/', views.get_summoner_update),
-    path('match-history/', views.get_match_history),
-    path('test-dup-match/', seed_functions.test_repeat_match),
-    path('test-all-matches/', views.test_all_matches),
-    path('test/', views.xxx),
-    # path('summoner-data-external/', views.get_summoner_details_from_riot),
-    # path('match-history/', views.get_more_match_details_from_riot),
-    # path('get-one/', views.get_one_game),
-    path('get-timeline/', views.get_one_timeline)
+    # path('match-history/', views.get_match_history),
+    # path('test-dup-match/', seed_functions.test_repeat_match),
+    # path('test-all-matches/', views.test_all_matches),
+    # path('test/', views.xxx),
+    # # path('summoner-data-external/', views.get_summoner_details_from_riot),
+    # # path('match-history/', views.get_more_match_details_from_riot),
+    # # path('get-one/', views.get_one_game),
+    # path('get-timeline/', views.get_one_timeline)
 ]
