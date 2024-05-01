@@ -92,7 +92,7 @@ class Migration(migrations.Migration):
                 ('losses', models.IntegerField()),
             ],
             options={
-                'db_table': 'wrs_api_builttiertwobootstat',
+                'db_table': 'wrs_api_tiertwobootstat',
                 'managed': False,
             },
         ),
@@ -161,6 +161,12 @@ class Migration(migrations.Migration):
                 'db_table': 'wrs_api_summoneroverview',
                 'managed': False,
             },
+        ),
+        migrations.CreateModel(
+            name='Rank',
+            fields=[
+                ('elo', models.CharField(choices=[('Unranked', 'Unranked'), ('Iron 4', 'Iron 4'), ('Iron 3', 'Iron 3'), ('Iron 2', 'Iron 2'), ('Iron 1', 'Iron 1'), ('Bronze 4', 'Bronze 4'), ('Bronze 3', 'Bronze 3'), ('Bronze 2', 'Bronze 2'), ('Bronze 1', 'Bronze 1'), ('Silver 4', 'Silver 4'), ('Silver 3', 'Silver 3'), ('Silver 2', 'Silver 2'), ('Silver 1', 'Silver 1'), ('Gold 4', 'Gold 4'), ('Gold 3', 'Gold 3'), ('Gold 2', 'Gold 2'), ('Gold 1', 'Gold 1'), ('Platinum 4', 'Platinum 4'), ('Platinum 3', 'Platinum 3'), ('Platinum 2', 'Platinum 2'), ('Platinum 1', 'Platinum 1'), ('Emerald 4', 'Emerald 4'), ('Emerald 3', 'Emerald 3'), ('Emerald 2', 'Emerald 2'), ('Emerald 1', 'Emerald 1'), ('Diamond 4', 'Diamond 4'), ('Diamond 3', 'Diamond 3'), ('Diamond 2', 'Diamond 2'), ('Diamond 1', 'Diamond 1'), ('Master', 'Master'), ('Grandmaster', 'Grandmaster'), ('Challenger', 'Challenger')], primary_key=True, serialize=False))
+            ],
         ),
         migrations.CreateModel(
             name='Champion',
@@ -293,13 +299,15 @@ class Migration(migrations.Migration):
                 --- Model Match
                 CREATE TABLE "wrs_api_match" (
                     "id" SERIAL NOT NULL,
-                    "matchId" varchar(20) NOT NULL, 
+                    "matchId" varchar(20) NOT NULL,
+                    "elo" varchar NOT NULL,
                     "queueId" integer NOT NULL, 
                     "season_id" bigint NOT NULL,
                     "patch" varchar(25) NOT NULL, 
                     "platform" varchar NOT NULL, 
                     "metadata" jsonb NOT NULL, 
                     PRIMARY KEY ("platform", "matchId"),
+                    FOREIGN KEY ("elo") REFERENCES wrs_api_rank ("elo") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("queueId") REFERENCES wrs_api_gamemode ("queueId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("patch") REFERENCES wrs_api_patch ("full_version") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("season_id") REFERENCES wrs_api_season ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
@@ -317,7 +325,9 @@ class Migration(migrations.Migration):
                 --- DO NOT NEED FOR PLATFORM: CREATE INDEX "wrs_api_match_platform_2b2c1736_like" ON "wrs_api_match" ("platform" varchar_pattern_ops);
                 CREATE INDEX "wrs_api_match_queueId_id_28ffec5b" ON "wrs_api_match" ("queueId");
                 CREATE INDEX "wrs_api_match_season_id_996a93bd" ON "wrs_api_match" ("season_id");
- 
+                CREATE INDEX "wrs_api_match_elo_118c15ef" ON "wrs_api_match" ("elo");
+                CREATE INDEX "wrs_api_match_elo_442j40i8_like" ON "wrs_api_match" ("elo" varchar_pattern_ops);
+
                 
                 --- Model summonermatch
                 --- Model summonermatch
@@ -325,11 +335,13 @@ class Migration(migrations.Migration):
                 CREATE TABLE "wrs_api_summonermatch" (
                     "id" SERIAL NOT NULL,
                     "matchId" varchar(20) NOT NULL,
+                    "elo" varchar NOT NULL,
                     "queueId" integer NOT NULL, 
                     "puuid" varchar(100) NOT NULL,
                     "season_id" bigint NOT NULL, 
                     "patch" VARCHAR(25) NOT NULL,
                     "platform" varchar NOT NULL,
+                    FOREIGN KEY ("elo") REFERENCES wrs_api_rank ("elo") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("platform", "matchId") REFERENCES wrs_api_match ("platform", "matchId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("platform", "puuid") REFERENCES wrs_api_summoner ("platform", "puuid") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("queueId") REFERENCES wrs_api_gamemode ("queueId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
@@ -350,21 +362,25 @@ class Migration(migrations.Migration):
                 CREATE INDEX "wrs_api_summonermatch_patch_c0a9c187" ON "wrs_api_summonermatch" ("patch");
                 CREATE INDEX "wrs_api_summonermatch_season_id_2b145bg1" ON "wrs_api_summonermatch" ("season_id");
                 CREATE INDEX "wrs_api_summonermatch_platform_d11ab006" ON "wrs_api_summonermatch" ("platform");
-
+                CREATE INDEX "wrs_api_summonermatch_elo_114b13cc" ON "wrs_api_summonermatch" ("elo");
+                CREATE INDEX "wrs_api_summonermatch_elo_221d20f4_like" ON "wrs_api_summonermatch" ("elo" varchar_pattern_ops);
                 
+
                 --- Model ChampionStat
                 --- Model ChampionStat
                 --- Model ChampionStat
                 CREATE TABLE "wrs_api_championstat" (
                     "id" SERIAL NOT NULL,
+                    "championId" INTEGER NOT NULL,
+                    "elo" varchar NOT NULL,
                     "wins" INTEGER NOT NULL,
                     "losses" INTEGER NOT NULL,
                     "picked" INTEGER NOT NULL,
                     "banned" INTEGER NOT NULL,
-                    "championId" INTEGER NOT NULL,
                     "patch" VARCHAR(25) NOT NULL,
                     "platform" VARCHAR NOT NULL,
                     "season_id" BIGINT NOT NULL,
+                    FOREIGN KEY ("elo") REFERENCES wrs_api_rank ("elo") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("championId") REFERENCES wrs_api_champion ("championId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("patch") REFERENCES wrs_api_patch ("full_version") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("platform") REFERENCES wrs_api_platform ("code") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
@@ -383,20 +399,24 @@ class Migration(migrations.Migration):
                 CREATE INDEX wrs_api_championstat_platform_88d7ca7a ON wrs_api_championstat ("platform");
                 --- DO NOT NEED FOR PLATFORM: CREATE INDEX wrs_api_championstat_platform_88d7ca7a_like ON wrs_api_championstat ("platform" varchar_pattern_ops);
                 CREATE INDEX wrs_api_championstat_season_id_24005562 ON wrs_api_championstat ("season_id");
-
+                CREATE INDEX "wrs_api_championstat_elo_332g39hj" ON "wrs_api_championstat" ("elo");
+                CREATE INDEX "wrs_api_championstat_elo_764f15t8_like" ON "wrs_api_championstat" ("elo" varchar_pattern_ops);
                 
+
                 --- Model BuiltFirstStat
                 --- Model BuiltFirstStat     
                 --- Model BuiltFirstStat
                 CREATE TABLE wrs_api_builtfirststat (
                     "id" SERIAL NOT NULL,
+                    "legendary_item" INTEGER NOT NULL,
+                    "championId" INTEGER NOT NULL,
+                    "elo" varchar NOT NULL,
                     "wins" INTEGER NOT NULL,
                     "losses" INTEGER NOT NULL,
-                    "championId" INTEGER NOT NULL,
-                    "legendary_item" INTEGER NOT NULL,
                     "patch" VARCHAR(25) NOT NULL,
                     "platform" VARCHAR NOT NULL,
                     "season_id" BIGINT NOT NULL,
+                    FOREIGN KEY ("elo") REFERENCES wrs_api_rank ("elo") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("championId") REFERENCES wrs_api_champion ("championId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("legendary_item") REFERENCES wrs_api_legendaryitem ("itemId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("patch") REFERENCES wrs_api_patch ("full_version") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
@@ -406,31 +426,35 @@ class Migration(migrations.Migration):
                     PRIMARY KEY ("platform", "legendary_item", "championId","patch")
                 ) PARTITION BY LIST ("platform");
 
+                CREATE TABLE wrs_api_builtfirststat_na1 PARTITION OF wrs_api_builtfirststat FOR VALUES IN ('na1');
+                CREATE TABLE wrs_api_builtfirststat_br1 PARTITION OF wrs_api_builtfirststat FOR VALUES IN ('br1');
+                CREATE TABLE wrs_api_builtfirststat_euw1 PARTITION OF wrs_api_builtfirststat FOR VALUES IN ('euw1');                
+
                 CREATE INDEX wrs_api_builtfirststat_championId_37f26e8d ON wrs_api_builtfirststat ("championId");
                 CREATE INDEX wrs_api_builtfirststat_legendary_item_e24cdaad ON wrs_api_builtfirststat ("legendary_item");
                 CREATE INDEX wrs_api_builtfirststat_patch_a2f5b0fa ON wrs_api_builtfirststat ("patch");
                 CREATE INDEX wrs_api_builtfirststat_patch_a2f5b0fa_like ON wrs_api_builtfirststat ("patch" varchar_pattern_ops);
                 CREATE INDEX wrs_api_builtfirststat_platform_83170699 ON wrs_api_builtfirststat ("platform");
-                --- DO NOT NEED FOR PLATFORM: CREATE INDEX wrs_api_builtfirststat_platform_83170699_like ON wrs_api_builtfirststat ("platform" varchar_pattern_ops);
                 CREATE INDEX wrs_api_builtfirststat_season_id_e2eb2542 ON wrs_api_builtfirststat ("season_id");
+                CREATE INDEX wrs_api_builtfirststat_elo_764f15t8 ON wrs_api_builtfirststat ("elo");
+                CREATE INDEX wrs_api_builtfirststat_elo_764f15t8_like ON wrs_api_builtfirststat ("elo" varchar_pattern_ops);
 
-                CREATE TABLE wrs_api_builtfirststat_na1 PARTITION OF wrs_api_builtfirststat FOR VALUES IN ('na1');
-                CREATE TABLE wrs_api_builtfirststat_br1 PARTITION OF wrs_api_builtfirststat FOR VALUES IN ('br1');
-                CREATE TABLE wrs_api_builtfirststat_euw1 PARTITION OF wrs_api_builtfirststat FOR VALUES IN ('euw1');
-                
+
 
                 -- Model BuiltSecondStat
                 -- Model BuiltSecondStat
                 -- Model BuiltSecondStat
                 CREATE TABLE wrs_api_builtsecondstat (
                     "id" SERIAL NOT NULL,
+                    "legendary_item" INTEGER NOT NULL,
+                    "championId" INTEGER NOT NULL,
+                    "elo" varchar NOT NULL,
                     "wins" INTEGER NOT NULL,
                     "losses" INTEGER NOT NULL,
-                    "championId" INTEGER NOT NULL,
-                    "legendary_item" INTEGER NOT NULL,
                     "patch" VARCHAR(25) NOT NULL,
                     "platform" VARCHAR NOT NULL,
                     "season_id" BIGINT NOT NULL,
+                    FOREIGN KEY ("elo") REFERENCES wrs_api_rank ("elo") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("championId") REFERENCES wrs_api_champion ("championId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("legendary_item") REFERENCES wrs_api_legendaryitem ("itemId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("patch") REFERENCES wrs_api_patch ("full_version") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
@@ -444,11 +468,14 @@ class Migration(migrations.Migration):
                 CREATE TABLE wrs_api_builtsecondstat_br1 PARTITION OF wrs_api_builtsecondstat FOR VALUES IN ('br1');
                 CREATE TABLE wrs_api_builtsecondstat_euw1 PARTITION OF wrs_api_builtsecondstat FOR VALUES IN ('euw1');
 
-                CREATE INDEX wrs_api_builtsecondstat_championId ON wrs_api_builtsecondstat ("championId");
-                CREATE INDEX wrs_api_builtsecondstat_legendary_item ON wrs_api_builtsecondstat ("legendary_item");
-                CREATE INDEX wrs_api_builtsecondstat_patch ON wrs_api_builtsecondstat ("patch");
-                CREATE INDEX wrs_api_builtsecondstat_platform ON wrs_api_builtsecondstat ("platform");
-                CREATE INDEX wrs_api_builtsecondstat_season_id ON wrs_api_builtsecondstat ("season_id");
+                CREATE INDEX wrs_api_builtsecondstat_championId_b8a9c3e1 ON wrs_api_builtsecondstat ("championId");
+                CREATE INDEX wrs_api_builtsecondstat_legendary_item_f6d2a5b4 ON wrs_api_builtsecondstat ("legendary_item");
+                CREATE INDEX wrs_api_builtsecondstat_patch_c7e8f9d2 ON wrs_api_builtsecondstat ("patch");
+                CREATE INDEX wrs_api_builtsecondstat_patch_c7e8f9d2_like ON wrs_api_builtsecondstat ("patch" varchar_pattern_ops);
+                CREATE INDEX wrs_api_builtsecondstat_platform_d3e4f5a6 ON wrs_api_builtsecondstat ("platform");
+                CREATE INDEX wrs_api_builtsecondstat_season_id_g2h3i4j5 ON wrs_api_builtsecondstat ("season_id");
+                CREATE INDEX wrs_api_builtsecondstat_elo_h4i5j6k7 ON wrs_api_builtsecondstat ("elo");
+                CREATE INDEX wrs_api_builtsecondstat_elo_h4i5j6k7_like ON wrs_api_builtsecondstat ("elo" varchar_pattern_ops);
 
                 
                 -- Model BuiltThirdStat
@@ -456,13 +483,15 @@ class Migration(migrations.Migration):
                 -- Model BuiltThirdStat
                 CREATE TABLE wrs_api_builtthirdstat (
                     "id" SERIAL NOT NULL,
+                    "legendary_item" INTEGER NOT NULL,
+                    "championId" INTEGER NOT NULL,
+                    "elo" varchar NOT NULL,
                     "wins" INTEGER NOT NULL,
                     "losses" INTEGER NOT NULL,
-                    "championId" INTEGER NOT NULL,
-                    "legendary_item" INTEGER NOT NULL,
                     "patch" VARCHAR(25) NOT NULL,
                     "platform" VARCHAR NOT NULL,
                     "season_id" BIGINT NOT NULL,
+                    FOREIGN KEY ("elo") REFERENCES wrs_api_rank ("elo") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("championId") REFERENCES wrs_api_champion ("championId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("legendary_item") REFERENCES wrs_api_legendaryitem ("itemId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("patch") REFERENCES wrs_api_patch ("full_version") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
@@ -476,11 +505,15 @@ class Migration(migrations.Migration):
                 CREATE TABLE wrs_api_builtthirdstat_br1 PARTITION OF wrs_api_builtthirdstat FOR VALUES IN ('br1');
                 CREATE TABLE wrs_api_builtthirdstat_euw1 PARTITION OF wrs_api_builtthirdstat FOR VALUES IN ('euw1');
 
-                CREATE INDEX wrs_api_builtthirdstat_championId ON wrs_api_builtthirdstat ("championId");
-                CREATE INDEX wrs_api_builtthirdstat_legendary_item ON wrs_api_builtthirdstat ("legendary_item");
-                CREATE INDEX wrs_api_builtthirdstat_patch ON wrs_api_builtthirdstat ("patch");
-                CREATE INDEX wrs_api_builtthirdstat_platform ON wrs_api_builtthirdstat ("platform");
-                CREATE INDEX wrs_api_builtthirdstat_season_id ON wrs_api_builtthirdstat ("season_id");
+                CREATE INDEX wrs_api_builtthirdstat_championId_2b3c4d5e ON wrs_api_builtthirdstat ("championId");
+                CREATE INDEX wrs_api_builtthirdstat_legendary_item_6f7g8h9i ON wrs_api_builtthirdstat ("legendary_item");
+                CREATE INDEX wrs_api_builtthirdstat_patch_1a2b3c4d ON wrs_api_builtthirdstat ("patch");
+                CREATE INDEX wrs_api_builtthirdstat_patch_1a2b3c4d_like ON wrs_api_builtthirdstat ("patch" varchar_pattern_ops);
+                CREATE INDEX wrs_api_builtthirdstat_platform_5e6f7g8h ON wrs_api_builtthirdstat ("platform");
+                CREATE INDEX wrs_api_builtthirdstat_season_id_9i8h7g6f ON wrs_api_builtthirdstat ("season_id");
+                CREATE INDEX wrs_api_builtthirdstat_elo_j5k4l3m2 ON wrs_api_builtthirdstat ("elo");
+                CREATE INDEX wrs_api_builtthirdstat_elo_j5k4l3m2_like ON wrs_api_builtthirdstat ("elo" varchar_pattern_ops);
+
 
 
                 -- Model BuiltFourthStat
@@ -488,13 +521,15 @@ class Migration(migrations.Migration):
                 -- Model BuiltFourthStat
                 CREATE TABLE wrs_api_builtfourthstat (
                     "id" SERIAL NOT NULL,
+                    "legendary_item" INTEGER NOT NULL,
+                    "championId" INTEGER NOT NULL,
+                    "elo" varchar NOT NULL,
                     "wins" INTEGER NOT NULL,
                     "losses" INTEGER NOT NULL,
-                    "championId" INTEGER NOT NULL,
-                    "legendary_item" INTEGER NOT NULL,
                     "patch" VARCHAR(25) NOT NULL,
                     "platform" VARCHAR NOT NULL,
                     "season_id" BIGINT NOT NULL,
+                    FOREIGN KEY ("elo") REFERENCES wrs_api_rank ("elo") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("championId") REFERENCES wrs_api_champion ("championId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("legendary_item") REFERENCES wrs_api_legendaryitem ("itemId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("patch") REFERENCES wrs_api_patch ("full_version") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
@@ -508,11 +543,15 @@ class Migration(migrations.Migration):
                 CREATE TABLE wrs_api_builtfourthstat_br1 PARTITION OF wrs_api_builtfourthstat FOR VALUES IN ('br1');
                 CREATE TABLE wrs_api_builtfourthstat_euw1 PARTITION OF wrs_api_builtfourthstat FOR VALUES IN ('euw1');
 
-                CREATE INDEX wrs_api_builtfourthstat_championId ON wrs_api_builtfourthstat ("championId");
-                CREATE INDEX wrs_api_builtfourthstat_legendary_item ON wrs_api_builtfourthstat ("legendary_item");
-                CREATE INDEX wrs_api_builtfourthstat_patch ON wrs_api_builtfourthstat ("patch");
-                CREATE INDEX wrs_api_builtfourthstat_platform ON wrs_api_builtfourthstat ("platform");
-                CREATE INDEX wrs_api_builtfourthstat_season_id ON wrs_api_builtfourthstat ("season_id");
+                CREATE INDEX wrs_api_builtfourthstat_championId_5a4b3c2d ON wrs_api_builtfourthstat ("championId");
+                CREATE INDEX wrs_api_builtfourthstat_legendary_item_9h8g7f6e ON wrs_api_builtfourthstat ("legendary_item");
+                CREATE INDEX wrs_api_builtfourthstat_patch_1d2c3b4a ON wrs_api_builtfourthstat ("patch");
+                CREATE INDEX wrs_api_builtfourthstat_patch_1d2c3b4a_like ON wrs_api_builtfourthstat ("patch" varchar_pattern_ops);
+                CREATE INDEX wrs_api_builtfourthstat_platform_6h5g4f3e ON wrs_api_builtfourthstat ("platform");
+                CREATE INDEX wrs_api_builtfourthstat_season_id_8i9j1k2l ON wrs_api_builtfourthstat ("season_id");
+                CREATE INDEX wrs_api_builtfourthstat_elo_m3n4o5p6 ON wrs_api_builtfourthstat ("elo");
+                CREATE INDEX wrs_api_builtfourthstat_elo_m3n4o5p6_like ON wrs_api_builtfourthstat ("elo" varchar_pattern_ops);
+
 
                 
                 -- Model BuiltFifthStat
@@ -520,13 +559,15 @@ class Migration(migrations.Migration):
                 -- Model BuiltFifthStat
                 CREATE TABLE wrs_api_builtfifthstat (
                     "id" SERIAL NOT NULL,
+                    "legendary_item" INTEGER NOT NULL,
+                    "championId" INTEGER NOT NULL,
+                    "elo" varchar NOT NULL,
                     "wins" INTEGER NOT NULL,
                     "losses" INTEGER NOT NULL,
-                    "championId" INTEGER NOT NULL,
-                    "legendary_item" INTEGER NOT NULL,
                     "patch" VARCHAR(25) NOT NULL,
                     "platform" VARCHAR NOT NULL,
                     "season_id" BIGINT NOT NULL,
+                    FOREIGN KEY ("elo") REFERENCES wrs_api_rank ("elo") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("championId") REFERENCES wrs_api_champion ("championId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("legendary_item") REFERENCES wrs_api_legendaryitem ("itemId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("patch") REFERENCES wrs_api_patch ("full_version") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
@@ -540,11 +581,15 @@ class Migration(migrations.Migration):
                 CREATE TABLE wrs_api_builtfifthstat_br1 PARTITION OF wrs_api_builtfifthstat FOR VALUES IN ('br1');
                 CREATE TABLE wrs_api_builtfifthstat_euw1 PARTITION OF wrs_api_builtfifthstat FOR VALUES IN ('euw1');
 
-                CREATE INDEX wrs_api_builtfifthstat_championId ON wrs_api_builtfifthstat ("championId");
-                CREATE INDEX wrs_api_builtfifthstat_legendary_item ON wrs_api_builtfifthstat ("legendary_item");
-                CREATE INDEX wrs_api_builtfifthstat_patch ON wrs_api_builtfifthstat ("patch");
-                CREATE INDEX wrs_api_builtfifthstat_platform ON wrs_api_builtfifthstat ("platform");
-                CREATE INDEX wrs_api_builtfifthstat_season_id ON wrs_api_builtfifthstat ("season_id");
+                CREATE INDEX wrs_api_builtfifthstat_championId_3b4c5d6e ON wrs_api_builtfifthstat ("championId");
+                CREATE INDEX wrs_api_builtfifthstat_legendary_item_8g7h6i5j ON wrs_api_builtfifthstat ("legendary_item");
+                CREATE INDEX wrs_api_builtfifthstat_patch_2a3b4c5d ON wrs_api_builtfifthstat ("patch");
+                CREATE INDEX wrs_api_builtfifthstat_patch_2a3b4c5d_like ON wrs_api_builtfifthstat ("patch" varchar_pattern_ops);
+                CREATE INDEX wrs_api_builtfifthstat_platform_7f6g5h4i ON wrs_api_builtfifthstat ("platform");
+                CREATE INDEX wrs_api_builtfifthstat_season_id_9l0m1n2o ON wrs_api_builtfifthstat ("season_id");
+                CREATE INDEX wrs_api_builtfifthstat_elo_n7o8p9q0 ON wrs_api_builtfifthstat ("elo");
+                CREATE INDEX wrs_api_builtfifthstat_elo_n7o8p9q0_like ON wrs_api_builtfifthstat ("elo" varchar_pattern_ops);
+
 
                 
                 -- Model BuiltSixthStat
@@ -552,13 +597,15 @@ class Migration(migrations.Migration):
                 -- Model BuiltSixthStat
                 CREATE TABLE wrs_api_builtsixthstat (
                     "id" SERIAL NOT NULL,
+                    "legendary_item" INTEGER NOT NULL,
+                    "championId" INTEGER NOT NULL,
+                    "elo" varchar NOT NULL,
                     "wins" INTEGER NOT NULL,
                     "losses" INTEGER NOT NULL,
-                    "championId" INTEGER NOT NULL,
-                    "legendary_item" INTEGER NOT NULL,
                     "patch" VARCHAR(25) NOT NULL,
                     "platform" VARCHAR NOT NULL,
                     "season_id" BIGINT NOT NULL,
+                    FOREIGN KEY ("elo") REFERENCES wrs_api_rank ("elo") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("championId") REFERENCES wrs_api_champion ("championId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("legendary_item") REFERENCES wrs_api_legendaryitem ("itemId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("patch") REFERENCES wrs_api_patch ("full_version") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
@@ -572,25 +619,31 @@ class Migration(migrations.Migration):
                 CREATE TABLE wrs_api_builtsixthstat_br1 PARTITION OF wrs_api_builtsixthstat FOR VALUES IN ('br1');
                 CREATE TABLE wrs_api_builtsixthstat_euw1 PARTITION OF wrs_api_builtsixthstat FOR VALUES IN ('euw1');
 
-                CREATE INDEX wrs_api_builtsixthstat_championId ON wrs_api_builtsixthstat ("championId");
-                CREATE INDEX wrs_api_builtsixthstat_legendary_item ON wrs_api_builtsixthstat ("legendary_item");
-                CREATE INDEX wrs_api_builtsixthstat_patch ON wrs_api_builtsixthstat ("patch");
-                CREATE INDEX wrs_api_builtsixthstat_platform ON wrs_api_builtsixthstat ("platform");
-                CREATE INDEX wrs_api_builtsixthstat_season_id ON wrs_api_builtsixthstat ("season_id");
+                CREATE INDEX wrs_api_builtsixthstat_championId_6c7d8e9f ON wrs_api_builtsixthstat ("championId");
+                CREATE INDEX wrs_api_builtsixthstat_legendary_item_7h8i9j0k ON wrs_api_builtsixthstat ("legendary_item");
+                CREATE INDEX wrs_api_builtsixthstat_patch_3d4e5f6g ON wrs_api_builtsixthstat ("patch");
+                CREATE INDEX wrs_api_builtsixthstat_patch_3d4e5f6g_like ON wrs_api_builtsixthstat ("patch" varchar_pattern_ops);
+                CREATE INDEX wrs_api_builtsixthstat_platform_5g6h7i8j ON wrs_api_builtsixthstat ("platform");
+                CREATE INDEX wrs_api_builtsixthstat_season_id_0m1n2o3p ON wrs_api_builtsixthstat ("season_id");
+                CREATE INDEX wrs_api_builtsixthstat_elo_p9q0r1s2 ON wrs_api_builtsixthstat ("elo");
+                CREATE INDEX wrs_api_builtsixthstat_elo_p9q0r1s2_like ON wrs_api_builtsixthstat ("elo" varchar_pattern_ops);
+
                 
 
                 -- Model BuiltTierTwoBootStat
                 -- Model BuiltTierTwoBootStat   
                 -- Model BuiltTierTwoBootStat
-                CREATE TABLE wrs_api_builttiertwobootstat (
+                CREATE TABLE wrs_api_tiertwobootstat (
                     "id" SERIAL NOT NULL,
+                    "tier_two_boot" INTEGER NOT NULL,
+                    "championId" INTEGER NOT NULL,
+                    "elo" varchar NOT NULL,
                     "wins" INTEGER NOT NULL,
                     "losses" INTEGER NOT NULL,
-                    "championId" INTEGER NOT NULL,
-                    "tier_two_boot" INTEGER NOT NULL,
                     "patch" VARCHAR(25) NOT NULL,
                     "platform" VARCHAR NOT NULL,
                     "season_id" BIGINT NOT NULL,
+                    FOREIGN KEY ("elo") REFERENCES wrs_api_rank ("elo") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("championId") REFERENCES wrs_api_champion ("championId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("tier_two_boot") REFERENCES wrs_api_tiertwoboot ("itemId") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
                     FOREIGN KEY ("patch") REFERENCES wrs_api_patch (full_version) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
@@ -600,15 +653,19 @@ class Migration(migrations.Migration):
                     PRIMARY KEY ("platform", "tier_two_boot", "championId", "patch")
                 ) PARTITION BY LIST ("platform");
 
-                CREATE TABLE wrs_api_builttiertwobootstat_na1 PARTITION OF wrs_api_builttiertwobootstat FOR VALUES IN ('na1');
-                CREATE TABLE wrs_api_builttiertwobootstat_br1 PARTITION OF wrs_api_builttiertwobootstat FOR VALUES IN ('br1');
-                CREATE TABLE wrs_api_builttiertwobootstat_euw1 PARTITION OF wrs_api_builttiertwobootstat FOR VALUES IN ('euw1');
+                CREATE TABLE wrs_api_tiertwobootstat_na1 PARTITION OF wrs_api_tiertwobootstat FOR VALUES IN ('na1');
+                CREATE TABLE wrs_api_tiertwobootstat_br1 PARTITION OF wrs_api_tiertwobootstat FOR VALUES IN ('br1');
+                CREATE TABLE wrs_api_tiertwobootstat_euw1 PARTITION OF wrs_api_tiertwobootstat FOR VALUES IN ('euw1');
 
-                CREATE INDEX wrs_api_builttiertwobootstat_championId ON wrs_api_builttiertwobootstat ("championId");
-                CREATE INDEX wrs_api_builttiertwobootstat_tier_two_boot ON wrs_api_builttiertwobootstat ("tier_two_boot");
-                CREATE INDEX wrs_api_builttiertwobootstat_patch ON wrs_api_builttiertwobootstat ("patch");
-                CREATE INDEX wrs_api_builttiertwobootstat_platform ON wrs_api_builttiertwobootstat ("platform");
-                CREATE INDEX wrs_api_builttiertwobootstat_season_id ON wrs_api_builttiertwobootstat ("season_id");
+                CREATE INDEX wrs_api_tiertwobootstat_championId ON wrs_api_tiertwobootstat ("championId");
+                CREATE INDEX wrs_api_tiertwobootstat_tier_two_boot ON wrs_api_tiertwobootstat ("tier_two_boot");
+                CREATE INDEX wrs_api_tiertwobootstat_patch ON wrs_api_tiertwobootstat ("patch");
+                CREATE INDEX wrs_api_tiertwobootstat_patch_like ON wrs_api_tiertwobootstat ("patch" varchar_pattern_ops);
+                CREATE INDEX wrs_api_tiertwobootstat_platform ON wrs_api_tiertwobootstat ("platform");
+                CREATE INDEX wrs_api_tiertwobootstat_season_id ON wrs_api_tiertwobootstat ("season_id");
+                CREATE INDEX wrs_api_tiertwobootstat_elo_p9q0r1s2 ON wrs_api_tiertwobootstat ("elo");
+                CREATE INDEX wrs_api_tiertwobootstat_elo_p9q0r1s2_like ON wrs_api_tiertwobootstat ("elo" varchar_pattern_ops);
+
             """],
             reverse_sql=[
                 """
@@ -667,10 +724,10 @@ class Migration(migrations.Migration):
                     DROP TABLE wrs_api_builtsixthstat_br1 CASCADE;
                     DROP TABLE wrs_api_builtsixthstat CASCADE;
 
-                    DROP TABLE wrs_api_builttiertwobootstat_na1 CASCADE;
-                    DROP TABLE wrs_api_builttiertwobootstat_euw1 CASCADE;
-                    DROP TABLE wrs_api_builttiertwobootstat_br1 CASCADE;
-                    DROP TABLE wrs_api_builttiertwobootstat CASCADE;
+                    DROP TABLE wrs_api_tiertwobootstat_na1 CASCADE;
+                    DROP TABLE wrs_api_tiertwobootstat_euw1 CASCADE;
+                    DROP TABLE wrs_api_tiertwobootstat_br1 CASCADE;
+                    DROP TABLE wrs_api_tiertwobootstat CASCADE;
                 """
             ]
         )

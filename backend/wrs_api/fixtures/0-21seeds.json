@@ -1,4 +1,1479 @@
 [
+    {
+      "model": "wrs_api.Role",
+      "fields": {
+          "name": "TOP"
+      }
+  },
+  {
+      "model": "wrs_api.Role",
+      "fields": {
+          "name": "JUNGLE"
+      }
+  },
+  {
+      "model": "wrs_api.Role",
+      "fields": {
+          "name": "MIDDLE"
+      }
+  },
+  {
+      "model": "wrs_api.Role",
+      "fields": {
+          "name": "BOTTOM"
+      }
+  },
+  {
+      "model": "wrs_api.Role",
+      "fields": {
+          "name": "UTILITY"
+      }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Unranked"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Iron 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Iron 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Iron 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Iron 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Bronze 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Bronze 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Bronze 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Bronze 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Silver 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Silver 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Silver 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Silver 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Gold 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Gold 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Gold 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Gold 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Platinum 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Platinum 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Platinum 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Platinum 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Emerald 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Emerald 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Emerald 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Emerald 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Diamond 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Diamond 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Diamond 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Diamond 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Master"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Grandmaster"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Challenger"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 21,
+      "name": "Barrier"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 1,
+      "name": "Cleanse"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 4,
+      "name": "Flash"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 2202,
+      "name": "Cherry Flash"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 2201,
+      "name": "Flee"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 14,
+      "name": "Ignite"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 3,
+      "name": "Exhaust"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 6,
+      "name": "Ghost"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 7,
+      "name": "Heal"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 13,
+      "name": "Clarity"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 30,
+      "name": "To the King!"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 31,
+      "name": "Poro Toss"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 11,
+      "name": "Smite"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 32,
+      "name": "Mark"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 12,
+      "name": "Teleport"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+        "keystone_id": 8010,
+        "name": "Conqueror"
+    }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8021,
+          "name": "Fleet Footwork"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8005,
+          "name": "Press the Attack"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8008,
+          "name": "Lethal Tempo"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8214,
+          "name": "Summon Aery"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8229,
+          "name": "Arcane Comet"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8230,
+          "name": "Phase Rush"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8437,
+          "name": "Grasp of the Undying"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8439,
+          "name": "Aftershock"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8465,
+          "name": "Guardian"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 9923,
+          "name": "Hail of Blades"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8124,
+          "name": "Predator"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8128,
+          "name": "Dark Harvest"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8112,
+          "name": "Electrocute"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8351,
+          "name": "Glacial Augment"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8360,
+          "name": "First Strike"
+      }
+  },
+  {
+      "model": "wrs_api.Keystone",
+      "fields": {
+          "keystone_id": 8369,
+          "name": "Unsealed Spellbook"
+      }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 9101,
+      "name": "Overheal"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 9111,
+      "name": "Triumph"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8009,
+      "name": "Presence of Mind"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8126,
+      "name": "Cheap Shot"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8139,
+      "name": "Taste of Blood"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8143,
+      "name": "Sudden Impact"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8224,
+      "name": "Nullifying Orb"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8226,
+      "name": "Manaflow Band"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8275,
+      "name": "Nimbus Cloak"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8446,
+      "name": "Demolish"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8463,
+      "name": "Font of Life"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8401,
+      "name": "Shield Bash"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8306,
+      "name": "Hextech Flashtraption"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8304,
+      "name": "Magical Footwear"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8313,
+      "name": "Triple Tonic"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 9104,
+      "name": "Legend: Alacrity"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 9105,
+      "name": "Legend: Tenacity"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 9103,
+      "name": "Legend: Bloodline"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8136,
+      "name": "Zombie Ward"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8120,
+      "name": "Ghost Poro"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8138,
+      "name": "Eyeball Collection"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8210,
+      "name": "Transcendence"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8234,
+      "name": "Celerity"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8233,
+      "name": "Absolute Focus"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8429,
+      "name": "Conditioning"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8444,
+      "name": "Second Wind"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8473,
+      "name": "Bone Plating"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8321,
+      "name": "Future's Market"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8316,
+      "name": "Minion Dematerializer"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8345,
+      "name": "Biscuit Delivery"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8014,
+      "name": "Coup de Grace"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8017,
+      "name": "Cut Down"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8299,
+      "name": "Last Stand"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8135,
+      "name": "Treasure Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8134,
+      "name": "Ingenious Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8105,
+      "name": "Relentless Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8106,
+      "name": "Ultimate Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8237,
+      "name": "Scorch"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8232,
+      "name": "Waterwalking"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8236,
+      "name": "Gathering Storm"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8451,
+      "name": "Overgrowth"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8453,
+      "name": "Revitalize"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8242,
+      "name": "Unflinching"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8347,
+      "name": "Cosmic Insight"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8410,
+      "name": "Approach Velocity"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8352,
+      "name": "Time Warp Tonic"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+        "perk_id": 9101,
+        "name": "Overheal"
+    }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 9111,
+          "name": "Triumph"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8009,
+          "name": "Presence of Mind"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8126,
+          "name": "Cheap Shot"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8139,
+          "name": "Taste of Blood"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8143,
+          "name": "Sudden Impact"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8224,
+          "name": "Nullifying Orb"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8226,
+          "name": "Manaflow Band"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8275,
+          "name": "Nimbus Cloak"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8446,
+          "name": "Demolish"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8463,
+          "name": "Font of Life"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8401,
+          "name": "Shield Bash"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8306,
+          "name": "Hextech Flashtraption"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8304,
+          "name": "Magical Footwear"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8313,
+          "name": "Triple Tonic"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 9104,
+          "name": "Legend: Alacrity"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 9105,
+          "name": "Legend: Tenacity"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 9103,
+          "name": "Legend: Bloodline"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8136,
+          "name": "Zombie Ward"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8120,
+          "name": "Ghost Poro"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8138,
+          "name": "Eyeball Collection"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8210,
+          "name": "Transcendence"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8234,
+          "name": "Celerity"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8233,
+          "name": "Absolute Focus"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8429,
+          "name": "Conditioning"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8444,
+          "name": "Second Wind"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8473,
+          "name": "Bone Plating"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8321,
+          "name": "Future's Market"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8316,
+          "name": "Minion Dematerializer"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8345,
+          "name": "Biscuit Delivery"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8014,
+          "name": "Coup de Grace"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8017,
+          "name": "Cut Down"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8299,
+          "name": "Last Stand"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8135,
+          "name": "Treasure Hunter"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8134,
+          "name": "Ingenious Hunter"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8105,
+          "name": "Relentless Hunter"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8106,
+          "name": "Ultimate Hunter"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8237,
+          "name": "Scorch"
+      }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+        "perk_id": 8232,
+        "name": "Waterwalking"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+        "perk_id": 8236,
+        "name": "Gathering Storm"
+    }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8451,
+          "name": "Overgrowth"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8453,
+          "name": "Revitalize"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8242,
+          "name": "Unflinching"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8347,
+          "name": "Cosmic Insight"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8410,
+          "name": "Approach Velocity"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkOne",
+      "fields": {
+          "perk_id": 8352,
+          "name": "Time Warp Tonic"
+      }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+        "perk_id": 9101,
+        "name": "Overheal"
+    }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 9111,
+          "name": "Triumph"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8009,
+          "name": "Presence of Mind"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8126,
+          "name": "Cheap Shot"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8139,
+          "name": "Taste of Blood"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8143,
+          "name": "Sudden Impact"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8224,
+          "name": "Nullifying Orb"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8226,
+          "name": "Manaflow Band"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8275,
+          "name": "Nimbus Cloak"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8446,
+          "name": "Demolish"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8463,
+          "name": "Font of Life"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8401,
+          "name": "Shield Bash"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8306,
+          "name": "Hextech Flashtraption"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8304,
+          "name": "Magical Footwear"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8313,
+          "name": "Triple Tonic"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 9104,
+          "name": "Legend: Alacrity"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 9105,
+          "name": "Legend: Tenacity"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 9103,
+          "name": "Legend: Bloodline"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8136,
+          "name": "Zombie Ward"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8120,
+          "name": "Ghost Poro"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8138,
+          "name": "Eyeball Collection"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8210,
+          "name": "Transcendence"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8234,
+          "name": "Celerity"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8233,
+          "name": "Absolute Focus"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8429,
+          "name": "Conditioning"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8444,
+          "name": "Second Wind"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8473,
+          "name": "Bone Plating"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8321,
+          "name": "Future's Market"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8316,
+          "name": "Minion Dematerializer"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8345,
+          "name": "Biscuit Delivery"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8014,
+          "name": "Coup de Grace"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8017,
+          "name": "Cut Down"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8299,
+          "name": "Last Stand"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8135,
+          "name": "Treasure Hunter"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8134,
+          "name": "Ingenious Hunter"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8105,
+          "name": "Relentless Hunter"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8106,
+          "name": "Ultimate Hunter"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8237,
+          "name": "Scorch"
+      }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+        "perk_id": 8232,
+        "name": "Waterwalking"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+        "perk_id": 8236,
+        "name": "Gathering Storm"
+    }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8451,
+          "name": "Overgrowth"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8453,
+          "name": "Revitalize"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8242,
+          "name": "Unflinching"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8347,
+          "name": "Cosmic Insight"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8410,
+          "name": "Approach Velocity"
+      }
+  },
+  {
+      "model": "wrs_api.SecondaryPerkTwo",
+      "fields": {
+          "perk_id": 8352,
+          "name": "Time Warp Tonic"
+      }
+  },
+  {
+    "model": "wrs_api.StatShardOne",
+    "fields": {
+        "shard_id": 5008,
+        "name": "Adaptive Force"
+    }
+  },
+  {
+      "model": "wrs_api.StatShardOne",
+      "fields": {
+          "shard_id": 5005,
+          "name": "Attack Speed"
+      }
+  },
+  {
+      "model": "wrs_api.StatShardOne",
+      "fields": {
+          "shard_id": 5007,
+          "name": "Ability Haste"
+      }
+  },
+  {
+    "model": "wrs_api.StatShardTwo",
+    "fields": {
+        "shard_id": 5008,
+        "name": "Adaptive Force"
+    }
+  },
+  {
+      "model": "wrs_api.StatShardTwo",
+      "fields": {
+          "shard_id": 5010,
+          "name": "Move Speed"
+      }
+  },
+  {
+      "model": "wrs_api.StatShardTwo",
+      "fields": {
+          "shard_id": 5001,
+          "name": "Health Scaling"
+      }
+  },
+  {
+    "model": "wrs_api.StatShardThree",
+    "fields": {
+        "shard_id": 5011,
+        "name": "Health"
+    }
+  },
+  {
+      "model": "wrs_api.StatShardThree",
+      "fields": {
+          "shard_id": 5013,
+          "name": "Tenacity And Slow Resist"
+      }
+  },
+  {
+      "model": "wrs_api.StatShardThree",
+      "fields": {
+          "shard_id": 5001,
+          "name": "Health Scaling"
+      }
+  },
   {
     "model": "wrs_api.Season",
     "fields": {
@@ -1882,7 +3357,7 @@
     {
       "model": "wrs_api.LegendaryItem",
       "fields": {
-        "itemId": 222065,
+        "itemId": 2065,
         "name": "Shurelya's Battlesong"
       }
     },

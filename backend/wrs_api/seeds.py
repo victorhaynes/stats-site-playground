@@ -51,7 +51,7 @@ legendary_items = {
   4633: "Riftmaker", 6657: "Rod of Ages", 3085: "Runaan's Hurricane", 
   3116: "Rylai's Crystal Scepter", 3040: "Seraph's Embrace", 
   6695: "Serpent's Fang", 6694: "Serylda's Grudge", 4645: "Shadowflame", 
-  222065: "Shurelya's Battlesong", 3876: "Solstice Sleigh", 
+  2065: "Shurelya's Battlesong", 3876: "Solstice Sleigh", 
   3161: "Spear of Shojin", 3065: "Spirit Visage", 6616: "Staff of Flowing Water", 
   3087: "Statikk Shiv", 3053: "Sterak's Gage", 3095: "Stormrazor", 
   4646: "Stormsurge", 6631: "Stridebreaker", 6610: "Sundered Sky", 
@@ -63,6 +63,176 @@ legendary_items = {
   3142: "Youmuu's Ghostblade", 3871: "Zaz'Zak's Realmspike", 
   3050: "Zeke's Convergence", 3157: "Zhonya's Hourglass"
 }
+
+
+# Runes / Perks
+# all_runes = {8369: 'First Strike', 8446: 'Demolish', 8126: 'Cheap Shot', 8321: "Future's Market", 8415: 'The Arcane Colossus', 8410: 'Approach Velocity', 8232: 'Waterwalking', 8299: 'Last Stand', 8112: 'Electrocute', 8234: 'Celerity', 8453: 'Revitalize', 8360: 'Unsealed Spellbook', 8004: 'The Brazen Perfect', 8128: 'Dark Harvest', 8220: 'The Calamity', 8016: 'The Merciless Elite', 8473: 'Bone Plating', 8339: 'Celestial Body', 8214: 'Summon Aery', 8237: 'Scorch', 8139: 'Taste of Blood', 8008: 'Lethal Tempo', 9105: 'Legend: Tenacity', 8010: 'Conqueror', 8106: 'Ultimate Hunter', 8017: 'Cut Down', 8224: 'Nullifying Orb', 8210: 'Transcendence', 8005: 'Press the Attack', 8435: 'Mirror Shell', 8115: 'The Aether Blade', 8359: 'Kleptomancy', 8352: 'Time Warp Tonic', 5003: 'Magic Resist', 8135: 'Treasure Hunter', 8120: 'Ghost Poro', 8134: 'Ingenious Hunter', 8351: 'Glacial Augment', 8242: 'Unflinching', 8401: 'Shield Bash', 9111: 'Triumph', 8105: 'Relentless Hunter', 8454: 'The Leviathan', 8275: 'Nimbus Cloak', 8207: 'The Cryptic', 5012: 'Resist Scaling', 8439: 'Aftershock', 8109: 'The Wicked Maestro ', 5002: 'Armor', 5011: 'Health', 5013: 'Tenacity and Slow Resist', 8414: 'The Behemoth', 5008: 'Adaptive Force', 8320: 'The Timeless', 8319: 'The Stargazer', 5001: 'Health Scaling', 8430: 'Iron Skin', 8014: 'Coup de Grace', 5007: 'Ability Haste', 8021: 'Fleet Footwork', 8226: 'Manaflow Band', 8451: 'Overgrowth', 8313: 'Triple Tonic', 9103: 'Legend: Bloodline', 8114: 'The Immortal Butcher', 8230: 'Phase Rush', 8318: 'The Ruthless Visionary', 8316: 'Minion Dematerializer', 8463: 'Font of Life', 7000: 'Template', 8304: 'Magical Footwear', 8236: 'Gathering Storm', 8009: 'Presence of Mind', 8006: 'The Eternal Champion', 9104: 'Legend: Alacrity', 8416: 'The Enlightened Titan', 5005: 'Attack Speed', 8306: 'Hextech Flashtraption', 8465: 'Guardian', 8138: 'Eyeball Collection', 5010: 'Move Speed', 8127: 'The Twisted Surgeon', 8143: 'Sudden Impact', 8345: 'Biscuit Delivery', 8444: 'Second Wind', 8205: 'The Incontestable Spellslinger', 8437: 'Grasp of the Undying', 9923: 'Hail of Blades', 8429: 'Conditioning', 8124: 'Predator', 8233: 'Absolute Focus', 8007: 'The Savant', 8136: 'Zombie Ward', 8208: 'The Ancient One', 8347: 'Cosmic Insight', 8472: 'Chrysalis', 8229: 'Arcane Comet', 8344: 'The Elegant Duelist ', 9101: 'Overheal'}
+
+perk_one_options = {
+      9101: 'Overheal',
+      9111: 'Triumph',
+      8009: 'Presence of Mind',
+      8126: 'Cheap Shot',
+      8139: 'Taste of Blood',
+      8143: 'Sudden Impact',
+      8224: 'Nullifying Orb',
+      8226: 'Manaflow Band',
+      8275: 'Nimbus Cloak',
+      8446: 'Demolish',
+      8463: 'Font of Life',
+      8401: 'Shield Bash',
+      8306: 'Hextech Flashtraption',
+      8304: 'Magical Footwear',
+      8313: 'Triple Tonic'
+  }
+
+
+perk_two_options = {
+    9104: 'Legend: Alacrity',
+    9105: 'Legend: Tenacity',
+    9103: 'Legend: Bloodline',
+    8136: 'Zombie Ward',
+    8120: 'Ghost Poro',
+    8138: 'Eyeball Collection', 
+    8210: 'Transcendence',
+    8234: 'Celerity',
+    8233: 'Absolute Focus',
+    8429: 'Conditioning',
+    8444: 'Second Wind',
+    8473: 'Bone Plating',
+    8321: "Future's Market", 
+    8316: 'Minion Dematerializer',
+    8345: 'Biscuit Delivery',
+  }
+
+
+perk_three_options = {
+    8014: 'Coup de Grace',
+    8017: 'Cut Down',
+    8299: 'Last Stand',
+    8135: 'Treasure Hunter',
+    8134: 'Ingenious Hunter',
+    8105: 'Relentless Hunter',
+    8106: 'Ultimate Hunter',
+    8237: 'Scorch', 
+    8232: 'Waterwalking',
+    8236: 'Gathering Storm',
+    8451: 'Overgrowth',
+    8453: 'Revitalize',
+    8242: 'Unflinching',
+    8347: 'Cosmic Insight',
+    8410: 'Approach Velocity',
+    8352: 'Time Warp Tonic',
+}
+
+secondary_options = {
+    9101: 'Overheal',
+    9111: 'Triumph',
+    8009: 'Presence of Mind',
+    8126: 'Cheap Shot',
+    8139: 'Taste of Blood',
+    8143: 'Sudden Impact',
+    8224: 'Nullifying Orb',
+    8226: 'Manaflow Band',
+    8275: 'Nimbus Cloak',
+    8446: 'Demolish',
+    8463: 'Font of Life',
+    8401: 'Shield Bash',
+    8306: 'Hextech Flashtraption',
+    8304: 'Magical Footwear',
+    8313: 'Triple Tonic',
+    9104: 'Legend: Alacrity',
+    9105: 'Legend: Tenacity',
+    9103: 'Legend: Bloodline',
+    8136: 'Zombie Ward',
+    8120: 'Ghost Poro',
+    8138: 'Eyeball Collection', 
+    8210: 'Transcendence',
+    8234: 'Celerity',
+    8233: 'Absolute Focus',
+    8429: 'Conditioning',
+    8444: 'Second Wind',
+    8473: 'Bone Plating',
+    8321: "Future's Market", 
+    8316: 'Minion Dematerializer',
+    8345: 'Biscuit Delivery',
+    8014: 'Coup de Grace',
+    8017: 'Cut Down',
+    8299: 'Last Stand',
+    8135: 'Treasure Hunter',
+    8134: 'Ingenious Hunter',
+    8105: 'Relentless Hunter',
+    8106: 'Ultimate Hunter',
+    8237: 'Scorch', 
+    8451: 'Overgrowth',
+    8453: 'Revitalize',
+    8242: 'Unflinching',
+    8347: 'Cosmic Insight',
+    8410: 'Approach Velocity',
+    8352: 'Time Warp Tonic',
+}
+
+all_keystones = {
+    8010: 'Conqueror',
+    8021: 'Fleet Footwork',
+    8005: 'Press the Attack',
+    8008: 'Lethal Tempo',
+    8214: 'Summon Aery',
+    8229: 'Arcane Comet',
+    8230: 'Phase Rush',
+    8437: 'Grasp of the Undying',
+    8439: 'Aftershock',
+    8465: 'Guardian',
+    9923: 'Hail of Blades',
+    8124: 'Predator',
+    8128: 'Dark Harvest',
+    8112: 'Electrocute',
+    8351: 'Glacial Augment',
+    8360: 'First Strike',
+    8369: 'Unsealed Spellbook'
+}
+
+shard_1 = {
+    5008: 'Adaptive Force',
+    5005: 'Attack Speed',
+    5007: 'Ability Haste'
+}
+
+shard_2 = {
+    5008: 'Adaptive Force',
+    5010: 'Move Speed',
+    5001: 'Health Scaling'
+}
+
+shard_3 = {
+    5011: 'Health',
+    5013: 'Tenacity And Slow Resist',
+    5001: 'Health Scaling'
+}
+
+
+all_perks = {
+  8446: 'Demolish', 8321: "Future's Market", 
+  8415: 'The Arcane Colossus', 8410: 'Approach Velocity', 8232: 'Waterwalking', 8299: 'Last Stand', 
+  8234: 'Celerity', 8453: 'Revitalize', 
+  8004: 'The Brazen Perfect', 8220: 'The Calamity', 8016: 'The Merciless Elite', 
+  8473: 'Bone Plating', 8339: 'Celestial Body', 8237: 'Scorch', 
+  8359: 'Kleptomancy', 8352: 'Time Warp Tonic', 5003: 'Magic Resist', 
+  8120: 'Ghost Poro', 8401: 'Shield Bash', 
+  8105: 'Relentless Hunter', 8275: 'Nimbus Cloak', 5012: 'Resist Scaling', 
+  8414: 'The Behemoth', 8320: 'The Timeless', 8319: 'The Stargazer', 
+  5001: 'Health Scaling', 8430: 'Iron Skin', 8021: 'Fleet Footwork', 
+  8226: 'Manaflow Band', 8451: 'Overgrowth', 8114: 'The Immortal Butcher', 
+  8318: 'The Ruthless Visionary', 8316: 'Minion Dematerializer', 8463: 'Font of Life', 
+  7000: 'Template', 8236: 'Gathering Storm', 8009: 'Presence of Mind', 
+  8006: 'The Eternal Champion', 9104: 'Legend: Alacrity', 8416: 'The Enlightened Titan', 
+  5005: 'Attack Speed', 8306: 'Hextech Flashtraption', 8138: 'Eyeball Collection', 
+  8127: 'The Twisted Surgeon', 8143: 'Sudden Impact', 8345: 'Biscuit Delivery', 
+  8444: 'Second Wind', 8205: 'The Incontestable Spellslinger', 8437: 'Grasp of the Undying', 
+  9923: 'Hail of Blades', 8429: 'Conditioning', 8136: 'Zombie Ward', 
+  8208: 'The Ancient One', 8347: 'Cosmic Insight', 8472: 'Chrysalis', 
+  8229: 'Arcane Comet', 8344: 'The Elegant Duelist ', 9101: 'Overheal'
+  }
 
 # 167 CHAMPIONS
 all_champions = {
@@ -115,37 +285,29 @@ platforms = ['tr1', 'ph2', 'la1', 'tw2', 'la2', 'eun1', 'vn2',
 
 
 tier_two_boots = {
-    3006: "Berserker's Greaves",
-    3009: 'Boots of Swiftness',
-    3111: "Mercury's Treads",
-    3117: 'Mobility Boots',
-    3047: 'Plated Steelcaps'
+  3006: "Berserker's Greaves",
+  3009: 'Boots of Swiftness',
+  3111: "Mercury's Treads",
+  3117: 'Mobility Boots',
+  3047: 'Plated Steelcaps'
 }
 
 
+summoner_spells = {
+  21: 'Barrier',
+  1: 'Cleanse',
+  4: 'Flash',
+  2202: 'Cherry Flash',
+  2201: 'Flee',
+  14: 'Ignite',
+  3: 'Exhaust',
+  6: 'Ghost',
+  7: 'Heal',
+  13: 'Clarity',
+  30: 'To the King!',
+  31: 'Poro Toss',
+  11: 'Smite',
+  32: 'Mark',
+  12: 'Teleport'
+}
 
-
-
-## NEXT: WRITE MODELS TO REFLECT REQUIREMENTS IN ERD, MAKE SURE MIGRATIONS GENERATE CORRECTLY (ID COLUMN, PARTITION ORDER OF OPERATIONS ISSUE)
-## THEN SEED AND START REFACTOR OF "OLD" FOLDER, MAKE SURE TIMELINE IS INTEGRATE INTO MATCH, REDUCE JSON
-
-
-
-
-
-
-
-
-### GET ALL CHAMPIONS FROM A DICT OF "NAME": NONE"
-# url = "https://ddragon.leagueoflegends.com/cdn/14.5.1/data/en_US/champion.json"
-# response = requests.get(url)
-# if response.status_code == 200:
-#     riotChamps = response.json()["data"]
-# else:
-#     print(response.status_code)
-
-# fixed_champs = {}
-# for oldchamp in all_champions:
-#     for riot_champ in riotChamps:
-#         if riotChamps[riot_champ]["name"] == oldchamp:
-#             fixed_champs[int(riotChamps[riot_champ]["key"])] = oldchamp

@@ -32,7 +32,7 @@ def format_overview_strings_as_json(overviews):
     return overviews
 
 
-def ranked_badge(elo_dict):
+def ranked_badge(elo_dict: dict):
     rank = elo_dict["rank"] # Roman Numeral Integer
     tier = elo_dict["tier"][0] if elo_dict["tier"] != "GRANDMASTER" else "GM"
 
@@ -72,41 +72,95 @@ def ranked_badge(elo_dict):
 
     return elo_dict
 
-ranked_tiers = {
-    "U": 0,
-    "I1": 1,
-    "I2": 2,
-    "I3": 3,
-    "I4": 4,
-    "B1": 5,
-    "B2": 6,
-    "B3": 7,
-    "B4": 8,
-    "S1": 9,
-    "S2": 10,
-    "S3": 11,
-    "S4": 12,
-    "G1": 13,
-    "G2": 14,
-    "G3": 15,
-    "G4": 16,
-    "P1": 17,
-    "P2": 18,
-    "P3": 19,
-    "P4": 20,
-    "E1": 21,
-    "E2": 22,
-    "E3": 23,
-    "E4": 24,
-    "D1": 25,
-    "D2": 26,
-    "D3": 27,
-    "D4": 28,
-    "M1": 29,
-    "GM1": 30,
-    "C1": 31
-}
+def calculate_average_elo(elos: list, queue: int):
 
+    rank_scores = []
+    ranked_tiers_map = {
+        "U": 0,
+        "I4": 1,
+        "I3": 2,
+        "I2": 3,
+        "I1": 4,
+        "B4": 5,
+        "B3": 6,
+        "B2": 7,
+        "B1": 8,
+        "S4": 9,
+        "S3": 10,
+        "S2": 11,
+        "S1": 12,
+        "G4": 13,
+        "G3": 14,
+        "G2": 15,
+        "G1": 16,
+        "P4": 17,
+        "P3": 18,
+        "P2": 19,
+        "P1": 20,
+        "E4": 21,
+        "E3": 22,
+        "E2": 23,
+        "E1": 24,
+        "D4": 25,
+        "D3": 26,
+        "D2": 27,
+        "D1": 28,
+        "M1": 29,
+        "GM1": 30,
+        "C1": 31
+    }
+
+    score_to_tier_map = {
+        0: "Unranked",
+        1: "Iron 4",
+        2: "Iron 3",
+        3: "Iron 2",
+        4: "Iron 1",
+        5: "Bronze 4",
+        6: "Bronze 3",
+        7: "Bronze 2",
+        8: "Bronze 1",
+        9: "Silver 4",
+        10: "Silver 3",
+        11: "Silver 2",
+        12: "Silver 1",
+        13: "Gold 4",
+        14: "Gold 3",
+        15: "Gold 2",
+        16: "Gold 1",
+        17: "Platinum 4",
+        18: "Platinum 3",
+        19: "Platinum 2",
+        20: "Platinum 1",
+        21: "Emerald 4",
+        22: "Emerald 3",
+        23: "Emerald 2",
+        24: "Emerald 1",
+        25: "Diamond 4",
+        26: "Diamond 3",
+        27: "Diamond 2",
+        28: "Diamond 1",
+        29: "Master",
+        30: "Grandmaster",
+        31: "Challenger"
+    }
+
+    for elo in elos:
+        if elo != 0: # Ignore unranked players
+            rank_scores.append(ranked_tiers_map[elo["badge"]])
+
+    if len(elos) == 0: # If everyone is unranked return unranked
+        return "Unranked"
+
+    possible_smurf = min(rank_scores) # If a lower ranked player is placed in a much higher RANKED MODE do a lobby smurf check
+    if queue == 420 and max(rank_scores) - possible_smurf >= 7:
+        rank_scores.remove(possible_smurf)
+
+    average_rank_score = round(sum(rank_scores) / len(rank_scores))
+    average_tier = score_to_tier_map[average_rank_score]
+
+    return average_tier
+    
 
 
 
