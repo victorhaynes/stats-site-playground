@@ -1656,6 +1656,13 @@
     {
       "model": "wrs_api.Champion",
       "fields": {
+        "championId": -1,
+        "name": "None"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
         "championId": 1,
         "name": "Annie"
       }
@@ -2820,6 +2827,48 @@
       "fields": {
         "championId": 950,
         "name": "Naafiri"
+      }
+    },
+    {
+      "model": "wrs_api.LegendaryItem",
+      "fields": {
+        "itemId": -1,
+        "name": "No First Item"
+      }
+    },
+    {
+      "model": "wrs_api.LegendaryItem",
+      "fields": {
+        "itemId": -2,
+        "name": "No Second Item"
+      }
+    },
+    {
+      "model": "wrs_api.LegendaryItem",
+      "fields": {
+        "itemId": -3,
+        "name": "No Third Item"
+      }
+    },
+    {
+      "model": "wrs_api.LegendaryItem",
+      "fields": {
+        "itemId": -4,
+        "name": "No Forth Item"
+      }
+    },
+    {
+      "model": "wrs_api.LegendaryItem",
+      "fields": {
+        "itemId": -5,
+        "name": "No Fifth Item"
+      }
+    },
+    {
+      "model": "wrs_api.LegendaryItem",
+      "fields": {
+        "itemId": -6,
+        "name": "No Sixth Item"
       }
     },
     {

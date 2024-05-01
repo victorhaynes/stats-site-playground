@@ -45,7 +45,7 @@ class SummonerCustomSerializer(serializers.ModelSerializer):
 
     def get_related_matches(self, instance):
         sql =   """
-                    SELECT wrs_api_summonermatch."matchId", wrs_api_match.metadata
+                    SELECT wrs_api_summonermatch."matchId",  wrs_api_match.metadata, wrs_api_match."queueId"
                     FROM wrs_api_summonermatch 
                     JOIN wrs_api_match ON wrs_api_summonermatch."matchId" = wrs_api_match."matchId"
                     WHERE wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s

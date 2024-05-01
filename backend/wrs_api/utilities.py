@@ -164,6 +164,7 @@ def calculate_average_elo(elos: list, queue: int):
 
 
 
+
 def get_summoner_matches(summoner: Summoner, count: int):
     sql =   """
                 SELECT wrs_api_summonermatch."matchId", wrs_api_match.metadata
@@ -207,113 +208,12 @@ def refresh_overview():
 
 
 
+def check_missing_items(build_list):
+    # Calculate the number of elements needed to reach 6
+    num_needed = 6 - len(build_list)
+    
+    # Add new elements and assign corresponding dummy itemId
+    for i in range(num_needed):
+        build_list.append(-(len(build_list) + 1))
 
-
-# class NestedLoopBreak(Exception):
-#     pass
-
-
-
-
-
-
-
-
-
-
-#     # Try to save all fetched/new match details at once & update the Summoner's most recent game. If any fail reject all.
-#     # Need atomicity because match, match's join table, and summoner update must all succeed to be consistent
-#     try:
-#         with transaction.atomic():
-#             with connection.cursor() as cursor:
-#                 for match_detail in match_details_not_in_database:
-#                     print("attempting to write match:", match_detail["metadata"]["matchId"])
-#                     split_version = match_detail["info"]["gameVersion"].split('.',1)
-#                     version = (split_version[0] + "." + split_version[1].split('.',1)[0])
-#                     patch_tuple = Patch.objects.get_or_create(full_version=match_detail["info"]["gameVersion"], version=version, season_id=current_season)
-#                     print("Created new patch:", patch_tuple[1])
-#                     cursor.execute(
-#                         """
-#                             INSERT INTO wrs_api_match ("matchId", "queueId", "season_id", "patch", "platform", "metadata")
-#                             VALUES (%s, %s, %s, %s, %s, %s);
-#                         """
-#                     ,[match_detail["metadata"]["matchId"], match_detail["info"]["queueId"], current_season.id, patch_tuple[0].full_version, request.query_params.get('platform'), json.dumps(match_detail)])
-                    
-#                     participants = match_detail["metadata"]["participants"]
-#                     for participant_puuid in participants:
-#                         # Check if participant already exists in database
-#                         print("Checking existing profile for:", participant_puuid)
-#                         participant_profile = Summoner.objects.filter(puuid=participant_puuid, platform=request.query_params.get('platform'))
-#                         if len(participant_profile) == 0:
-#                             # If not found GET Encrypted Summoner ID externally
-#                             print("Getting ESID from Riot API for:", participant_puuid)
-#                             encrypted_summonerID_by_puuid_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{participant_puuid}"
-#                             response_summonerID = requests.get(encrypted_summonerID_by_puuid_url, headers=headers, verify=True)
-#                             if response_summonerID.status_code == 200:
-#                                 participant_summonerID = response_summonerID.json()['id']
-#                                 participant_profile_icon = response_summonerID.json()['profileIconId']
-#                                 participant_stats = [d for d in match_detail["info"]["participants"] if d.get("puuid") == participant_puuid][0] 
-#                                 participant_gameName = participant_stats["riotIdGameName"]
-#                                 participant_tagLine = participant_stats["riotIdTagline"]
-#                                 new_summoner = Summoner.objects.create(puuid=participant_puuid, gameName=participant_gameName, tagLine=participant_tagLine, platform=platform, profileIconId=participant_profile_icon, encryptedSummonerId=participant_summonerID)
-
-#                                 # GET Summoner Overview / Ranked Stats / Elo
-#                                 print("Getting ELO update for:", participant_puuid)
-#                                 league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{participant_summonerID}"
-#                                 response_overview = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
-                                
-#                                 if response_account_details.status_code == 200:
-#                                     participant_elo = {}
-#                                     if response_overview.status_code == 200 and len(response_overview.json()) == 0:
-#                                         participant_elo = json.dumps({"rank": "UNRANKED", "tier": "UNRANKED", "wins": 0, "losses": 0, "leaguePoints": 0})
-#                                     else:
-#                                         participant_elo = json.dumps(response_overview.json()[0])
-
-#                                         print("Instering overview for:", participant_puuid)
-#                                         cursor.execute(
-#                                         """
-#                                             INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
-#                                             VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-#                                             ON CONFLICT (puuid, season_id, platform) 
-#                                             DO UPDATE SET 
-#                                             metadata = EXCLUDED.metadata,
-#                                             updated_at = EXCLUDED.updated_at;
-#                                         """
-#                                         , [participant_puuid, platform.code, current_season.id, participant_elo])
-
-#                             elif response_summonerID.status_code != 200:
-#                                 raise HTTPError("Error Issued from Riot API")
-#                             else:
-#                                 raise Exception("Error fetching or creating Summoner.")
-#                         cursor.execute(
-#                             """
-#                                 INSERT INTO wrs_api_summonermatch ("matchId", "queueId", "puuid", "season_id", "patch", "platform")
-#                                 VALUES (%s, %s, %s, %s, %s, %s);
-#                             """
-#                         ,[match_detail["metadata"]["matchId"], match_detail["info"]["queueId"], participant_puuid, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
-
-#                 cursor.execute(
-#                     """
-#                         SELECT "matchId" FROM wrs_api_summonermatch WHERE wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
-#                         ORDER BY wrs_api_summonermatch."matchId" DESC
-#                         LIMIT 1;
-#                     """
-#                 ,[puuid, request.query_params.get('platform')])
-#                 last_saved_game = cursor.fetchone()[0]
-#                 if summoner_searched.most_recent_game != last_saved_game:
-#                     summoner_searched.custom_update(most_recent_game=last_saved_game)
-#                 print(last_saved_game)
-
-#     except Exception as err:
-#         return JsonResponse(f"Could not update databse. Error: {str(err)}", safe=False, status=status.HTTP_409_CONFLICT)
-
-
-#     summoner_searched = Summoner.objects.get(puuid=puuid, platform=request.query_params.get('platform'))
-#     serialized_summoner = SummonerCustomSerializer(summoner_searched)
-
-#     return JsonResponse(serialized_summoner.data, safe=False, status=status.HTTP_202_ACCEPTED)
-
-
-
-
-
+    return build_list

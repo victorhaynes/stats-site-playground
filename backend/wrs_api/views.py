@@ -4,7 +4,7 @@ from .models import Summoner, SummonerOverview, Platform, Season, Patch, Region,
 from django.db import connection, transaction
 from django.db.utils import DatabaseError
 from .serializers import SummonerSerializer, SummonerCustomSerializer, SummonerOverviewSerializer
-from .utilities import dictfetchall, get_summoner_matches, ranked_badge, calculate_average_elo
+from .utilities import dictfetchall, get_summoner_matches, ranked_badge, calculate_average_elo, check_missing_items
 import pprint
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -22,8 +22,8 @@ import asyncio
 
 
 #################################################################################
-#################################################################################
-### Config ######################################################################
+################################################################################# Factor current_season into approp places
+### Config ###################################################################### Update season offsets in .env so it'll change automatically
 load_dotenv()
 riot_key = os.environ["RIOT_KEY"]
 headers = {'X-Riot-Token': riot_key}
@@ -53,26 +53,9 @@ def get_summoner(request):
         return JsonResponse({"message": "There was an issue searching for summoner. Please try again.", "detail": repr(e)}, status=status.HTTP_404_NOT_FOUND, safe=False)
 
 
-########################################################################################
-# # Helper Function to check database for existing match details before hitting Riot API
-########################################################################################
-@api_view(['GET'])
-def get_match_history(request):
-    try:
-        summoner = Summoner.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), platform=request.query_params.get('platform'))
-        print("player:", summoner)
-        summoner_matches = get_summoner_matches(summoner, 5)
-        print("my matches:", summoner_matches)
-        return JsonResponse(summoner_matches, safe=False, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-    except Summoner.DoesNotExist:
-        return JsonResponse({"message": "There was an issue searching for summoner. Please try again.", "detail": repr(e)}, status=status.HTTP_404_NOT_FOUND, safe=False)
-    except Exception as e:
-        return JsonResponse({"message": "There was an issue searching for summoner. Please try again.", "detail": repr(e)}, status=status.HTTP_404_NOT_FOUND, safe=False)
-
-
-###########################################
+############################################
 # Takes region, gameName, tagLine, platform
-###########################################
+############################################
 @api_view(['GET'])
 def get_summoner_update(request):
     platform = Platform.objects.get(code=request.query_params.get('platform'))
@@ -141,7 +124,6 @@ def get_summoner_update(request):
     season_split_start_epoch_seconds = season_schedule[request.query_params.get('platform')][f"season_{current_season.season}"][f"split_{current_season.split}"]["start"]
     season_split_end_epoch_seconds = season_schedule[request.query_params.get('platform')][f"season_{current_season.season}"][f"split_{current_season.split}"]["end"]
 
-    # Look at this, one too many requests?
     start = 0
     count = 100 # must be <= 100
     all_matches_played = []
@@ -166,7 +148,6 @@ def get_summoner_update(request):
 
     print("!!!TESTING ONLY CHECK FOR SOME MATCHES!!!")
     all_matches_played = all_matches_played[:3]
-    # all_matches_played = all_matches_played
 
     # GET details for all matches fetched that are not already in database
     with connection.cursor() as cursor:
@@ -198,7 +179,6 @@ def get_summoner_update(request):
                 timeline = timeline_response.json()
 
                 
-                # participant_elos = {}
                 participant_elos = []
                 for participant_data in match_detail["info"]["participants"]:
                     build_path = []
@@ -253,20 +233,18 @@ def get_summoner_update(request):
                                 participant_elo = {}
                                 if len(response_overview.json()) == 0:
                                     participant_elo = json.dumps({"rank": "UNRANKED", "tier": "UNRANKED", "wins": 0, "losses": 0, "leaguePoints": 0})
-                                    # new_overviews[participant_data["puuid"]] = participant_elo
                                 else:
                                     try:
                                         participant_elo = json.dumps([d for d in response_overview.json() if d["queueType"] == "RANKED_SOLO_5x5"][0])
                                     except IndexError: # Only plays flex queue and never ranked
-                                    # new_overviews[participant_data["puuid"]] = participant_elo
                                         participant_elo = json.dumps({"rank": "UNRANKED", "tier": "UNRANKED", "wins": 0, "losses": 0, "leaguePoints": 0})
 
 
                                 elo = {"puuid": participant_data["puuid"], "tier": json.loads(participant_elo)["tier"], "rank": json.loads(participant_elo)["rank"]}
                                 elo = ranked_badge(elo)
-                                # participant_elos[participant_data["puuid"]] = elo
                                 participant_elos.append(elo)
                                 participant_data["summonerElo"] = elo
+
                                 with connection.cursor() as cursor:
                                     print("Inserting overview for:", participant_data["puuid"])
                                     cursor.execute(
@@ -282,19 +260,11 @@ def get_summoner_update(request):
                             else:
                                 if len(match_details_not_in_database) == 0:
                                     return JsonResponse({"Riot API returned error": response_overview.status_code, "message": response_overview.json(), "meta": 284}, status=response_overview.status_code)
-                                # removed = match_details_not_in_database.pop() # Remove the last element which casued the error and continue with complete records
-                                # print("REMOVING THE LAST GAME BC OF ERROR ABOVE", removed["metadata"]["matchId"])
-                                # if len(match_details_not_in_database) == 0:
-                                #     return JsonResponse({"message": "Forced to stop. Timeout received with partial data, try again.", "meta": 287}, status=429)
                                 participant_loop_broken = True
                                 break
                         else:
                             if len(match_details_not_in_database) == 0:
                                 return JsonResponse({"Riot API returned error": response_summonerID.status_code, "message": response_summonerID.json(), "meta": 291}, status=response_summonerID.status_code)
-                            # removed = match_details_not_in_database.pop() # Remove the last element which casued the error and continue with complete records
-                            # print("REMOVING THE LAST GAME BC OF ERROR ABOVE", removed["metadata"]["matchId"])
-                            # if len(match_details_not_in_database) == 0:
-                            #     return JsonResponse({"message": "Forced to stop. Timeout received with partial data, try again.", "meta": 295}, status=429)
                             participant_loop_broken = True
                             break
                         
@@ -311,12 +281,10 @@ def get_summoner_update(request):
 
                         elo = {"puuid": participant_data["puuid"], "tier": ov["tier"], "rank": ov["rank"]}
                         elo = ranked_badge(elo)
-                        # participant_elos[participant_data["puuid"]] = elo
                         participant_elos.append(elo)
                         participant_data["summonerElo"] = elo
 
                 if participant_loop_broken == False:
-                    # match_detail["playerElos"] = participant_elos
                     match_detail["participantElos"] = participant_elos
                     average_elo = calculate_average_elo(participant_elos, match_detail["info"]["queueId"])
                     match_detail["averageElo"] = average_elo
@@ -338,9 +306,6 @@ def get_summoner_update(request):
             print("skipped:", game, "already found")
             pass
 
-## FROM TRY TO SKIPPED UN-UNDENT IF YOU REMOVE ATOMIC
-## FROM TRY TO SKIPPED UN-UNDENT IF YOU REMOVE ATOMIC
-## FROM TRY TO SKIPPED UN-UNDENT IF YOU REMOVE ATOMIC
 
     print(len(match_details_not_in_database))
     for d in match_details_not_in_database:
@@ -349,86 +314,168 @@ def get_summoner_update(request):
     # Try to save all fetched/new match details at once & update the Summoner's most recent game. If any fail reject all.
     # Need atomicity because match, match's join table, and summoner update must all succeed to be consistent
     try:
-        # with transaction.atomic():
-        #     with connection.cursor() as cursor:
-                for match_detail in match_details_not_in_database:
-                    with transaction.atomic():
-                        with connection.cursor() as cursor:
-                            print("attempting to write match:", match_detail["metadata"]["matchId"])
-                            split_version = match_detail["info"]["gameVersion"].split('.',1)
-                            version = (split_version[0] + "." + split_version[1].split('.',1)[0])
-                            patch_tuple = Patch.objects.get_or_create(full_version=match_detail["info"]["gameVersion"], version=version, season_id=current_season)
-                            print("Created new patch:", patch_tuple[1])
-                            cursor.execute(
-                                """
-                                    INSERT INTO wrs_api_match ("matchId", "queueId", "season_id", "patch", "platform", "elo", "metadata")
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s);
-                                """
-                            ,[match_detail["metadata"]["matchId"], match_detail["info"]["queueId"], current_season.id, patch_tuple[0].full_version, request.query_params.get('platform'), match_detail["averageElo"], json.dumps(match_detail)])
-                            
-                            # participants = match_detail["metadata"]["participants"]
-                            participants = match_detail["info"]["participants"]
-                            for participant_object in participants:
-
-                                cursor.execute(
-                                    """
-                                        INSERT INTO wrs_api_summonermatch ("matchId", "elo", "queueId", "puuid", "season_id", "patch", "platform")
-                                        VALUES (%s, %s, %s, %s, %s, %s, %s);
-                                    """
-                                # ,[match_detail["metadata"]["matchId"], match_detail["averageElo"], match_detail["info"]["queueId"], participant_puuid, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
-                                ,[match_detail["metadata"]["matchId"], match_detail["averageElo"], match_detail["info"]["queueId"], participant_object["puuid"], current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
-                                
-                                runes_in_order = []
-                                for style in participant_object["perks"]["styles"]:
-                                    for selection in style["selections"]:
-                                        runes_in_order.append(selection["perk"])
-                                shard1 = participant_object["perks"]["statPerks"]["offense"]
-                                shard2 = participant_object["perks"]["statPerks"]["flex"]
-                                shard3 = participant_object["perks"]["statPerks"]["defense"]
-
-                                win = participant_object["win"]
-                                remake = participant_object["gameEndedInEarlySurrender"]
-                                if remake:
-                                    win_counter = 0
-                                    loss_counter = 0
-                                elif win:
-                                    win_counter = 1
-                                    loss_counter = 0
-                                else:
-                                    win_counter = 0
-                                    loss_counter = 1
-                                picked_counter = 1
-                                print("for match", match_detail["metadata"]["matchId"], participant_object["puuid"])
-                               
-
-
-                                ### THIS IS WORKING, NOW DELETE DATA, RUN SEEDS, MAKE IT ONLY ACTIVATE FOR RANKED QUEUE 420
-                                ### IMPLEMENT CHAMPION STAT, ITEMBUILDSTATS, SUMMONER STATS, AND BOOTS
-                                cursor.execute(
-                                    """
-                                        INSERT INTO wrs_api_runepagestat ("keystone", "primary_one", "primary_two", "primary_three", "secondary_one", "secondary_two", "shard_one", "shard_two", "shard_three", "championId", "elo", "role", "wins", "losses", "picked", "season_id", "patch", "platform")
-                                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                        ON CONFLICT ("keystone", "primary_one", "primary_two", "primary_three", "secondary_one", "secondary_two", "shard_one", "shard_two", "shard_three", "championId", "platform", "patch", "role", "elo")
-                                        DO UPDATE SET 
-                                        wins = wrs_api_runepagestat.wins + EXCLUDED.wins,
-                                        losses = wrs_api_runepagestat.losses + EXCLUDED.losses;
-                                    """
-                                # ,[match_detail["metadata"]["matchId"], match_detail["averageElo"], match_detail["info"]["queueId"], participant_puuid, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
-                                ,[runes_in_order[0], runes_in_order[1], runes_in_order[2], runes_in_order[3], runes_in_order[4], runes_in_order[5], shard1, shard2, shard3, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_counter, loss_counter, picked_counter, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
-
-
+        for match_detail in match_details_not_in_database:
+            with transaction.atomic():
                 with connection.cursor() as cursor:
+                    
+                    print("Begin iteration for  match:", match_detail["metadata"]["matchId"])
+                    split_version = match_detail["info"]["gameVersion"].split('.',1)
+                    version = (split_version[0] + "." + split_version[1].split('.',1)[0])
+                    patch_tuple = Patch.objects.get_or_create(full_version=match_detail["info"]["gameVersion"], version=version, season_id=current_season)
+                    print("Created new patch:", patch_tuple[1])
+
+                    print("attempting to write match:", match_detail["metadata"]["matchId"], "to table")
                     cursor.execute(
                         """
-                            SELECT "matchId" FROM wrs_api_summonermatch WHERE wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
-                            ORDER BY wrs_api_summonermatch."matchId" DESC
-                            LIMIT 1;
+                            INSERT INTO wrs_api_match ("matchId", "queueId", "season_id", "patch", "platform", "elo", "metadata")
+                            VALUES (%s, %s, %s, %s, %s, %s, %s);
                         """
-                    ,[puuid, request.query_params.get('platform')])
-                    last_saved_game = cursor.fetchone()[0]
-                    if summoner_searched.most_recent_game != last_saved_game:
-                        summoner_searched.custom_update(most_recent_game=last_saved_game)
-                    print(last_saved_game)
+                    ,[match_detail["metadata"]["matchId"], match_detail["info"]["queueId"], current_season.id, patch_tuple[0].full_version, request.query_params.get('platform'), match_detail["averageElo"], json.dumps(match_detail)])
+
+                    # Update ban stats for banned champions for all teams ALL STATS SHOULD ONLY BE FOR RANKED 420
+                    if match_detail["info"]["queueId"] == 420:
+                        for team in match_detail["info"]["teams"]:
+                            bans = team["bans"]
+                            for ban in bans:
+                                ban_increment = 1
+                                print("Updating ban for", ban["championId"])
+                                cursor.execute(
+                                    """
+                                        INSERT INTO wrs_api_banstat ("championId", "elo", "banned", "season_id", "patch", "platform")
+                                        VALUES (%s, %s, %s, %s, %s, %s)
+                                        ON CONFLICT ("platform","championId", "patch", "elo", "season_id")
+                                        DO UPDATE SET 
+                                        banned = wrs_api_banstat.banned + EXCLUDED.banned;
+                                    """
+                                ,[ban["championId"], match_detail["averageElo"], ban_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+
+                    
+                    # participants = match_detail["metadata"]["participants"]
+                    participants = match_detail["info"]["participants"]
+                    for participant_object in participants:
+
+                        cursor.execute(
+                            """
+                                INSERT INTO wrs_api_summonermatch ("matchId", "elo", "queueId", "puuid", "season_id", "patch", "platform")
+                                VALUES (%s, %s, %s, %s, %s, %s, %s);
+                            """
+                        # ,[match_detail["metadata"]["matchId"], match_detail["averageElo"], match_detail["info"]["queueId"], participant_puuid, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+                        ,[match_detail["metadata"]["matchId"], match_detail["averageElo"], match_detail["info"]["queueId"], participant_object["puuid"], current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+
+                        if match_detail["info"]["queueId"] == 420:
+                            win = participant_object["win"]
+                            remake = participant_object["gameEndedInEarlySurrender"]
+                            if remake:
+                                win_increment = 0
+                                loss_increment = 0
+                            elif win:
+                                win_increment = 1
+                                loss_increment = 0
+                            else:
+                                win_increment = 0
+                                loss_increment = 1
+                            pick_increment = 1
+                            cursor.execute(
+                                """
+                                    INSERT INTO wrs_api_championstat ("championId", "role", "elo", "wins", "losses", "picked", "season_id", "patch", "platform")
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                    ON CONFLICT ("platform","championId", "patch", "role", "elo", "season_id")
+                                    DO UPDATE SET 
+                                    wins = wrs_api_championstat.wins + EXCLUDED.wins,
+                                    losses = wrs_api_championstat.losses + EXCLUDED.losses,
+                                    picked = wrs_api_championstat.picked + EXCLUDED.picked;
+                                """
+                            ,[participant_object["championId"],  participant_object["teamPosition"], match_detail["averageElo"], win_increment, loss_increment, pick_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+
+                            # Write Rune Page Stats Logic
+                            runes_in_order = []
+                            for style in participant_object["perks"]["styles"]:
+                                for selection in style["selections"]:
+                                    runes_in_order.append(selection["perk"])
+                            shard1 = participant_object["perks"]["statPerks"]["offense"]
+                            shard2 = participant_object["perks"]["statPerks"]["flex"]
+                            shard3 = participant_object["perks"]["statPerks"]["defense"]
+
+                            cursor.execute(
+                                """
+                                    INSERT INTO wrs_api_runepagestat ("keystone", "primary_one", "primary_two", "primary_three", "secondary_one", "secondary_two", "shard_one", "shard_two", "shard_three", "championId", "elo", "role", "wins", "losses", "picked", "season_id", "patch", "platform")
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                    ON CONFLICT ("keystone", "primary_one", "primary_two", "primary_three", "secondary_one", "secondary_two", "shard_one", "shard_two", "shard_three", "championId", "platform", "patch", "role", "elo", "season_id")
+                                    DO UPDATE SET 
+                                    wins = wrs_api_runepagestat.wins + EXCLUDED.wins,
+                                    losses = wrs_api_runepagestat.losses + EXCLUDED.losses;
+                                """
+                            ,[runes_in_order[0], runes_in_order[1], runes_in_order[2], runes_in_order[3], runes_in_order[4], runes_in_order[5], shard1, shard2, shard3, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, pick_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+                            print("pass4")
+
+                            # Legendary Item Stats writing logic 
+                            legendary_items_built_by_player = []
+                            all_legendary_items = list(LegendaryItem.objects.values_list('itemId', flat=True))
+                            for item_built in participant_object["buildPath"]:
+                                if item_built["itemId"] in all_legendary_items:
+                                    legendary_items_built_by_player.append(item_built["itemId"])
+                            
+                            cleaned_item_build = check_missing_items(legendary_items_built_by_player)
+
+                            if cleaned_item_build[0] != -1: # If the first item built is a real item (not dummy -1) write entire build to table
+                                cursor.execute(
+                                    """
+                                        INSERT INTO wrs_api_itembuildstat ("legendary_one", "legendary_two", "legendary_three", "legendary_four", "legendary_five", "legendary_six", "championId", "elo", "role", "wins", "losses", "season_id", "patch", "platform")
+                                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                        ON CONFLICT ("legendary_one", "legendary_two", "legendary_three", "legendary_four", "legendary_five", "legendary_six", "championId", "platform", "patch", "role", "elo", "season_id")
+                                        DO UPDATE SET 
+                                        wins = wrs_api_itembuildstat.wins + EXCLUDED.wins,
+                                        losses = wrs_api_itembuildstat.losses + EXCLUDED.losses;
+                                    """
+                                ,[cleaned_item_build[0], cleaned_item_build[1], cleaned_item_build[2], cleaned_item_build[3], cleaned_item_build[4], cleaned_item_build[5], participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+
+                            # Tier Two Boots Stats writing logic 
+                            boots_built_by_player = []
+                            all_tier_two_boots = list(TierTwoBoot.objects.values_list('itemId', flat=True))
+                            for item_built in participant_object["buildPath"]:
+                                if item_built["itemId"] in all_tier_two_boots:
+                                    boots_built_by_player.append(item_built["itemId"])
+                            
+                            if boots_built_by_player:
+                                bootId = boots_built_by_player[-1] # Get the last boot built, players sometimes sell and buy a different pair
+                                cursor.execute(
+                                    """
+                                        INSERT INTO wrs_api_tiertwobootstat ("tier_two_boot","championId", "elo", "role", "wins", "losses", "season_id", "patch", "platform")
+                                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                        ON CONFLICT ("platform", "tier_two_boot", "championId","patch", "role", "elo", "season_id")
+                                        DO UPDATE SET 
+                                        wins = wrs_api_tiertwobootstat.wins + EXCLUDED.wins,
+                                        losses = wrs_api_tiertwobootstat.losses + EXCLUDED.losses;
+                                    """
+                                ,[bootId, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+
+                            # Summoner Spell writing logi
+                            spell_one = participant_object["summoner1Id"]
+                            spell_two = participant_object["summoner2Id"]                                 
+                            cursor.execute(
+                                """
+                                    INSERT INTO wrs_api_summonerspellstat ("spell_one", "spell_two", "championId", "elo", "role", "wins", "losses", "picked", "season_id", "patch", "platform")
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                    ON CONFLICT ("platform", "spell_one", "spell_two", "championId","patch", "role", "elo", "season_id")
+                                    DO UPDATE SET 
+                                    wins = wrs_api_summonerspellstat.wins + EXCLUDED.wins,
+                                    losses = wrs_api_summonerspellstat.losses + EXCLUDED.losses,
+                                    picked = wrs_api_summonerspellstat.picked + EXCLUDED.picked;
+                                """
+                            ,[spell_one, spell_two, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, pick_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                    SELECT "matchId" FROM wrs_api_summonermatch WHERE wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
+                    ORDER BY wrs_api_summonermatch."matchId" DESC
+                    LIMIT 1;
+                """
+            ,[puuid, request.query_params.get('platform')])
+            last_saved_game = cursor.fetchone()[0]
+            if summoner_searched.most_recent_game != last_saved_game:
+                summoner_searched.custom_update(most_recent_game=last_saved_game)
+            print(last_saved_game)
 
     except Exception as err:
         return JsonResponse(f"Could not update databse. Error: {str(err)}", safe=False, status=status.HTTP_409_CONFLICT)
@@ -438,3 +485,23 @@ def get_summoner_update(request):
     serialized_summoner = SummonerCustomSerializer(summoner_searched)
 
     return JsonResponse(serialized_summoner.data, safe=False, status=status.HTTP_202_ACCEPTED)
+
+
+
+# Not needed?
+
+########################################################################################
+# # Helper Function to check database for existing match details before hitting Riot API 
+########################################################################################
+# @api_view(['GET'])
+# def get_match_history(request):
+#     try:
+#         summoner = Summoner.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), platform=request.query_params.get('platform'))
+#         print("player:", summoner)
+#         summoner_matches = get_summoner_matches(summoner, 5)
+#         print("my matches:", summoner_matches)
+#         return JsonResponse(summoner_matches, safe=False, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+#     except Summoner.DoesNotExist:
+#         return JsonResponse({"message": "There was an issue searching for summoner. Please try again.", "detail": repr(e)}, status=status.HTTP_404_NOT_FOUND, safe=False)
+#     except Exception as e:
+#         return JsonResponse({"message": "There was an issue searching for summoner. Please try again.", "detail": repr(e)}, status=status.HTTP_404_NOT_FOUND, safe=False)
