@@ -4,7 +4,7 @@ from .models import Summoner, SummonerOverview, Platform, Season, Patch, Region,
 from django.db import connection, transaction
 from django.db.utils import DatabaseError
 from .serializers import SummonerSerializer, SummonerCustomSerializer, SummonerOverviewSerializer
-from .utilities import dictfetchall, get_summoner_matches, ranked_badge, calculate_average_elo, check_missing_items
+from .utilities import dictfetchall, ranked_badge, calculate_average_elo, check_missing_items
 import pprint
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -43,24 +43,23 @@ season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
 ######################################################################################
 @api_view(['GET'])
 def get_summoner(request):
-    try:
-        summoner = Summoner.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), platform=request.query_params.get('platform'))
-        serialized_summoner = SummonerCustomSerializer(summoner)
-        return JsonResponse(serialized_summoner.data, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION, safe=False)
-    except Summoner.DoesNotExist:
-        return JsonResponse({"message": "There was an issue searching for summoner. Please try again.", "detail": repr(e)}, status=status.HTTP_404_NOT_FOUND, safe=False)
-    except Exception as e:
-        return JsonResponse({"message": "There was an issue searching for summoner. Please try again.", "detail": repr(e)}, status=status.HTTP_404_NOT_FOUND, safe=False)
 
+    if request.query_params.get('update') == 'false' or not request.query_params.get('update'):
+        try: # Check 
 
-############################################
-# Takes region, gameName, tagLine, platform
-############################################
-@api_view(['GET'])
-def get_summoner_update(request):
+            summoner = Summoner.objects.get(gameName__iexact=request.query_params.get('gameName'), tagLine__iexact=request.query_params.get('tagLine'), platform=request.query_params.get('platform'))
+
+            if request.query_params.get('limit'):
+                serialized_summoner = SummonerCustomSerializer(instance=summoner, context={'limit': request.query_params.get('limit')})
+            else:
+                serialized_summoner = SummonerCustomSerializer(instance=summoner, context={'limit': 15})
+            return JsonResponse(serialized_summoner.data, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION, safe=False)
+        except Summoner.DoesNotExist as e:
+            pass # Continue and get details from Riot API
+        except Exception as e:
+            return JsonResponse({"message": "There was an issue searching for summoner. Please try again.", "detail": repr(e)}, status=status.HTTP_404_NOT_FOUND, safe=False)
+
     platform = Platform.objects.get(code=request.query_params.get('platform'))
-
-
     # Also eventually fix Flex Queue for Overview, it will be the 1st element in the json resposne if flex history exists
     # Atomically Create/Update: Summoner & SummonerOverview
     with transaction.atomic():
@@ -158,16 +157,16 @@ def get_summoner_update(request):
         , [request.query_params.get('platform'), puuid])
         rows = cursor.fetchall()
 
-    my_existing_matches = []
+    my_matches_in_database = []
     for row in rows:
-        my_existing_matches.append(row[0])
+        my_matches_in_database.append(row[0])
 
     participant_loop_broken = False # Keep track of if the inner loop breaks
     match_details_not_in_database = []
     for game in all_matches_played:
         if participant_loop_broken == True: # If inner loop breaks, break this outer loop
             break
-        if game not in my_existing_matches:
+        if game not in my_matches_in_database:
             match_detail_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/{game}"
             response_match_detail = requests.get(match_detail_url, headers=headers, verify=True)
             timeline_url = f"https://{request.query_params.get('region')}.api.riotgames.com/lol/match/v5/matches/{game}/timeline"
@@ -486,6 +485,25 @@ def get_summoner_update(request):
 
     return JsonResponse(serialized_summoner.data, safe=False, status=status.HTTP_202_ACCEPTED)
 
+
+
+
+# ######################################################################################
+# # Helper Function to check database for existing summoner data before hitting Riot API
+# ######################################################################################
+# @api_view(['GET'])
+# def get_summoner(request):
+#     try:
+#         summoner = Summoner.objects.get(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), platform=request.query_params.get('platform'))
+#         if request.query_params.get('limit'):
+#             serialized_summoner = SummonerCustomSerializer(instance=summoner, context={'limit': request.query_params.get('limit')})
+#         else:
+#             serialized_summoner = SummonerCustomSerializer(instance=summoner, context={'limit': 15})
+#         return JsonResponse(serialized_summoner.data, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION, safe=False)
+#     except Summoner.DoesNotExist as e:
+#         return JsonResponse({"message": "There was an issue searching for summoner. Please try again.", "detail": repr(e)}, status=status.HTTP_404_NOT_FOUND, safe=False)
+#     except Exception as e:
+#         return JsonResponse({"message": "There was an issue searching for summoner. Please try again.", "detail": repr(e)}, status=status.HTTP_404_NOT_FOUND, safe=False)
 
 
 # Not needed?

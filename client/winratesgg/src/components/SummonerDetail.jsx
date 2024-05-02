@@ -20,10 +20,15 @@ const SummonerDetail = () => {
     },[location.pathname])
 
 
-    // Get summoner data, including match details nested as json
-    async function getSummonerData(routeToRiot=false){
+    // Get summoner data from db cache, including match details nested as json
+    async function getSummonerData(limit=null, update=false){
+        let url = `http://127.0.0.1:8000/summoner/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}`
+        
+        url += limit ? `&limit=${limit}` : '';
+        url += update ? `&update=${update}` : '';
+
         try {
-            let response = await axios.get(`http://127.0.0.1:8000/summoner-data-external/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}&routeToRiot=${routeToRiot}`)
+            let response = await axios.get(url)
             console.log(response.data)
             setSummonerData(response.data)
         } catch (error) {
@@ -31,6 +36,25 @@ const SummonerDetail = () => {
         }
     }
 
+    // Get summoner data from Riot API, update db cache, including match details nested as json
+    // async function getSummonerData(routeToRiot=false){
+    //     try {
+    //         let response = await axios.get(`http://127.0.0.1:8000/summoner-update/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}&routeToRiot=${routeToRiot}`)
+    //         console.log(response.data)
+    //         setSummonerData(response.data)
+    //     } catch (error) {
+    //         console.log({[error.response.request.status]: error.response.data})
+    //     }
+    // }
+    // async function getSummonerData(routeToRiot=false){
+    //     try {
+    //         let response = await axios.get(`http://127.0.0.1:8000/summoner-data-external/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}&routeToRiot=${routeToRiot}`)
+    //         console.log(response.data)
+    //         setSummonerData(response.data)
+    //     } catch (error) {
+    //         console.log({[error.response.request.status]: error.response.data})
+    //     }
+    // }
 
     // Fetch additional games /w no filter, =false get from databse & no update, =true get from riot API & update databse
     async function getMoreMatchDetails(routeToRiot=false){
@@ -75,7 +99,7 @@ const SummonerDetail = () => {
     function formatLastUpdateTime(summonerOverview){
         let lastUpdatedText = "time unknown"
         try {
-            let lastUpdated = summonerOverview?.summoner_overviews[0]?.updated_at
+            let lastUpdated = summonerOverview?.overviews[0]?.updated_at
             console.log(lastUpdated)
             let yearUpdated = lastUpdated.split("-")[0]
             let monthUpdated = lastUpdated.split("-")[1]
@@ -128,24 +152,25 @@ const SummonerDetail = () => {
     // Isolate the summoner overview from summoner data, handle index error if nothing is there
     let summonerOverview = {}
     try {
-        summonerOverview = summonerData?.summoner_overviews[0]?.json
-    } catch (error){
+        summonerOverview = summonerData?.overviews[0]?.metadata
+        } catch (error){
         summonerOverview = {}
     }
+    console.log("OVERVIEW:", summonerOverview)
 
     // Isolate the updated_at field from summoner data.summoner overview, handle index error if nothing is there
     let lastUpdated = ""
     try {
-        lastUpdated = summonerData?.summoner_overviews[0]?.updated_at
+        lastUpdated = summonerData?.overviews[0]?.updated_at
     } catch (error){
         lastUpdated = "Unknown"
     }
 
     // Isolate match history from summoner data
-    let matchHistory = summonerData?.match_details?.json?.filter((match) => {
+    let matchHistory = summonerData?.match_history?.filter((match) => {
         if(queueType === ""){
             return match
-        } else if(String(match?.info?.queueId) === String(queueType)){
+        } else if(String(match?.queueId) === String(queueType)){
             return match
         }
     })
@@ -159,6 +184,8 @@ const SummonerDetail = () => {
     function formatRank(summonerOverview){
         const capitalizedFirstLetter = summonerOverview?.tier?.charAt(0)?.toUpperCase()
         const remainingLetters = summonerOverview?.tier?.slice(1).toLowerCase()
+        console.log(1, capitalizedFirstLetter)
+        console.log(2, remainingLetters)
         return capitalizedFirstLetter + remainingLetters
 
     }
@@ -174,7 +201,7 @@ const SummonerDetail = () => {
             <h2>Ranked Solo Queue:</h2>
             {/* <img width="100" height="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank=${summonerOverview?.tier?.toLowerCase()}.png`} />  */}
             <img width="100" height="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank=${formatRank(summonerOverview)}.png`} /> 
-            <plaintext>{summonerOverview?.tier} {summonerOverview?.rank}</plaintext>
+            <plaintext>{summonerOverview?.tier} {summonerOverview?.rank} {summonerOverview?.leaguePoints} LP</plaintext>
             <plaintext>Wins: {summonerOverview?.wins} Losses:{summonerOverview?.losses}</plaintext>
             <plaintext>Win Rate {Math.round(summonerOverview?.wins/(summonerOverview?.wins + summonerOverview?.losses)*100)}%</plaintext>
             {/* <plaintext>Last Updated {formatLastUpdateTime(summonerOverview)}</plaintext> */}

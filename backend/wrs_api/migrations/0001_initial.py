@@ -314,6 +314,7 @@ class Migration(migrations.Migration):
                 CREATE TABLE wrs_api_summoner_br1 PARTITION OF wrs_api_summoner FOR VALUES IN ('br1');
 
                 --- DO NOT NEED FOR PUUID: CREATE INDEX "wrs_api_summoner_puuid_ec1c8f0f_like" ON "wrs_api_summoner" ("puuid" varchar_pattern_ops);
+                CREATE INDEX idx_lower_gamename_tagline ON wrs_api_summoner (LOWER("gameName"), LOWER("tagLine"));
                 CREATE INDEX "wrs_api_summoner_puuid_ec1c8f0f" ON "wrs_api_summoner" ("puuid");
                 CREATE INDEX "wrs_api_summoner_platform_39a7e8f3" ON "wrs_api_summoner" ("platform");
                 --- CREATE INDEX "wrs_api_summoner_platform_39a7e8f3_like" ON "wrs_api_summoner" ("platform" varchar_pattern_ops);

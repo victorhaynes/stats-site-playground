@@ -118,7 +118,7 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
         return (
             <div>
                 <h3>Blue Team:</h3>
-                    {blueSide.map((participant, index)=>{
+                    {blueSide?.map((participant, index)=>{
                         return (
                             <div key={index}>
                                 {renderChampionIcon(participant, "25", "25")}
@@ -128,7 +128,7 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
                         )
                     })}
                 <h3>Red Team:</h3>
-                    {redSide.map((participant, index)=>{
+                    {redSide?.map((participant, index)=>{
                         return (
                             <div key={index}>
                                 {renderChampionIcon(participant, "25", "25")}
@@ -195,7 +195,7 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
 
     function renderMatchHistory(){
         return matchHistory?.map((match, index)=>{
-            let individualStats = match?.info?.participants?.filter((player) => {
+            let individualStats = match?.metadata?.info?.participants?.filter((player) => {
                 // return player.riotIdGameName?.toLowerCase() === (params.gameName).toLowerCase() && player.riotIdTagline?.toLowerCase() === params.tagLine.toLowerCase()
                 return player?.puuid === summonerData?.puuid && summonerData?.puuid
             })[0]

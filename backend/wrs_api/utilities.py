@@ -165,19 +165,19 @@ def calculate_average_elo(elos: list, queue: int):
 
 
 
-def get_summoner_matches(summoner: Summoner, count: int):
-    sql =   """
-                SELECT wrs_api_summonermatch."matchId", wrs_api_match.metadata
-                FROM wrs_api_summonermatch 
-                JOIN wrs_api_match ON wrs_api_summonermatch."matchId" = wrs_api_match."matchId"
-                WHERE wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
-                ORDER BY wrs_api_summonermatch."matchId" DESC
-                LIMIT %s;
-            """
-    with connection.cursor() as cursor:
-        cursor.execute(sql,[summoner.puuid, summoner.platform.code, count])
-        results = dictfetchall(cursor)
-        return format_match_strings_as_json(results)
+# def get_summoner_matches(summoner: Summoner, count: int):
+#     sql =   """
+#                 SELECT wrs_api_summonermatch."matchId", wrs_api_match.metadata
+#                 FROM wrs_api_summonermatch 
+#                 JOIN wrs_api_match ON wrs_api_summonermatch."matchId" = wrs_api_match."matchId"
+#                 WHERE wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
+#                 ORDER BY wrs_api_summonermatch."matchId" DESC
+#                 LIMIT %s;
+#             """
+#     with connection.cursor() as cursor:
+#         cursor.execute(sql,[summoner.puuid, summoner.platform.code, count])
+#         results = dictfetchall(cursor)
+#         return format_match_strings_as_json(results)
 
 
 def refresh_overview():

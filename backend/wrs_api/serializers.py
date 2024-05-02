@@ -50,10 +50,10 @@ class SummonerCustomSerializer(serializers.ModelSerializer):
                     JOIN wrs_api_match ON wrs_api_summonermatch."matchId" = wrs_api_match."matchId"
                     WHERE wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
                     ORDER BY wrs_api_summonermatch."matchId" DESC
-                    LIMIT 10;
+                    LIMIT %s;
                 """
         with connection.cursor() as cursor:
-            cursor.execute(sql,[instance.puuid, instance.platform.code])
+            cursor.execute(sql,[instance.puuid, instance.platform.code, self.context.get('limit')])
             results = dictfetchall(cursor)
         return format_match_strings_as_json(results)
 
