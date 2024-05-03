@@ -12,18 +12,61 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
 
 
 
-    function renderItemIcons(individualStats){
-      return (
-          <>
-              <img width="40" height="40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item0}.png`} /><img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item1}.png`}/><img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item2}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item3}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item4}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item5}.png`} /> <img width= "40" height = "40" alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item6}.png`} /> 
-          </>
-          )
-    }
-
-    function renderParticipantItemIcons(individualStats, width="20", height="20"){
+    function renderItemIcons(individualStats, width="40", height="40"){
+        const items = [0, 0, 0, 0, 0, 0, 0]; // There are always items 0-5 + 6 for ward slot
+        let nonZeroCount = 0;
+        for (let i = 0; i <= 6; i++) {
+            const key = 'item' + i;
+            const value = individualStats[key];
+            if (value !== undefined && value !== 0) {
+                if (i === 6) {
+                    items[6] = value;
+                } else {
+                    items[nonZeroCount++] = value;
+                }
+            }
+        }
         return (
             <>
-                <img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item0}.png`} /><img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item1}.png`}/><img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item2}.png`} /> <img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item3}.png`} /> <img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item4}.png`} /> <img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item5}.png`} /> <img width={width} height={height} alt="item icon" src={process.env.PUBLIC_URL + `/assets/item_icons/${individualStats?.item6}.png`} /> 
+                {items.map((item, index) => (
+                    <img
+                        key={index}
+                        width="40"
+                        height="40"
+                        alt="item icon"
+                        src={process.env.PUBLIC_URL + `/assets/item_icons/${item}.png`}
+                    />
+                ))}
+            </>
+            )
+    }
+
+
+    function renderParticipantItemIcons(individualStats, width="25", height="25"){
+        const items = [0, 0, 0, 0, 0, 0, 0]; // There are always items 0-5 + 6 for ward slot
+        let nonZeroCount = 0;
+        for (let i = 0; i <= 6; i++) {
+            const key = 'item' + i;
+            const value = individualStats[key];
+            if (value !== undefined && value !== 0) {
+                if (i === 6) {
+                    items[6] = value;
+                } else {
+                    items[nonZeroCount++] = value;
+                }
+            }
+        }
+        return (
+            <>
+                {items.map((item, index) => (
+                    <img
+                        key={index}
+                        width="25"
+                        height="25"
+                        alt="item icon"
+                        src={process.env.PUBLIC_URL + `/assets/item_icons/${item}.png`}
+                    />
+                ))}
             </>
             )
     }
@@ -55,7 +98,8 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
     }
 
 
-    function calculateCsAndGold(individualStats, match){
+    function calculateCsAndGold(individualStats, matchRecord){
+        let match = matchRecord?.metadata
         let totalCs = individualStats?.neutralMinionsKilled + individualStats?.totalMinionsKilled
         let gameLengthMinutes = match?.info?.gameDuration / 60
         let csPerMin = totalCs / gameLengthMinutes
@@ -68,7 +112,21 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
         )
     }
 
-    function calculateGameTimes(match){
+    function calculateParticipantCsAndGold(individualStats, match){
+        let totalCs = individualStats?.neutralMinionsKilled + individualStats?.totalMinionsKilled
+        let gameLengthMinutes = match?.info?.gameDuration / 60
+        let csPerMin = totalCs / gameLengthMinutes
+
+        return (
+            <>
+                <plaintext>CS: {totalCs} ({csPerMin.toFixed(1)})</plaintext>
+                <plaintext>Gold: {individualStats?.goldEarned} ({individualStats?.challenges?.goldPerMinute.toFixed(1)})</plaintext>
+            </>
+        )
+    }
+
+    function calculateGameTimes(matchRecord){
+        let match = matchRecord?.metadata
         let gameEndTime = match?.info?.gameEndTimestamp
         let now = Date.now()
         let unixTimeHoursAgo = (now - gameEndTime) / 1000 / 60 / 60
@@ -103,42 +161,77 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
         )
     }
 
-    function renderParticipantNamesChampions(match){
-        let blueSide = match?.info?.participants?.filter((participant) => {
-            return parseInt(participant.teamId) === 100
-        })
-        let redSide = match?.info?.participants?.filter((participant) => {
-            return parseInt(participant.teamId) === 200
-        })
+    function renderParticipantNamesChampions(matchRecord){
+        let match = matchRecord?.metadata
 
+        // let blueSide = match?.info?.participants?.filter((participant) => {
+        //     return parseInt(participant.teamId) === 100
+        // })
+        // let redSide = match?.info?.participants?.filter((participant) => {
+        //     return parseInt(participant.teamId) === 200
+        // })
 
+        let blueSide = []
+        let redSide = []
+        let topFourArenaTeams = []
+
+        if (match?.info?.queueId != 1700){
+            blueSide = match?.info?.participants?.filter((participant) => {
+                return parseInt(participant.teamId) === 100
+            })
+            redSide = match?.info?.participants?.filter((participant) => {
+                return parseInt(participant.teamId) === 200
+            })
+        } else if (match?.info?.queueId === 1700){
+            topFourArenaTeams = match?.info?.participants?.filter((participant) => {
+                return (parseInt(participant?.placement) <= 4)
+            })
+            topFourArenaTeams.sort((a, b) => a.placement - b.placement);
+        }
         // STYLE THIS AND MAKE BOLD EVENTUALLY
         // STYLE THIS AND MAKE BOLD EVENTUALLY
         // STYLE THIS AND MAKE BOLD EVENTUALLY
-        return (
-            <div>
-                <h3>Blue Team:</h3>
-                    {blueSide?.map((participant, index)=>{
-                        return (
-                            <div key={index}>
-                                {renderChampionIcon(participant, "25", "25")}
-                                {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
-                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
-                            </div>
-                        )
-                    })}
-                <h3>Red Team:</h3>
-                    {redSide?.map((participant, index)=>{
-                        return (
-                            <div key={index}>
-                                {renderChampionIcon(participant, "25", "25")}
-                                {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
-                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
-                            </div>
-                        )
-                    })}
-            </div>
-        )
+        if (match?.info?.queueId != 1700){
+            return (
+                <div>
+                    <h3>Blue Team:</h3>
+                        {blueSide?.map((participant, index)=>{
+                            return (
+                                <div key={index}>
+                                    {renderChampionIcon(participant, "25", "25")}
+                                    {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
+                                    <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
+                                </div>
+                            )
+                        })}
+                    <h3>Red Team:</h3>
+                        {redSide?.map((participant, index)=>{
+                            return (
+                                <div key={index}>
+                                    {renderChampionIcon(participant, "25", "25")}
+                                    {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
+                                    <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
+                                </div>
+                            )
+                        })}
+                </div>
+            )
+        } else if (match?.info?.queueId == 1700) {
+            return (
+                <div>
+                    <h3>Top Four Teams:</h3> 
+                        {topFourArenaTeams.map((participant, index)=>{
+                            return (
+                                <div key={index}>
+                                    {renderChampionIcon(participant, "25", "25")}
+                                    {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
+                                    <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
+                                </div>
+                            )
+                        })}
+                </div>
+            )
+        }
     }    
 
 
@@ -150,7 +243,8 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
     }
 
 
-    function renderGameModeRole(match, individualStats){
+    function renderGameModeRole(matchRecord, individualStats){
+        let match = matchRecord?.metadata
         let gameType = ""
         if (parseInt(match?.info?.queueId) === 420){
             gameType = "Solo Ranked"
@@ -194,8 +288,9 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
     }
 
     function renderMatchHistory(){
-        return matchHistory?.map((match, index)=>{
-            let individualStats = match?.metadata?.info?.participants?.filter((player) => {
+        return matchHistory?.map((matchRecord, index)=>{
+            // let match = matchRecord?.metadata
+            let individualStats = matchRecord?.metadata?.info?.participants?.filter((player) => {
                 // return player.riotIdGameName?.toLowerCase() === (params.gameName).toLowerCase() && player.riotIdTagline?.toLowerCase() === params.tagLine.toLowerCase()
                 return player?.puuid === summonerData?.puuid && summonerData?.puuid
             })[0]
@@ -203,11 +298,11 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
                     <div key={index}>
                         <h1>------------------------------</h1>
                         <h3>{individualStats?.championName} {`[${individualStats?.champLevel}]`}</h3>
-                        {renderGameModeRole(match, individualStats)}
+                        {renderGameModeRole(matchRecord, individualStats)}
                         <plaintext>{renderHighestStreak(individualStats)}</plaintext>
                         {calculateKda(individualStats)}
-                        {calculateCsAndGold(individualStats, match)}
-                        {calculateGameTimes(match)}
+                        {calculateCsAndGold(individualStats, matchRecord)}
+                        {calculateGameTimes(matchRecord)}
                         {renderChampionIcon(individualStats)}
                         {renderSummonerSpells(individualStats)}
                         <div>
@@ -219,8 +314,8 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
                         <plaintext>Vision Score: {individualStats?.visionScore}</plaintext>
                         <plaintext>Control Wards Placed: {individualStats?.challenges?.controlWardsPlaced}</plaintext>
                         <plaintext>{individualStats?.wardsPlaced} / {individualStats?.wardsKilled}</plaintext>
-                        {renderParticipantNamesChampions(match)}
-                        <MatchDetails key={match?.metadata?.matchId} match={match} renderChampionIcon={renderChampionIcon} navAndSearchParticipant={navAndSearchParticipant} renderParticipantItemIcons={renderParticipantItemIcons} calculateKda={calculateKda} calculateCsAndGold={calculateCsAndGold}/>
+                        {renderParticipantNamesChampions(matchRecord)}
+                        <MatchDetails key={matchRecord?.metadata?.matchId} matchRecord={matchRecord} renderChampionIcon={renderChampionIcon} navAndSearchParticipant={navAndSearchParticipant} renderParticipantItemIcons={renderParticipantItemIcons} calculateKda={calculateKda}/>
                         <br></br>
                     </div>
             )

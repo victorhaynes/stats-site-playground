@@ -2,57 +2,114 @@ import React from 'react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-const MatchDetails = ({match, renderChampionIcon, navAndSearchParticipant, renderParticipantItemIcons, calculateKda, calculateCsAndGold}) => {
-
+const MatchDetails = ({matchRecord, renderChampionIcon, navAndSearchParticipant, renderParticipantItemIcons, calculateKda}) => {
+// # rename to match record
     const [showDetails, setShowDetails] = useState(false)
     const params = useParams()
+    const match = matchRecord?.metadata
 
-     function displayMatchDetails(){
+    function displayMatchDetails(){
       setShowDetails((previousState)=>!previousState)
-     }
+    }
 
-     function renderParticipantsDetail(match){
-        let blueSide = match?.info?.participants?.filter((participant) => {
-            return parseInt(participant.teamId) === 100
-        })
-        let redSide = match?.info?.participants?.filter((participant) => {
-            return parseInt(participant.teamId) === 200
-        })
+
+    function calculateParticipantCsAndGold(individualStats, match){
+        let totalCs = individualStats?.neutralMinionsKilled + individualStats?.totalMinionsKilled
+        let gameLengthMinutes = match?.info?.gameDuration / 60
+        let csPerMin = totalCs / gameLengthMinutes
 
         return (
-            <div>
-                <h3>Blue Team:</h3>
-                    {blueSide.map((participant, index)=>{
-                        return (
-                            <div key={index}>
-                                {renderChampionIcon(participant, "25", "25")}
-                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
-                                <>{renderParticipantItemIcons(participant)}</>
-                                {calculateKda(participant)}
-                                {calculateCsAndGold(participant, match)}
-                                <plaintext>Damage: {participant?.totalDamageDealtToChampions}</plaintext>
-                                <plaintext>Damage Taken: {participant?.totalDamageTaken}</plaintext>
-                                <plaintext>Control Wards Placed: {participant?.challenges?.controlWardsPlaced}</plaintext>
-                                <plaintext>{participant?.wardsPlaced} / {participant?.wardsKilled}</plaintext>
-                            </div>
-                        )
-                    })}
-                <h3>Red Team:</h3>
-                    {redSide.map((participant, index)=>{
-                        return (
-                            <div key={index}>
-                                {renderChampionIcon(participant, "25", "25")}
-                                <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
-                                <>{renderParticipantItemIcons(participant)}</>
-                                <plaintext>Damage: {participant?.totalDamageDealtToChampions}</plaintext>
-                                <plaintext>Damage Taken: {participant?.totalDamageTaken}</plaintext>
-                                <plaintext>Control Wards Placed: {participant?.challenges?.controlWardsPlaced}</plaintext>
-                                <plaintext>{participant?.wardsPlaced} / {participant?.wardsKilled}</plaintext>
-                            </div>
-                        )
-                    })}
-            </div>
+            <>
+                <plaintext>CS: {totalCs} ({csPerMin.toFixed(1)})</plaintext>
+                <plaintext>Gold: {individualStats?.goldEarned} ({individualStats?.challenges?.goldPerMinute.toFixed(1)})</plaintext>
+            </>
         )
+    }
+
+    function renderParticipantsDetail(match){
+        let blueSide = []
+        let redSide = []
+        let topFourArenaTeams = []
+
+        if (match?.info?.queueId != 1700){
+            blueSide = match?.info?.participants?.filter((participant) => {
+                return parseInt(participant.teamId) === 100
+            })
+            redSide = match?.info?.participants?.filter((participant) => {
+                return parseInt(participant.teamId) === 200
+            })
+        } else if (match?.info?.queueId === 1700){
+            topFourArenaTeams = match?.info?.participants?.filter((participant) => {
+                return (parseInt(participant?.placement) <= 4)
+            })
+            topFourArenaTeams.sort((a, b) => a.placement - b.placement);
+        }
+
+
+    
+        if (match?.info?.queueId != 1700){
+            return (
+                <div>
+                    <h3>Blue Team:</h3>
+                        {blueSide.map((participant, index)=>{
+                            return (
+                                <div key={index}>
+                                    {renderChampionIcon(participant, "25", "25")}
+                                    <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
+                                    <>{renderParticipantItemIcons(participant)}</>
+                                    {calculateKda(participant)}
+                                    {calculateParticipantCsAndGold(participant, match)}
+                                    <plaintext>Damage: {participant?.totalDamageDealtToChampions}</plaintext>
+                                    <plaintext>Damage Taken: {participant?.totalDamageTaken}</plaintext>
+                                    <plaintext>Control Wards Placed: {participant?.challenges?.controlWardsPlaced}</plaintext>
+                                    <plaintext>{participant?.wardsPlaced} / {participant?.wardsKilled}</plaintext>
+                                </div>
+                            )
+                        })}
+                    <h3>Red Team:</h3>
+                        {redSide.map((participant, index)=>{
+                            return (
+                                <div key={index}>
+                                    {renderChampionIcon(participant, "25", "25")}
+                                    <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
+                                    <>{renderParticipantItemIcons(participant)}</>
+                                    {calculateKda(participant)}
+                                    {calculateParticipantCsAndGold(participant, match)}
+                                    <plaintext>Damage: {participant?.totalDamageDealtToChampions}</plaintext>
+                                    <plaintext>Damage Taken: {participant?.totalDamageTaken}</plaintext>
+                                    <plaintext>Control Wards Placed: {participant?.challenges?.controlWardsPlaced}</plaintext>
+                                    <plaintext>{participant?.wardsPlaced} / {participant?.wardsKilled}</plaintext>
+                                </div>
+                            )
+                        })}
+                </div>
+            )
+            /// THIS SHOULD BE ALL TEAMS REALLY, NOT JUST THE TOP 4 // FIX THIS!!!!!!!!!!
+        } else if (match?.info?.queueId == 1700) {
+            return (
+                <div>
+                    <h3>Arena Teams:</h3> 
+                        {topFourArenaTeams.map((participant, index)=>{
+                            return (
+                                <div key={index}>
+                                    {renderChampionIcon(participant, "25", "25")}
+                                    <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
+                                    <>{renderParticipantItemIcons(participant)}</>
+                                    {calculateKda(participant)}
+                                    {calculateParticipantCsAndGold(participant, match)}
+                                    <plaintext>Damage: {participant?.totalDamageDealtToChampions}</plaintext>
+                                    <plaintext>Damage Taken: {participant?.totalDamageTaken}</plaintext>
+                                    <plaintext>Control Wards Placed: {participant?.challenges?.controlWardsPlaced}</plaintext>
+                                    <plaintext>{participant?.wardsPlaced} / {participant?.wardsKilled}</plaintext>
+                                </div>
+                            )
+                        })}
+                </div>
+            )
+        } else {
+            return <></>
+        }
+
     }
 
   return (
