@@ -39,21 +39,22 @@ season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
 
 
 ######################################################################################
-# Helper Function to check database for existing summoner data before hitting Riot API
+# Helper Function to check database for existing summoner data before hitting Riot API # special text index on gamename and tagline?
 ######################################################################################
 @api_view(['GET'])
 def get_summoner(request):
 
     if request.query_params.get('update') == 'false' or not request.query_params.get('update'):
-        try: # Check 
-
+        try: 
             summoner = Summoner.objects.get(gameName__iexact=request.query_params.get('gameName'), tagLine__iexact=request.query_params.get('tagLine'), platform=request.query_params.get('platform'))
-
-            if request.query_params.get('limit'):
-                serialized_summoner = SummonerCustomSerializer(instance=summoner, context={'limit': request.query_params.get('limit')})
+            if request.query_params.get('queueId') or request.query_params.get('limit'):
+                serialized_summoner = SummonerCustomSerializer(instance=summoner, context={'queueId': request.query_params.get('queueId'), 'limit': request.query_params.get('limit')})
+            # if request.query_params.get('limit'):
+            #     serialized_summoner = SummonerCustomSerializer(instance=summoner, context={'limit': request.query_params.get('limit')})
             else:
-                serialized_summoner = SummonerCustomSerializer(instance=summoner, context={'limit': 15})
+                serialized_summoner = SummonerCustomSerializer(instance=summoner)
             return JsonResponse(serialized_summoner.data, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION, safe=False)
+        
         except Summoner.DoesNotExist as e:
             pass # Continue and get details from Riot API
         except Exception as e:

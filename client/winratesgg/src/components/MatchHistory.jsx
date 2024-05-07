@@ -175,14 +175,14 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
         let redSide = []
         let topFourArenaTeams = []
 
-        if (match?.info?.queueId != 1700){
+        if (match?.info?.queueId != 1700){ // If NOT Arena Game Mode, split teams by red & blue
             blueSide = match?.info?.participants?.filter((participant) => {
                 return parseInt(participant.teamId) === 100
             })
             redSide = match?.info?.participants?.filter((participant) => {
                 return parseInt(participant.teamId) === 200
             })
-        } else if (match?.info?.queueId === 1700){
+        } else if (match?.info?.queueId === 1700){ // If Arena Game Mode, isolate top 4 teams
             topFourArenaTeams = match?.info?.participants?.filter((participant) => {
                 return (parseInt(participant?.placement) <= 4)
             })
@@ -223,6 +223,7 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
                         {topFourArenaTeams.map((participant, index)=>{
                             return (
                                 <div key={index}>
+                                    <plaintext>{participant?.placement}</plaintext>
                                     {renderChampionIcon(participant, "25", "25")}
                                     {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
                                     <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}

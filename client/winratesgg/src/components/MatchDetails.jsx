@@ -29,9 +29,9 @@ const MatchDetails = ({matchRecord, renderChampionIcon, navAndSearchParticipant,
     function renderParticipantsDetail(match){
         let blueSide = []
         let redSide = []
-        let topFourArenaTeams = []
+        let arenaTeams = []
 
-        if (match?.info?.queueId != 1700){
+        if (match?.info?.queueId !== 1700){
             blueSide = match?.info?.participants?.filter((participant) => {
                 return parseInt(participant.teamId) === 100
             })
@@ -39,15 +39,13 @@ const MatchDetails = ({matchRecord, renderChampionIcon, navAndSearchParticipant,
                 return parseInt(participant.teamId) === 200
             })
         } else if (match?.info?.queueId === 1700){
-            topFourArenaTeams = match?.info?.participants?.filter((participant) => {
-                return (parseInt(participant?.placement) <= 4)
-            })
-            topFourArenaTeams.sort((a, b) => a.placement - b.placement);
+            arenaTeams = match?.info?.participants
+            arenaTeams.sort((a, b) => a.placement - b.placement);
         }
 
 
     
-        if (match?.info?.queueId != 1700){
+        if (match?.info?.queueId !== 1700){
             return (
                 <div>
                     <h3>Blue Team:</h3>
@@ -85,13 +83,14 @@ const MatchDetails = ({matchRecord, renderChampionIcon, navAndSearchParticipant,
                 </div>
             )
             /// THIS SHOULD BE ALL TEAMS REALLY, NOT JUST THE TOP 4 // FIX THIS!!!!!!!!!!
-        } else if (match?.info?.queueId == 1700) {
+        } else if (match?.info?.queueId === 1700) {
             return (
                 <div>
                     <h3>Arena Teams:</h3> 
-                        {topFourArenaTeams.map((participant, index)=>{
+                        {arenaTeams.map((participant, index)=>{
                             return (
                                 <div key={index}>
+                                    <plaintext>{participant?.placement}</plaintext>
                                     {renderChampionIcon(participant, "25", "25")}
                                     <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>
                                     <>{renderParticipantItemIcons(participant)}</>

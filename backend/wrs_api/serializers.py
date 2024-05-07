@@ -43,19 +43,42 @@ class SummonerCustomSerializer(serializers.ModelSerializer):
             results = dictfetchall(cursor)
         return format_overview_strings_as_json(results)
 
+
     def get_related_matches(self, instance):
-        sql =   """
-                    SELECT wrs_api_summonermatch."matchId",  wrs_api_match.metadata, wrs_api_match."queueId"
-                    FROM wrs_api_summonermatch 
-                    JOIN wrs_api_match ON wrs_api_summonermatch."matchId" = wrs_api_match."matchId"
-                    WHERE wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
-                    ORDER BY wrs_api_summonermatch."matchId" DESC
-                    LIMIT %s;
-                """
-        with connection.cursor() as cursor:
-            cursor.execute(sql,[instance.puuid, instance.platform.code, self.context.get('limit')])
-            results = dictfetchall(cursor)
-        return format_match_strings_as_json(results)
+        limit = 3
+        if self.context.get("limit") and int(self.context.get("limit")) > limit:
+            limit = self.context.get("limit")
+
+        # Query is not queue-specific get all matches up to a limit 
+        if not self.context.get('queueId'):
+            sql =   """
+                        SELECT wrs_api_summonermatch."matchId",  wrs_api_match.metadata, wrs_api_match."queueId"
+                        FROM wrs_api_summonermatch 
+                        JOIN wrs_api_match ON wrs_api_summonermatch."matchId" = wrs_api_match."matchId"
+                        WHERE wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
+                        ORDER BY wrs_api_summonermatch."matchId" DESC
+                        LIMIT %s;
+                    """
+            with connection.cursor() as cursor:
+                cursor.execute(sql, [instance.puuid, instance.platform.code, limit])
+                results = dictfetchall(cursor)
+            return format_match_strings_as_json(results)
+
+        # If query is queue-specific get all matches of a certain type up to a limit 
+        elif self.context.get('queueId'):
+            sql =   """
+                        SELECT wrs_api_summonermatch."matchId",  wrs_api_match.metadata, wrs_api_match."queueId"
+                        FROM wrs_api_summonermatch 
+                        JOIN wrs_api_match ON wrs_api_summonermatch."matchId" = wrs_api_match."matchId"
+                        WHERE wrs_api_summonermatch."queueId" = %s AND wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
+                        ORDER BY wrs_api_summonermatch."matchId" DESC
+                        LIMIT %s;
+                    """
+            with connection.cursor() as cursor:
+                cursor.execute(sql, [int(self.context.get("queueId")), instance.puuid, instance.platform.code, limit])
+                results = dictfetchall(cursor)
+            return format_match_strings_as_json(results)
+
 
     class Meta:
         model = Summoner

@@ -10,6 +10,7 @@ const SummonerDetail = () => {
 
     const [summonerData, setSummonerData] = useState({})
     const [queueType, setQueueType] = useState("")
+    const [queueSpecificGameCount, setQueueSpecificGameCount] = useState(0)
     const location = useLocation()
     const numberOfMatchesToAdd = 2
 
@@ -21,16 +22,20 @@ const SummonerDetail = () => {
 
 
     // Get summoner data from db cache, including match details nested as json
-    async function getSummonerData(limit=null, update=false){
+    async function getSummonerData(queryLimit=null, update=false, specificQueue=false){
         let url = `http://127.0.0.1:8000/summoner/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}`
         
-        url += limit ? `&limit=${limit}` : '';
-        url += update ? `&update=${update}` : '';
+        url += queryLimit ? `&limit=${queryLimit}` : ''
+        url += update ? `&update=${update}` : ''
+        url += specificQueue ? `&queueId=${specificQueue}` : ''
 
         try {
             let response = await axios.get(url)
             console.log(response.data)
             setSummonerData(response.data)
+            if (specificQueue){
+                setQueueSpecificGameCount(response.data.match_history.length)  
+            }
         } catch (error) {
             console.log({[error.response.request.status]: error.response.data})
         }
@@ -91,63 +96,69 @@ const SummonerDetail = () => {
 
     // Get latest date for the summoner being viewed /w update button
     function forceUpdatePage(){
-        getSummonerData(true)
+        getSummonerData(null, true)
     }
-
+ ///// STOP HERE FOR TODAY. MAKE SURE TO COMMUNICATE BETWEEN CLIENT AND API THE CURRENT NUMBER OF GAMES FOR A SPECIFIC QUEUE, IF
+ ///// THERE ARE CURRENTLY 2 GAMES AND WE REQUEST 7 BUT < 7 ARE RETURNED DO NOT SHOW BUTTON
+ ///// ALSO MAKE SURE THIS WORKS WHEN SWITCHING BETWEEN QUEUES
+ ///// TEST NAV'ING, MAKE LEADER BOARDS, STYLE, MVP
+    function updateQueueType(queueId){
+        setQueueType(queueId)
+        setQueueSpecificGameCount(() => {
+            // Filter the match history based on queueType
+            const filteredMatchHistory = summonerData?.match_history?.filter((match) => {
+                if (queueId === "") {
+                    return true; // Keep all matches if queueType is empty
+                } else {
+                    console.log("here1", match?.queueId)
+                    console.log("here1", queueType)
+                    return String(match?.queueId) === String(queueId);
+                }
+            });
+        
+            // Return a new object with updated match_history
+            return filteredMatchHistory?.length
+        });
+    }
 
     // Calculate and display time since last update
-    function formatLastUpdateTime(summonerOverview){
-        let lastUpdatedText = "time unknown"
-        try {
-            let lastUpdated = summonerOverview?.overviews[0]?.updated_at
-            console.log(lastUpdated)
-            let yearUpdated = lastUpdated.split("-")[0]
-            let monthUpdated = lastUpdated.split("-")[1]
-            let dayUpdated = lastUpdated.split("-")[2].split("T")[0]
-            let hoursMinsSeconds = lastUpdated.split("T")[1].split(":")
-            let hoursUpdated = hoursMinsSeconds[0]
-            let minutesUpdated = hoursMinsSeconds[1]
-            let secondsUpdated = hoursMinsSeconds[2].split(".")[0]
+    function formatLastUpdateTime(timestamp){
+        const currentTime = new Date();
+        const targetTime = new Date(timestamp);
+        if (!timestamp || (isNaN(targetTime.getTime()))) return ': Unknown.';
 
-            let now = new Date();
-            let currentDay = String(now.getDate()).padStart(2, '0');
-            let currentMonth = String(now.getMonth() + 1).padStart(2, '0'); //January is 0!
-            let currentYear = now.getFullYear();
-            let currentHours = now.getHours();
-            let currentMinutes = now.getMinutes();
-            let currentSeconds = now.getSeconds();
-
-            let elapsedYears = currentYear - yearUpdated
-            let elapsedMonths = currentMonth - monthUpdated
-            let elapsedDays = currentDay - dayUpdated
-            let elapsedHours = currentHours - hoursUpdated
-            let elapsedMinutes = currentMinutes - minutesUpdated
-            let elapsedSeconds = currentSeconds - secondsUpdated
-
-            if (elapsedYears){
-                lastUpdatedText = `${elapsedYears} year(s) ago`
-            } else if (elapsedMonths){
-                lastUpdatedText = `${elapsedMonths} months(s) ago`
-            } else if (parseInt(elapsedDays)*24 + elapsedHours >= 24) {
-                lastUpdatedText = `${elapsedDays} days(s) ago`
-            } else if (parseInt(elapsedHours)*60 + elapsedMinutes >= 60){
-                lastUpdatedText = `${elapsedHours} hours(s) ago`
-                console.log("ONE")
-            } else if (parseInt(elapsedMinutes)*60 + elapsedSeconds >= 60){
-            lastUpdatedText = `${elapsedMinutes} minutes(s) ago`
-            } else if (elapsedSeconds > 0){
-                lastUpdatedText = `${elapsedSeconds} seconds(s) ago`
-            } else if (parseInt(elapsedSeconds) === 0){
-                console.log(lastUpdatedText)
-                lastUpdatedText = 'just now'
-                console.log(lastUpdatedText)
-            }
-
-        } catch (error){
-            return lastUpdatedText
+        const difference = currentTime - targetTime;
+    
+        // Convert milliseconds to seconds
+        const seconds = Math.floor(difference / 1000);
+    
+        // Define time units in seconds
+        const minute = 60;
+        const hour = minute * 60;
+        const day = hour * 24;
+        const month = day * 30; // Approximate
+        const year = day * 365; // Approximate
+    
+        if (seconds < minute) {
+            return `A Moment Ago`;
+        } else if (seconds < hour) {
+        const minutes = Math.floor(seconds / minute);
+            return `${minutes} Minute${minutes !== 1 ? 's' : ''} ago`;
+        } else if (seconds < day) {
+        const hours = Math.floor(seconds / hour);
+            return `${hours} Hour${hours !== 1 ? 's' : ''} ago`;
+        } else if (seconds < month) {
+        const days = Math.floor(seconds / day);
+            return `${days} Day${days !== 1 ? 's' : ''} ago`;
+        } else if (seconds < year) {
+        const months = Math.floor(seconds / month);
+            return `${months} Month${months !== 1 ? 's' : ''} ago`;
+        } else {
+        const years = Math.floor(seconds / year);
+            return `${years} Year${years !== 1 ? 's' : ''} ago`;
         }
-        return lastUpdatedText
-    }
+  }
+
 
     // Isolate the summoner overview from summoner data, handle index error if nothing is there
     let summonerOverview = {}
@@ -155,15 +166,6 @@ const SummonerDetail = () => {
         summonerOverview = summonerData?.overviews[0]?.metadata
         } catch (error){
         summonerOverview = {}
-    }
-    console.log("OVERVIEW:", summonerOverview)
-
-    // Isolate the updated_at field from summoner data.summoner overview, handle index error if nothing is there
-    let lastUpdated = ""
-    try {
-        lastUpdated = summonerData?.overviews[0]?.updated_at
-    } catch (error){
-        lastUpdated = "Unknown"
     }
 
     // Isolate match history from summoner data
@@ -178,24 +180,21 @@ const SummonerDetail = () => {
     // When clicking on "All Queues" filter undo filtering and re-run fetch match details
     function undoFilterAndGetRecentMatchDetails(){
         setQueueType("")
-        getMoreMatchDetails(false)
+        getSummonerData(false)
     }
 
     function formatRank(summonerOverview){
         const capitalizedFirstLetter = summonerOverview?.tier?.charAt(0)?.toUpperCase()
         const remainingLetters = summonerOverview?.tier?.slice(1).toLowerCase()
-        console.log(1, capitalizedFirstLetter)
-        console.log(2, remainingLetters)
         return capitalizedFirstLetter + remainingLetters
-
     }
 
 
     return (
         <>
-            <button onClick={()=>undoFilterAndGetRecentMatchDetails()}>All</button><button onClick={()=>setQueueType(450)}>ARAM</button>
-            <button onClick={()=>setQueueType(420)}>Ranked Solo/Duo</button><button onClick={()=>setQueueType(400)}>Normal</button><button onClick={()=>setQueueType(490)}>Quick Play</button><button onClick={()=>setQueueType(440)}>Flex</button>
-            <button onClick={()=>setQueueType(700)}>Clash</button><button onClick={()=>setQueueType(1300)}>Nexus Blitz</button><button onClick={()=>setQueueType(1700)}>Arena</button>
+            <button onClick={()=>undoFilterAndGetRecentMatchDetails()}>All</button><button onClick={()=>updateQueueType(450)}>ARAM</button>
+            <button onClick={()=>updateQueueType(420)}>Ranked Solo/Duo</button><button onClick={()=>updateQueueType(400)}>Normal</button><button onClick={()=>updateQueueType(490)}>Quick Play</button><button onClick={()=>updateQueueType(440)}>Flex</button>
+            <button onClick={()=>updateQueueType(700)}>Clash</button><button onClick={()=>updateQueueType(1300)}>Nexus Blitz</button><button onClick={()=>updateQueueType(1700)}>Arena</button>
             <h1>{params.gameName} #{params.tagLine}</h1>
             <img width="75" height="75" alt="profile icon" src={process.env.PUBLIC_URL + `/assets/profile_icons/${summonerData?.profileIconId}.png`} /> 
             <h2>Ranked Solo Queue:</h2>
@@ -204,12 +203,19 @@ const SummonerDetail = () => {
             <plaintext>{summonerOverview?.tier} {summonerOverview?.rank} {summonerOverview?.leaguePoints} LP</plaintext>
             <plaintext>Wins: {summonerOverview?.wins} Losses:{summonerOverview?.losses}</plaintext>
             <plaintext>Win Rate {Math.round(summonerOverview?.wins/(summonerOverview?.wins + summonerOverview?.losses)*100)}%</plaintext>
-            {/* <plaintext>Last Updated {formatLastUpdateTime(summonerOverview)}</plaintext> */}
-            <plaintext>Last Updated {lastUpdated}</plaintext>
+            <plaintext>Last Updated {formatLastUpdateTime(summonerData?.updated_at)}</plaintext>
             <button onClick={()=>forceUpdatePage()}>Update</button>
             <MatchHistory matchHistory={matchHistory} setSummonerData={setSummonerData} summonerData={summonerData}/>
-            {queueType? <button onClick={()=>getMoreMatchDetailsQueueSpecific(queueType, true)}>Fetch More Games (specific, remove this text)</button> :
-            <button onClick={()=>getMoreMatchDetails(true)}>Fetch More Games (all, remove this text)</button>}
+            {queueType ? 
+                <button onClick={()=>getSummonerData(matchHistory?.length + 5, false, queueType)}>Fetch More Games (queue specific, remove this text)</button> :
+                <button onClick={()=>getSummonerData(matchHistory?.length + 5, false)}>Fetch More Games (all, remove this text)</button>
+            }            
+
+            {/* {queueType && matchHistory?.length === summonerData?.max_display_length ?
+                <button onClick={() => getSummonerData(matchHistory?.length + 5, false, queueType)}>Fetch More Games (queue specific, remove this text)</button> :
+                (!queueType || matchHistory?.length === summonerData?.max_display_length) &&
+                <button onClick={() => getSummonerData(matchHistory?.length + 5, false)}>Fetch More Games (all, remove this text)</button>
+            } */}
         </>
     )
 }
