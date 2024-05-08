@@ -51,31 +51,55 @@ class SummonerCustomSerializer(serializers.ModelSerializer):
 
         # Query is not queue-specific get all matches up to a limit 
         if not self.context.get('queueId'):
+            partition_name = "_" + instance.platform.code
+            formatted_table_names = [partition_name] * 10
+
             sql =   """
-                        SELECT wrs_api_summonermatch."matchId",  wrs_api_match.metadata, wrs_api_match."queueId"
-                        FROM wrs_api_summonermatch 
-                        JOIN wrs_api_match ON wrs_api_summonermatch."matchId" = wrs_api_match."matchId"
-                        WHERE wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
-                        ORDER BY wrs_api_summonermatch."matchId" DESC
+                        SELECT wrs_api_summonermatch{}."matchId", wrs_api_match{}."queueId", wrs_api_match{}.metadata
+                        FROM wrs_api_summonermatch{}
+                        JOIN wrs_api_match{} ON wrs_api_summonermatch{}."matchId" = wrs_api_match{}."matchId"
+                        WHERE wrs_api_summonermatch{}.puuid = %s 
+                            AND wrs_api_summonermatch{}.platform = %s
+                        ORDER BY wrs_api_summonermatch{}."matchId" DESC
                         LIMIT %s;
-                    """
+
+                    """.format(*formatted_table_names)
+
+            params = [
+                instance.puuid,
+                instance.platform.code,
+                limit
+            ]       
+
             with connection.cursor() as cursor:
-                cursor.execute(sql, [instance.puuid, instance.platform.code, limit])
+                cursor.execute(sql, params)
                 results = dictfetchall(cursor)
             return format_match_strings_as_json(results)
-
+        
         # If query is queue-specific get all matches of a certain type up to a limit 
         elif self.context.get('queueId'):
+            partition_name = "_" + instance.platform.code
+            formatted_table_names = [partition_name] * 11
+
             sql =   """
-                        SELECT wrs_api_summonermatch."matchId",  wrs_api_match.metadata, wrs_api_match."queueId"
-                        FROM wrs_api_summonermatch 
-                        JOIN wrs_api_match ON wrs_api_summonermatch."matchId" = wrs_api_match."matchId"
-                        WHERE wrs_api_summonermatch."queueId" = %s AND wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
-                        ORDER BY wrs_api_summonermatch."matchId" DESC
+                        SELECT wrs_api_summonermatch{}."matchId", wrs_api_match{}."queueId", wrs_api_match{}.metadata
+                        FROM wrs_api_summonermatch{}
+                        JOIN wrs_api_match{} ON wrs_api_summonermatch{}."matchId" = wrs_api_match{}."matchId"
+                        WHERE wrs_api_summonermatch{}."queueId" = %s 
+                            AND wrs_api_summonermatch{}.puuid = %s 
+                            AND wrs_api_summonermatch{}.platform = %s
+                        ORDER BY wrs_api_summonermatch{}."matchId" DESC
                         LIMIT %s;
-                    """
+                    """.format(*formatted_table_names)
+            
+            params = [
+                    int(self.context.get("queueId")), 
+                    instance.puuid,
+                    instance.platform.code,
+                    limit]   
+
             with connection.cursor() as cursor:
-                cursor.execute(sql, [int(self.context.get("queueId")), instance.puuid, instance.platform.code, limit])
+                cursor.execute(sql, params)
                 results = dictfetchall(cursor)
             return format_match_strings_as_json(results)
 

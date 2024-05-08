@@ -47,10 +47,8 @@ def get_summoner(request):
     if request.query_params.get('update') == 'false' or not request.query_params.get('update'):
         try: 
             summoner = Summoner.objects.get(gameName__iexact=request.query_params.get('gameName'), tagLine__iexact=request.query_params.get('tagLine'), platform=request.query_params.get('platform'))
-            if request.query_params.get('queueId') or request.query_params.get('limit'):
+            if request.query_params.get('queueId') or request.query_params.get('limit'): # Limit is essentially requesting additional records for same summoner
                 serialized_summoner = SummonerCustomSerializer(instance=summoner, context={'queueId': request.query_params.get('queueId'), 'limit': request.query_params.get('limit')})
-            # if request.query_params.get('limit'):
-            #     serialized_summoner = SummonerCustomSerializer(instance=summoner, context={'limit': request.query_params.get('limit')})
             else:
                 serialized_summoner = SummonerCustomSerializer(instance=summoner)
             return JsonResponse(serialized_summoner.data, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION, safe=False)

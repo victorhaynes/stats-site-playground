@@ -326,8 +326,8 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
 
 
   return (
-    <>
-        {renderMatchHistory()}
+    <> 
+        { matchHistory?.length === 0? <div>No games played.</div> : renderMatchHistory()}
     </>
   )
 }
