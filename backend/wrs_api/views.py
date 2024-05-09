@@ -5,6 +5,7 @@ from django.db import connection, transaction
 from django.db.utils import DatabaseError
 from .serializers import SummonerSerializer, SummonerCustomSerializer, SummonerOverviewSerializer
 from .utilities import dictfetchall, ranked_badge, calculate_average_elo, check_missing_items, RiotApiError
+from django.forms.models import model_to_dict
 import pprint
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -145,7 +146,7 @@ def get_summoner(request):
     print("oldest game", all_matches_played[-1])
 
     print("!!!TESTING ONLY CHECK FOR SOME MATCHES!!!")
-    all_matches_played = all_matches_played[:1]
+    all_matches_played = all_matches_played[:3]
 
     # GET details for all matches fetched that are not already in database
     with connection.cursor() as cursor:
@@ -506,12 +507,13 @@ def get_ranked_ladder(request):
             page1 = challenger_page1_response.json()
             page2 = challenger_page2_response.json()
             challenger_players = page1 + page2
-            challenger_players = challenger_players[:2]
+            challenger_players = challenger_players[:25]
 
+            summoners = []
             for player_overview in challenger_players:
                 print("attempting for player:", player_overview["summonerId"])
                 try:
-                    summoner = Summoner.objects.get(encryptedSummonerId=player_overview["summonerId"], platform=platform)
+                    existing_challenger = Summoner.objects.get(encryptedSummonerId=player_overview["summonerId"], platform=platform)
                     print("FOUND! UPDATING OVERVIW")
                     # The above is not necessarily optimal, you will fail foreign key constraint if summoner doesn't exist we don't need to check
                     # but remain now for simplcity
@@ -525,7 +527,11 @@ def get_ranked_ladder(request):
                             metadata = EXCLUDED.metadata,
                             updated_at = EXCLUDED.updated_at;
                         """
-                        , [summoner.puuid, request.query_params.get('platform'), current_season.id, json.dumps(player_overview)])
+                        , [existing_challenger.puuid, request.query_params.get('platform'), current_season.id, json.dumps(player_overview)])
+
+                    updated_summoner = model_to_dict(existing_challenger)
+                    updated_summoner["metadata"] = player_overview
+                    summoners.append(updated_summoner)
 
                 except Summoner.DoesNotExist:
                     print("NOT FOUND! FETCHING DETAILS OVERVIW")
@@ -588,6 +594,10 @@ def get_ranked_ladder(request):
                 #     error_message = response_account_details.json()["status"]["message"]
                 #     raise RiotApiError(int(response_account_details.status_code), error_message)
 
+                    updated_summoner = model_to_dict(challenger_player)
+                    updated_summoner["metadata"] = player_overview
+                    summoners.append(updated_summoner)
+
         else:
             error_message1 = challenger_page1_response.json()["status"]["message"]
             error_message2 = challenger_page1_response.json()["status"]["message"]
@@ -601,37 +611,37 @@ def get_ranked_ladder(request):
     #     return JsonResponse(repr(err), status=500, safe=False)
     
 
-    # Serialize all the players, but maybe it's actually easier than what I'm doing. Maybe just keep track of the array
-    # and get the related overviews from the array 
+    # # Serialize all the players, but maybe it's actually easier than what I'm doing. Maybe just keep track of the array
+    # # and get the related overviews from the array 
 
-    summoner_ids = [p["summonerId"] for p in challenger_players]
+    # summoner_ids = [p["summonerId"] for p in challenger_players]
 
-    partition_name = "_" + request.query_params.get('platform')
-    formatted_table_names = [partition_name] * 1
+    # partition_name = "_" + request.query_params.get('platform')
+    # formatted_table_names = [partition_name] * 1
 
-    temp_table_creation_query = """
-    CREATE TEMP TABLE temp_summoner_ids (
-        id TEXT
-    );
-    """
-    with connection.cursor() as cursor:
-        cursor.execute(temp_table_creation_query)
-        # Insert summoner IDs into the temporary table
-        for summoner_id in summoner_ids:
-            cursor.execute("INSERT INTO temp_summoner_ids (id) VALUES (%s)", [summoner_id])
+    # temp_table_creation_query = """
+    # CREATE TEMP TABLE temp_summoner_ids (
+    #     id TEXT
+    # );
+    # """
+    # with connection.cursor() as cursor:
+    #     cursor.execute(temp_table_creation_query)
+    #     # Insert summoner IDs into the temporary table
+    #     for summoner_id in summoner_ids:
+    #         cursor.execute("INSERT INTO temp_summoner_ids (id) VALUES (%s)", [summoner_id])
         
-        # Query to select summoners based on the temporary table
-        query = """
-        SELECT s.*
-        FROM wrs_api_summoner{} s
-        JOIN temp_summoner_ids t ON s."encryptedSummonerId" = t.id
-        ORDER BY (SELECT array_position(ARRAY(SELECT id FROM temp_summoner_ids), t.id));
-        """
-        cursor.execute(query)
-        results = dictfetchall(cursor)
+    #     # Query to select summoners based on the temporary table
+    #     query = """
+    #     SELECT s.*
+    #     FROM wrs_api_summoner{} s
+    #     JOIN temp_summoner_ids t ON s."encryptedSummonerId" = t.id
+    #     ORDER BY (SELECT array_position(ARRAY(SELECT id FROM temp_summoner_ids), t.id));
+    #     """
+    #     cursor.execute(query)
+    #     results = dictfetchall(cursor)
 
-    return JsonResponse(results, safe=False)
-
+    # return JsonResponse(results, safe=False)
+    return JsonResponse(summoners, safe=False)
 
 
 ############################

@@ -2,15 +2,11 @@ import React from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import MatchHistory from './MatchHistory'
+import MatchHistory from '../client/winratesgg/src/components/MatchHistory'
 
-const SummonerDetail = ({region, platform}) => {
+const SummonerDetail = () => {
 
     const params = useParams()
-    // const displayRegion = params.displayRegion
-    const displayName = params.displayNameZipped
-    const [gameName, tagLine] = displayName.split("-")
-
 
     const [summonerData, setSummonerData] = useState({})
     const [queueType, setQueueType] = useState("")
@@ -29,7 +25,7 @@ const SummonerDetail = ({region, platform}) => {
 
     // Get summoner data from db cache, including match details nested as json
     async function getSummonerData(queryLimit=null, update=false, specificQueue=false){
-        let url = `http://127.0.0.1:8000/summoner/?region=${region}&platform=${platform}&gameName=${gameName}&tagLine=${tagLine}`
+        let url = `http://127.0.0.1:8000/summoner/?region=${params.region}&platform=${params.platform}&gameName=${params.gameName}&tagLine=${params.tagLine}`
         
         url += queryLimit ? `&limit=${queryLimit}` : ''
         url += update ? `&update=${update}` : ''
@@ -148,7 +144,7 @@ const SummonerDetail = ({region, platform}) => {
             <button onClick={()=>undoQueueFilterAndGetRecentMatchDetails()}>All</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(450)}>ARAM</button>
             <button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(420)}>Ranked Solo/Duo</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(400)}>Normal</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(490)}>Quick Play</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(440)}>Flex</button>
             <button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(700)}>Clash</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(1300)}>Nexus Blitz</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(1700)}>Arena</button>
-            <h1>{gameName} #{tagLine}</h1>
+            <h1>{params.gameName} #{params.tagLine}</h1>
             <img width="75" height="75" alt="profile icon" src={process.env.PUBLIC_URL + `/assets/profile_icons/${summonerData?.profileIconId}.png`} /> 
             <h2>Ranked Solo Queue:</h2>
             <img width="100" height="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank=${formatRank(summonerOverview)}.png`} /> 
@@ -171,4 +167,3 @@ const SummonerDetail = ({region, platform}) => {
 }
 
 export default SummonerDetail
-

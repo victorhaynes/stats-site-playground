@@ -5,6 +5,9 @@ import MatchDetails from './MatchDetails'
 const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
 
     const params = useParams()
+    const displayRegion = params.displayRegion
+    const displayName = params.displayNameZipped
+    const [gameName, tagLine] = displayName.split("-")
 
     function navAndSearchParticipant(){
       setSummonerData({})
@@ -199,8 +202,8 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
                             return (
                                 <div key={index}>
                                     {renderChampionIcon(participant, "25", "25")}
-                                    {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
-                                    <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
+                                    {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${displayRegion}/${participant.riotIdGameName}-${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
+                                    <Link to={`/summoners/${displayRegion}/${participant.riotIdGameName}-${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
                                 </div>
                             )
                         })}
@@ -209,8 +212,8 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
                             return (
                                 <div key={index}>
                                     {renderChampionIcon(participant, "25", "25")}
-                                    {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
-                                    <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
+                                    {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${displayRegion}-${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
+                                    <Link to={`/summoners/${displayRegion}/${participant.riotIdGameName}-${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
                                 </div>
                             )
                         })}
@@ -225,8 +228,8 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
                                 <div key={index}>
                                     <plaintext>{participant?.placement}</plaintext>
                                     {renderChampionIcon(participant, "25", "25")}
-                                    {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
-                                    <Link to={`/summoners/${params.region}/${params.platform}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
+                                    {participant.puuid === summonerData.puuid ? <Link to={`/summoners/${displayRegion}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link> : 
+                                    <Link to={`/summoners/${displayRegion}/${participant.riotIdGameName}/${participant.riotIdTagline}`} onClick={navAndSearchParticipant}>{participant.riotIdGameName + " #" + participant.riotIdTagline}<br></br></Link>}
                                 </div>
                             )
                         })}

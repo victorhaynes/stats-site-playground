@@ -4,63 +4,88 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  useNavigate
   // Link
 } from "react-router-dom";
 import Home from './components/Home';
 import SummonerDetail from './components/SummonerDetail';
 import Header from './components/Header';
-import Test from './components/Test';
+import Ladder from './components/Ladder';
 
 
 
 function App() {
 
+  const navigate = useNavigate()
+
+
   const [summonerSearchFormData, setSummonerSearchFormData] = useState({
-      platform: "",
       gameName: "",
       tagLine: "",
   })
 
-  const [region, setRegion] = useState("")
-  
-  function convertPlatformToRegion(){
-    let re = ""
-    if ({...summonerSearchFormData}.platform === "na1" || {...summonerSearchFormData}.platform === "oc1"){
-      re = "americas"
-    } else if ({...summonerSearchFormData}.platform === "kr" || {...summonerSearchFormData}.platform === "jp1"){
-      re = "asia"
-    } else if ({...summonerSearchFormData}.platform === "euw1" || {...summonerSearchFormData}.platform === "eun1"){
-      re = "europe"
-    } else {
-      re = ""
-    }
-    return re
-  }
+  const [platform, setPlatform] = useState('na1');
+  const [region, setRegion] = useState('americas');
+  const [displayRegion, setDisplayRegion] = useState('na')
+  // displayRegion is the colloquiial way players refer to 'region', it is actually platform without the integer
 
-  useEffect(()=>{
-    setRegion(convertPlatformToRegion())
-  },[summonerSearchFormData])
 
-  function handleSummonerSearchChange(event){
+
+  function handleSummonerNameEntry(event){
     setSummonerSearchFormData({...summonerSearchFormData,
     [event.target.name]: event.target.value})
   }
 
+  function handlePlatformSelection(event){
+    const selectedPlatform = event.target.value
+    const mapPlatormToRegion = {
+        'na1': 'americas',
+        'br1': 'americas',
+        'euw1': 'europe',
+        'kr': 'asia'         
+    }
+    const newRegion = mapPlatormToRegion[selectedPlatform]
+
+    setPlatform(selectedPlatform)
+    setRegion(newRegion)
+    let platformIntegerCheck = selectedPlatform.charAt(selectedPlatform.length - 1) // Get last character from platform{
+    if (isNaN(platformIntegerCheck)){ // If not a number i.e. 'RU' platform
+      setDisplayRegion(selectedPlatform)
+    } else if (!isNaN(platformIntegerCheck)) // Is a number i.e. 1 from 'KR1' platform
+      setDisplayRegion(selectedPlatform.slice(0,-1)) // Remove the 1
+  }
+
+
+  function submitAndSearchSummoner(event){
+    event.target.reset()
+    event.preventDefault()
+    navigate(`/summoners/${displayRegion}/${summonerSearchFormData.gameName}-${summonerSearchFormData.tagLine}`)
+    setSummonerSearchFormData({
+        gameName: "",
+        tagLine: "",
+    })
+  }
+
+
+
   return (
-    <>
-      <Router>
-      <Header handleSummonerSearchChange={handleSummonerSearchChange} summonerSearchFormData={summonerSearchFormData} setSummonerSearchFormData={setSummonerSearchFormData} region={region}/>
+      // <Router>
+      <>
+      <Header displayRegion={displayRegion} handleSummonerNameEntry={handleSummonerNameEntry} handlePlatformSelection={handlePlatformSelection} submitAndSearchSummoner={submitAndSearchSummoner}/>
         <Routes>
-          <Route path="/test" 
-            element={<Test/>}/>
           <Route path="/" exact
-            element={<Home handleSummonerSearchChange={handleSummonerSearchChange} summonerSearchFormData={summonerSearchFormData} setSummonerSearchFormData={setSummonerSearchFormData} region={region}/>}/>
-          <Route path="/summoners/:region/:platform/:gameName/:tagLine"
-            element={<SummonerDetail summonerSearchFormData={summonerSearchFormData}/>}/>
+            element={<Home handleSummonerNameEntry={handleSummonerNameEntry} handlePlatformSelection={handlePlatformSelection} submitAndSearchSummoner={submitAndSearchSummoner} platform={platform} region={region}/>}/>
+          {/* <Route path="/summoners/:region/:platform/:gameName/:tagLine" */}
+          {/* <Route path="/summoners/:displayRegion/:gameName-:tagLine" */}
+          <Route path="/summoners/:displayRegion/:displayNameZipped"
+            element={<SummonerDetail region={region} platform={platform}/>}/>
+          <Route path="/ladder/:displayRegion" 
+            element={<Ladder/>}/>
         </Routes>
-      </Router>
-    </>
+      </>
+      // </Router>
   );
 }
 
 export default App;
+

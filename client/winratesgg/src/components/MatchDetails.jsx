@@ -43,8 +43,7 @@ const MatchDetails = ({matchRecord, renderChampionIcon, navAndSearchParticipant,
             arenaTeams.sort((a, b) => a.placement - b.placement);
         }
 
-
-    
+        // Non-Arena Format, assumed 5v5 Game Mode
         if (match?.info?.queueId !== 1700){
             return (
                 <div>
@@ -82,7 +81,7 @@ const MatchDetails = ({matchRecord, renderChampionIcon, navAndSearchParticipant,
                         })}
                 </div>
             )
-            /// THIS SHOULD BE ALL TEAMS REALLY, NOT JUST THE TOP 4 // FIX THIS!!!!!!!!!!
+        /// If Game Mode is Arena return different HTML
         } else if (match?.info?.queueId === 1700) {
             return (
                 <div>
