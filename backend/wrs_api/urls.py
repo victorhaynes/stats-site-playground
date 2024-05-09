@@ -24,6 +24,8 @@ urlpatterns = [
     path('seed-summoner-overviews/', seed_functions.seed_summoner_overviews),
     path('seed-summoner-matches/', seed_functions.seed_summoner_matches),
     path('summoner/', views.get_summoner),
+    path('ladder/', views.get_ranked_ladder),
+    path('testing/', views.testing)
     # path('summoner-update/', views.get_summoner_update),
     # path('match-history/', views.get_match_history),
     # path('test-dup-match/', seed_functions.test_repeat_match),

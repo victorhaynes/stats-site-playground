@@ -165,6 +165,28 @@ def calculate_average_elo(elos: list, queue: int):
 
 
 
+class RiotApiError(Exception):
+    def __init__(self, code1, message1, code2=None, message2=None):
+        self.errors = []
+        if code1 != 200:
+            self.errors.append({'code': code1, 'message': message1})
+        if code2 and code2 != 200:
+            self.errors.append({'code': code2, 'message': message2})
+        # super().__init__(message1 if code2 == 200 else message1 + " - " + message2)
+
+
+        if message2 is not None:
+            super().__init__(message1 + " - " + message2)
+        else:
+            super().__init__(message1)
+
+    def as_dict(self):
+        return {'errors': self.errors}
+
+    def largest_code(self):
+        return int(max(error['code'] for error in self.errors))
+    
+
 # def get_summoner_matches(summoner: Summoner, count: int):
 #     sql =   """
 #                 SELECT wrs_api_summonermatch."matchId", wrs_api_match.metadata
@@ -217,3 +239,6 @@ def check_missing_items(build_list):
         build_list.append(-(len(build_list) + 1))
 
     return build_list
+
+
+
