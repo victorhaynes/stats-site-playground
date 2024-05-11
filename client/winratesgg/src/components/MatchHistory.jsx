@@ -6,8 +6,8 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
 
     const params = useParams()
     const displayRegion = params.displayRegion
-    const displayName = params.displayNameZipped
-    const [gameName, tagLine] = displayName.split("-")
+    // const displayName = params.displayNameZipped
+    // const [gameName, tagLine] = displayName.split("-")
 
     function navAndSearchParticipant(){
       setSummonerData({})

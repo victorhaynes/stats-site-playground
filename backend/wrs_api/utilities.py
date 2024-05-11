@@ -1,7 +1,7 @@
 import json
 from django.db import connection
 from .models import Summoner, SummonerOverview
-
+import os
 
 # UTILITY METHOD TO "SERIALIZER" RAW UNMANAGED QUERY RESULTS AS A LIST OF DICTS
 def dictfetchall(cursor):
@@ -186,6 +186,10 @@ class RiotApiError(Exception):
     def largest_code(self):
         return int(max(error['code'] for error in self.errors))
     
+
+def get_rate_limit_key(request, *args, **kwargs):
+    return os.environ["RIOT_KEY"]
+
 
 # def get_summoner_matches(summoner: Summoner, count: int):
 #     sql =   """

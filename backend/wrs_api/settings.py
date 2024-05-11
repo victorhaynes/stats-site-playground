@@ -35,6 +35,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# REDIS CONFIG / DEBUG CONFIG
+INTERNAL_IPS = [
+    '127.0.0.1'
+]
 
 # Application definition
 
@@ -55,9 +59,14 @@ INSTALLED_APPS = [
     # PSQL Extras--support table partitioning
     # "django.contrib.postgres",
     # "psqlextra",
+    # REDIS CONFIG
+    'debug_toolbar'
+
 ]
 
 MIDDLEWARE = [
+    # REDIS CONFIG
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -93,7 +102,19 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'wrs_api.wsgi.application'
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        }
+    }
+}
+
+
+# # MIGHT NOT BE NEEDED, IF I DON'T USE ASYNC
+# WSGI_APPLICATION = 'wrs_api.wsgi.application'
 
 
 # Database

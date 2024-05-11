@@ -2,10 +2,14 @@
 # from .serializers import  SummonerSerializer, SummonerOverviewSerializer, MatchHistorySerializer, MatchDetailsSerializer, SeasonSerializer
 from .models import Summoner, SummonerOverview, Platform, Season, Patch, Region, GameMode, Champion, LegendaryItem, TierTwoBoot, Match, SummonerMatch
 from django.db import connection, transaction
+from django_ratelimit.decorators import ratelimit
 from django.db.utils import DatabaseError
 from .serializers import SummonerSerializer, SummonerCustomSerializer, SummonerOverviewSerializer
-from .utilities import dictfetchall, ranked_badge, calculate_average_elo, check_missing_items, RiotApiError
+from .utilities import dictfetchall, ranked_badge, calculate_average_elo, check_missing_items, RiotApiError, get_rate_limit_key
 from django.forms.models import model_to_dict
+from django_redis import get_redis_connection
+from .rate_limiter import RiotRateLimiter
+# from django.views.decorators.cache import cache_page
 import pprint
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -494,165 +498,279 @@ def get_summoner(request):
 @api_view(['GET'])
 @transaction.atomic
 def get_ranked_ladder(request):
-    try:
-        platform = Platform.objects.get(code=request.query_params.get('platform'))
+    redis_conn = get_redis_connection("default")
+    cached_ladder = redis_conn.get(f"{request.query_params.get('platform')}_ladder")
 
-        url_page1 = f'https://{request.query_params.get("platform")}.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=1'
-        url_page2 = f'https://{request.query_params.get("platform")}.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=2'
+    if cached_ladder:
+        summoners = json.loads(cached_ladder)
+        http_status_code = status.HTTP_208_ALREADY_REPORTED
 
-        challenger_page1_response = requests.get(url_page1, headers=headers, verify=True)
-        challenger_page2_response = requests.get(url_page2, headers=headers, verify=True)
-        if challenger_page1_response.status_code == 200 and challenger_page2_response.status_code == 200:
-            print("Got all challenger players OK")
-            page1 = challenger_page1_response.json()
-            page2 = challenger_page2_response.json()
-            challenger_players = page1 + page2
-            challenger_players = challenger_players[:25]
+    else: 
+        try:
+            platform = Platform.objects.get(code=request.query_params.get('platform'))
 
-            summoners = []
-            for player_overview in challenger_players:
-                print("attempting for player:", player_overview["summonerId"])
-                try:
-                    existing_challenger = Summoner.objects.get(encryptedSummonerId=player_overview["summonerId"], platform=platform)
-                    print("FOUND! UPDATING OVERVIW")
-                    # The above is not necessarily optimal, you will fail foreign key constraint if summoner doesn't exist we don't need to check
-                    # but remain now for simplcity
-                    with connection.cursor() as cursor:
-                        cursor.execute(
-                        """
-                            INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
-                            VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-                            ON CONFLICT (puuid, season_id, platform) 
-                            DO UPDATE SET 
-                            metadata = EXCLUDED.metadata,
-                            updated_at = EXCLUDED.updated_at;
-                        """
-                        , [existing_challenger.puuid, request.query_params.get('platform'), current_season.id, json.dumps(player_overview)])
+            url_page1 = f'https://{request.query_params.get("platform")}.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=1'
+            url_page2 = f'https://{request.query_params.get("platform")}.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=2'
 
-                    updated_summoner = model_to_dict(existing_challenger)
-                    updated_summoner["metadata"] = player_overview
-                    summoners.append(updated_summoner)
+            challenger_page1_response = requests.get(url_page1, headers=headers, verify=True)
+            challenger_page2_response = requests.get(url_page2, headers=headers, verify=True)
+            if challenger_page1_response.status_code == 200 and challenger_page2_response.status_code == 200:
+                print("Got all challenger players OK")
+                page1 = challenger_page1_response.json()
+                page2 = challenger_page2_response.json()
+                challenger_players = page1 + page2
+                challenger_players = challenger_players[:25]
 
-                except Summoner.DoesNotExist:
-                    print("NOT FOUND! FETCHING DETAILS OVERVIW")
-                    # GET PUUID from Encrypted summonerId / list of Challenger Players
-                    encrypted_sum_id_to_puuid_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/summoner/v4/summoners/{player_overview['summonerId']}"            
-                    puuid_details_response = requests.get(encrypted_sum_id_to_puuid_url, headers=headers, verify=True)
-                    if puuid_details_response.status_code == 200:
-                        print("success ONE")
-                        data = puuid_details_response.json()
-                        puuid = data["puuid"]
-                        profileIconId = data["profileIconId"]
-                    else:
-                        # return JsonResponse({"Riot API returned error": puuid_details_response.status_code, "message": puuid_details_response.json(), "meta": 523}, status=puuid_details_response.status_code)
-                        error_message = puuid_details_response.json()["status"]["message"]
-                        raise RiotApiError(int(puuid_details_response.status_code), error_message)
-                    
-                    # Get Display Name from PUUID
-                    puuid_to_display_name_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-puuid/{puuid}"
-                    display_name_details = requests.get(puuid_to_display_name_url, headers=headers, verify=True)
-                    if display_name_details.status_code == 200:
-                        print("success TWO")
-                        data = display_name_details.json()
-                        gameName = data["gameName"]
-                        tagLine = data["tagLine"]
-                        print("parsed successfully")
-                    else:
-                        # return JsonResponse({"Riot API returned error": display_name_details.status_code, "message": display_name_details.json(), "meta": 531}, status=display_name_details.status_code)
-                        error_message = display_name_details.json()["status"]["message"]
-                        raise RiotApiError(int(display_name_details.status_code), error_message)
+                summoners = []
+                for player_overview in challenger_players:
+                    print("attempting for player:", player_overview["summonerId"])
+                    try:
+                        existing_challenger = Summoner.objects.get(encryptedSummonerId=player_overview["summonerId"], platform=platform)
+                        print("FOUND! UPDATING OVERVIW")
+                        # The above is not necessarily optimal, you will fail foreign key constraint if summoner doesn't exist we don't need to check
+                        # but remain now for simplcity
+                        with connection.cursor() as cursor:
+                            cursor.execute(
+                            """
+                                INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
+                                VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                                ON CONFLICT (puuid, season_id, platform) 
+                                DO UPDATE SET 
+                                metadata = EXCLUDED.metadata,
+                                updated_at = EXCLUDED.updated_at;
+                            """
+                            , [existing_challenger.puuid, request.query_params.get('platform'), current_season.id, json.dumps(player_overview)])
 
-                    print("check here")
-                    # Write New Player to database
-                    challenger_player = Summoner.objects.create(puuid=puuid, gameName=gameName, tagLine=tagLine, platform=platform, profileIconId=profileIconId, encryptedSummonerId=player_overview["summonerId"])
-                    print("challenger saved to db")
-                    # account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
-                    # response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
+                        updated_summoner = model_to_dict(existing_challenger)
+                        updated_summoner["metadata"] = player_overview
+                        summoners.append(updated_summoner)
 
+                    except Summoner.DoesNotExist:
+                        print("NOT FOUND! FETCHING DETAILS OVERVIW")
+                        # GET PUUID from Encrypted summonerId / list of Challenger Players
+                        encrypted_sum_id_to_puuid_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/summoner/v4/summoners/{player_overview['summonerId']}"            
+                        puuid_details_response = requests.get(encrypted_sum_id_to_puuid_url, headers=headers, verify=True)
+                        if puuid_details_response.status_code == 200:
+                            print("success ONE")
+                            data = puuid_details_response.json()
+                            puuid = data["puuid"]
+                            profileIconId = data["profileIconId"]
+                        else:
+                            # return JsonResponse({"Riot API returned error": puuid_details_response.status_code, "message": puuid_details_response.json(), "meta": 523}, status=puuid_details_response.status_code)
+                            error_message = puuid_details_response.json()["status"]["message"]
+                            raise RiotApiError(int(puuid_details_response.status_code), error_message)
                         
-                    # Write Summoner Overview / Ranked Stats / Elo
-                    # league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerID}"
-                    # response_overview = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
-                    
-                # if display_name_details.status_code == 200:
-                    print("WRITING OVERVIEW FOR", player_overview["summonerId"])
-                    with connection.cursor() as cursor:
-                        cursor.execute(
-                        """
-                            INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
-                            VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-                            ON CONFLICT (puuid, season_id, platform) 
-                            DO UPDATE SET 
-                            metadata = EXCLUDED.metadata,
-                            updated_at = EXCLUDED.updated_at;
-                        """
-                        , [challenger_player.puuid, request.query_params.get('platform'), current_season.id, json.dumps(player_overview)])
-                    print("Wrote successfully")
+                        # Get Display Name from PUUID
+                        puuid_to_display_name_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-puuid/{puuid}"
+                        display_name_details = requests.get(puuid_to_display_name_url, headers=headers, verify=True)
+                        if display_name_details.status_code == 200:
+                            print("success TWO")
+                            data = display_name_details.json()
+                            gameName = data["gameName"]
+                            tagLine = data["tagLine"]
+                            print("parsed successfully")
+                        else:
+                            # return JsonResponse({"Riot API returned error": display_name_details.status_code, "message": display_name_details.json(), "meta": 531}, status=display_name_details.status_code)
+                            error_message = display_name_details.json()["status"]["message"]
+                            raise RiotApiError(int(display_name_details.status_code), error_message)
 
-                # else:
-                #     # return JsonResponse({"Riot API returned error": response_account_details.status_code, "message": response_account_details.json(), "meta": 143}, status=response_account_details.status_code)   
-                #     error_message = response_account_details.json()["status"]["message"]
-                #     raise RiotApiError(int(response_account_details.status_code), error_message)
+                        print("check here")
+                        # Write New Player to database
+                        challenger_player = Summoner.objects.create(puuid=puuid, gameName=gameName, tagLine=tagLine, platform=platform, profileIconId=profileIconId, encryptedSummonerId=player_overview["summonerId"])
+                        print("challenger saved to db")
+                        # account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
+                        # response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
 
-                    updated_summoner = model_to_dict(challenger_player)
-                    updated_summoner["metadata"] = player_overview
-                    summoners.append(updated_summoner)
+                            
+                        # Write Summoner Overview / Ranked Stats / Elo
+                        # league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerID}"
+                        # response_overview = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
+                        
+                    # if display_name_details.status_code == 200:
+                        print("WRITING OVERVIEW FOR", player_overview["summonerId"])
+                        with connection.cursor() as cursor:
+                            cursor.execute(
+                            """
+                                INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
+                                VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                                ON CONFLICT (puuid, season_id, platform) 
+                                DO UPDATE SET 
+                                metadata = EXCLUDED.metadata,
+                                updated_at = EXCLUDED.updated_at;
+                            """
+                            , [challenger_player.puuid, request.query_params.get('platform'), current_season.id, json.dumps(player_overview)])
+                        print("Wrote successfully")
 
-        else:
-            error_message1 = challenger_page1_response.json()["status"]["message"]
-            error_message2 = challenger_page1_response.json()["status"]["message"]
-            raise RiotApiError(int(challenger_page1_response.status_code), error_message1, int(challenger_page2_response.status_code), error_message2)
+                    # else:
+                    #     # return JsonResponse({"Riot API returned error": response_account_details.status_code, "message": response_account_details.json(), "meta": 143}, status=response_account_details.status_code)   
+                    #     error_message = response_account_details.json()["status"]["message"]
+                    #     raise RiotApiError(int(response_account_details.status_code), error_message)
 
-    except RiotApiError as err:
-        print("here1", err)
-        print("here2", err.as_dict())
-        return JsonResponse(err.as_dict(), status=err.largest_code(), safe=False)
-    # except Exception as err:
-    #     return JsonResponse(repr(err), status=500, safe=False)
-    
+                        updated_summoner = model_to_dict(challenger_player)
+                        updated_summoner["metadata"] = player_overview
+                        summoners.append(updated_summoner)
 
-    # # Serialize all the players, but maybe it's actually easier than what I'm doing. Maybe just keep track of the array
-    # # and get the related overviews from the array 
+                redis_conn.set(f"{request.query_params.get('platform')}_ladder", json.dumps(summoners), ex=3600)
+                http_status_code = status.HTTP_201_CREATED
 
-    # summoner_ids = [p["summonerId"] for p in challenger_players]
+            else:
+                error_message1 = challenger_page1_response.json()["status"]["message"]
+                error_message2 = challenger_page1_response.json()["status"]["message"]
+                raise RiotApiError(int(challenger_page1_response.status_code), error_message1, int(challenger_page2_response.status_code), error_message2)
 
-    # partition_name = "_" + request.query_params.get('platform')
-    # formatted_table_names = [partition_name] * 1
+        except RiotApiError as err:
+            print("here1", err)
+            print("here2", err.as_dict())
+            return JsonResponse(err.as_dict(), status=err.largest_code(), safe=False)
 
-    # temp_table_creation_query = """
-    # CREATE TEMP TABLE temp_summoner_ids (
-    #     id TEXT
-    # );
-    # """
-    # with connection.cursor() as cursor:
-    #     cursor.execute(temp_table_creation_query)
-    #     # Insert summoner IDs into the temporary table
-    #     for summoner_id in summoner_ids:
-    #         cursor.execute("INSERT INTO temp_summoner_ids (id) VALUES (%s)", [summoner_id])
-        
-    #     # Query to select summoners based on the temporary table
-    #     query = """
-    #     SELECT s.*
-    #     FROM wrs_api_summoner{} s
-    #     JOIN temp_summoner_ids t ON s."encryptedSummonerId" = t.id
-    #     ORDER BY (SELECT array_position(ARRAY(SELECT id FROM temp_summoner_ids), t.id));
-    #     """
-    #     cursor.execute(query)
-    #     results = dictfetchall(cursor)
+    return JsonResponse(summoners, safe=False, status=http_status_code)
 
-    # return JsonResponse(results, safe=False)
-    return JsonResponse(summoners, safe=False)
+
 
 
 ############################
 @api_view(['GET'])
+@ratelimit(key=get_rate_limit_key, rate='1/h', method='GET')
 def testing(request):
-    platform = Platform.objects.get(code=request.query_params.get('platform'))
 
-    summoner_id = 'pyj-WC_EnEGfvPIVer5DFUyfdW4TYQZREPAWerehKQyyO0I'
-    summoner = Summoner.objects.get(encryptedSummonerId=summoner_id, platform=platform)
+    current_season = Season.objects.get(season=os.environ["CURRENT_SEASON"], split=os.environ["CURRENT_SPLIT"])
 
-    return JsonResponse("yay", safe=False)
+    season_split_start_epoch_seconds = season_schedule['na1'][f"season_{current_season.season}"][f"split_{current_season.split}"]["start"]
+    season_split_end_epoch_seconds = season_schedule['na1'][f"season_{current_season.season}"][f"split_{current_season.split}"]["end"]
+
+
+    start = 0
+    count = 100 # must be <= 100
+    all_matches_played = []
+    while True:
+        matches_url = f"https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/f649YxVWblcWTKMjnLYAZTKlbH6b3iNEZXf9-HXZhxxJRBSQ-Zws7v6jErBh0tzyVS9VNo50FHK3rA/ids/?start={start}&count={count}&startTime={season_split_start_epoch_seconds}&endTime={season_split_end_epoch_seconds}"
+        response_matches = requests.get(matches_url, headers=headers, verify=True)
+        if response_matches.status_code == 200:
+            print("Got 100 Matches Successfully:", matches_url)
+            matches = response_matches.json()
+            if len(matches) > 0:
+                for match in matches:
+                    all_matches_played.append(match)
+                start+=len(matches)
+            else:
+                break
+        else:
+            return JsonResponse({"Riot API returned error": response_matches.status_code, "message": response_matches.json(), "meta": 167}, status=response_matches.status_code)
+
+    all_matches_played = all_matches_played[:2]
+
+
+    for game in all_matches_played:
+        match_detail_url = f"https://americas.api.riotgames.com/lol/match/v5/matches/{game}"
+        response_match_detail = requests.get(match_detail_url, headers=headers, verify=True)
+        timeline_url = f"https://americas.api.riotgames.com/lol/match/v5/matches/{game}/timeline"
+        timeline_response = requests.get(timeline_url, headers=headers)
+        if response_match_detail.status_code == 200 and timeline_response.status_code == 200:
+            print("successfully got details for:", game)
+            print("successfully got timeline for:", game)
+            match_detail = response_match_detail.json()
+            timeline = timeline_response.json()
+
+    return JsonResponse("no errors", safe=False, status=203)
+
+
+
+
+
+
+
+
+
+############################
+@api_view(['GET'])
+def cachetest(request):
+
+    data = ""
+
+    redis_conn = get_redis_connection("default")
+    cached_data = redis_conn.get("EXKEY")
+
+    if cached_data:
+        data = cached_data
+        return JsonResponse(f"{data} already existed", safe=False, status=status.HTTP_208_ALREADY_REPORTED)
+
+    else:
+        data = request.query_params.get('test')
+        redis_conn.set("EXKEY", data, ex=15)
+
+    return JsonResponse(f"{data} WROTE", safe=False, status=status.HTTP_202_ACCEPTED)
+
+
+
+
+
+
+
+############################
+@api_view(['GET'])
+def ratelimittest(request):
+    url_page1 = f'https://{request.query_params.get("platform")}.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=1'
+    url2 = f"https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/vanilli%vanilli/vv2"
+
+
+    custom_request = RiotRateLimiter(url_page1)
+    response1 = custom_request.get(url_page1)
+    print(response1.json()[0], "ok1")
+
+    custom_request = RiotRateLimiter(url2)
+    response2 = custom_request.get(url2)
+    print(response2.json(), "ok2")
+
+    custom_request = RiotRateLimiter(url2)
+    response2 = custom_request.get(url2)
+    print(response2.json(), "ok2")
+
+    custom_request = RiotRateLimiter(url2)
+    response2 = custom_request.get(url2)
+    print(response2.json(), "ok2")
+
+    # response1 = CustomRequests.get(request, url_page1)
+    # response2 = CustomRequests.get(request, url_page2)
+
+    # print(response1.json()[0], "ok1")
+    # print(response2.json()[0], "ok2")
+
+
+    return JsonResponse("No Errors", safe=False, status=200)
+
+    # start = 0
+    # count = 100 # must be <= 100
+    # all_matches_played = []
+    # while True:
+    #     matches_url = f"https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/f649YxVWblcWTKMjnLYAZTKlbH6b3iNEZXf9-HXZhxxJRBSQ-Zws7v6jErBh0tzyVS9VNo50FHK3rA/ids/?start={start}&count={count}&startTime={season_split_start_epoch_seconds}&endTime={season_split_end_epoch_seconds}"
+    #     response_matches = requests.get(matches_url, headers=headers, verify=True)
+    #     if response_matches.status_code == 200:
+    #         print("Got 100 Matches Successfully:", matches_url)
+    #         matches = response_matches.json()
+    #         if len(matches) > 0:
+    #             for match in matches:
+    #                 all_matches_played.append(match)
+    #             start+=len(matches)
+    #         else:
+    #             break
+    #     else:
+    #         return JsonResponse({"Riot API returned error": response_matches.status_code, "message": response_matches.json(), "meta": 167}, status=response_matches.status_code)
+  
+
+    # data = ""
+
+    # redis_conn = get_redis_connection("default")
+    # cached_data = redis_conn.get("EXKEY")
+
+    # if cached_data:
+    #     data = cached_data
+    #     return JsonResponse(f"{data} already existed", safe=False, status=status.HTTP_208_ALREADY_REPORTED)
+
+    # else:
+    #     data = request.query_params.get('test')
+    #     redis_conn.set("EXKEY", data, ex=15)
+
+    # return JsonResponse(f"{data} WROTE", safe=False, status=status.HTTP_202_ACCEPTED)
 
 
 

@@ -15,9 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from wrs_api import views
 from wrs_api import seed_functions
+import debug_toolbar 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,7 +26,10 @@ urlpatterns = [
     path('seed-summoner-matches/', seed_functions.seed_summoner_matches),
     path('summoner/', views.get_summoner),
     path('ladder/', views.get_ranked_ladder),
-    path('testing/', views.testing)
+    path('testing/', views.testing),
+    path('cachetest/', views.cachetest),
+    path('ratelimittest/', views.ratelimittest),
+    path('__debug__/', include(debug_toolbar.urls))
     # path('summoner-update/', views.get_summoner_update),
     # path('match-history/', views.get_match_history),
     # path('test-dup-match/', seed_functions.test_repeat_match),
