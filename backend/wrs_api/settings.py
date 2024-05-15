@@ -65,7 +65,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # REDIS CONFIG
+    # REDIS /DEBUG CONFIG
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -77,7 +77,14 @@ MIDDLEWARE = [
 
     ## CORS
     "corsheaders.middleware.CorsMiddleware",
+
+    # RATE LIMITING CONFIG
+    # 'django_ratelimit.middleware.RatelimitMiddleware'
+
 ]
+
+# RATELIMIT_VIEW = 'wrs_api.views.ratelimited_error'
+
 
 ROOT_URLCONF = 'wrs_api.urls'
 

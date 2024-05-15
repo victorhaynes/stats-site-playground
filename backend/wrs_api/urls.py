@@ -27,7 +27,7 @@ urlpatterns = [
     path('summoner/', views.get_summoner),
     path('ladder/', views.get_ranked_ladder),
     path('testing/', views.testing),
-    path('cachetest/', views.cachetest),
+    path('test2/', views.test2),
     path('ratelimittest/', views.ratelimittest),
     path('__debug__/', include(debug_toolbar.urls))
     # path('summoner-update/', views.get_summoner_update),
@@ -40,3 +40,6 @@ urlpatterns = [
     # # path('get-one/', views.get_one_game),
     # path('get-timeline/', views.get_one_timeline)
 ]
+
+# # To Check if a 403 Forbidden is really a 429 raised by a rate limiter
+# handler403 = views.custom403handler

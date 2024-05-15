@@ -165,6 +165,11 @@ def calculate_average_elo(elos: list, queue: int):
 
 
 
+def test_rate_limit_key(self, *args, **kwargs):
+    return "abc"
+
+
+
 class RiotApiError(Exception):
     def __init__(self, code1, message1, code2=None, message2=None):
         self.errors = []
@@ -186,6 +191,20 @@ class RiotApiError(Exception):
     def largest_code(self):
         return int(max(error['code'] for error in self.errors))
     
+
+
+class RiotRateLimitError(Exception):
+    def __init__(self, code, details, retry_after):
+        self.code = code
+        self.details = details
+        self.retry_after = retry_after
+    
+    def to_dict(self):
+        return {
+            'code': self.code,
+            'details': self.details,
+            'retry_after': self.retry_after
+        }
 
 def get_rate_limit_key(request, *args, **kwargs):
     return os.environ["RIOT_KEY"]

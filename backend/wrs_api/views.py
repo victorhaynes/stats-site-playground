@@ -3,12 +3,16 @@
 from .models import Summoner, SummonerOverview, Platform, Season, Patch, Region, GameMode, Champion, LegendaryItem, TierTwoBoot, Match, SummonerMatch
 from django.db import connection, transaction
 from django_ratelimit.decorators import ratelimit
+from django_ratelimit.exceptions import Ratelimited
 from django.db.utils import DatabaseError
 from .serializers import SummonerSerializer, SummonerCustomSerializer, SummonerOverviewSerializer
-from .utilities import dictfetchall, ranked_badge, calculate_average_elo, check_missing_items, RiotApiError, get_rate_limit_key
+from .utilities import dictfetchall, ranked_badge, calculate_average_elo, check_missing_items, RiotApiError, get_rate_limit_key, RiotRateLimitError, test_rate_limit_key
+from functools import wraps
 from django.forms.models import model_to_dict
 from django_redis import get_redis_connection
-from .rate_limiter import RiotRateLimiter
+from django.core.cache import cache
+from .rate_limiting_OLD import RiotRateLimiter
+from .rate_limiter import rate_limited_RIOT_get
 # from django.views.decorators.cache import cache_page
 import pprint
 from rest_framework.decorators import api_view
@@ -22,8 +26,10 @@ import time
 import os
 import ast
 import json
+import time
 import httpx
 import asyncio
+
 
 
 #################################################################################
@@ -37,6 +43,45 @@ try:
 except Exception as error:
     print("Admin must create season records in database." + repr(error))
 season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
+
+
+# def atomic_view_rate_limit(self, *args, **kwargs):
+#     currently_timed_out = cache.get("Rate Limit Received")
+#     if currently_timed_out:
+#         print("this rte was hit")
+#         return "0/s"
+#     return None
+
+
+# def ratelimited_error(request, exception):
+#     # or other types:
+#     return JsonResponse({'error': 'ratelimited'}, status=429)
+
+
+# def custom403handler(request, exception):
+#     if isinstance(exception, Ratelimited):
+#         return JsonResponse({'error': 'ratelimited'}, status=429)
+#     return JsonResponse("Forbidden", safe=False, status=403)
+
+
+def check_timeout(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        # Check if the key "429" exists in the Redis cache
+        redis_conn = get_redis_connection("default")
+        timeout_timer = redis_conn.ttl(":1:429")
+        if timeout_timer > 0:
+            # If the key exists, return error JSON
+            return JsonResponse({"error": f"Too Many Requests. Retry in {timeout_timer}"}, status=429)
+
+        # If the key does not exist, let the function run as normal
+        # Note this does not preempt getting a rate limit inside of a loop
+        # If that happens a 403 will be returned by django_ratelimit, handle that in client
+        return view_func(request, *args, **kwargs)
+
+    return _wrapped_view
+
+
 #################################################################################
 #################################################################################
 #################################################################################
@@ -46,6 +91,7 @@ season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
 ######################################################################################
 # Helper Function to check database for existing summoner data before hitting Riot API # special text index on gamename and tagline?
 ######################################################################################
+@ratelimit(key=os.environ["RIOT_KEY"])
 @api_view(['GET'])
 def get_summoner(request):
 
@@ -498,8 +544,10 @@ def get_summoner(request):
 @api_view(['GET'])
 @transaction.atomic
 def get_ranked_ladder(request):
-    redis_conn = get_redis_connection("default")
-    cached_ladder = redis_conn.get(f"{request.query_params.get('platform')}_ladder")
+    # redis_conn = get_redis_connection("default")
+    # cached_ladder = redis_conn.get(f"{request.query_params.get('platform')}_ladder")
+
+    cached_ladder = cache.get(f"{request.query_params.get('platform')}_ladder")
 
     if cached_ladder:
         summoners = json.loads(cached_ladder)
@@ -610,7 +658,8 @@ def get_ranked_ladder(request):
                         updated_summoner["metadata"] = player_overview
                         summoners.append(updated_summoner)
 
-                redis_conn.set(f"{request.query_params.get('platform')}_ladder", json.dumps(summoners), ex=3600)
+                cache.set(f"{request.query_params.get('platform')}_ladder", json.dumps(summoners), timeout=3600)
+                # redis_conn.set(f"{request.query_params.get('platform')}_ladder", json.dumps(summoners), ex=3600)
                 http_status_code = status.HTTP_201_CREATED
 
             else:
@@ -682,26 +731,31 @@ def testing(request):
 
 
 ############################
+# @ratelimit(key='abc', rate=atomic_view_rate_limit, method=ratelimit.ALL)
+# @ratelimit(key=test_rate_limit_key, rate='100/h', method=ratelimit.ALL)
+@check_timeout
 @api_view(['GET'])
-def cachetest(request):
+def test2(request):
 
-    data = ""
+    request = rate_limited_RIOT_get(riot_endpoint="https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/vanilli%20vanilli/vv2",
+                                region='americas',
+                                request=request)
+    # # Start the timer
+    # start_time = time.time()
 
-    redis_conn = get_redis_connection("default")
-    cached_data = redis_conn.get("EXKEY")
+    # i = 0
+    # while i < 5:
+    #     url = f"https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/vanilli%vanilli/vv2"
+    #     request = RiotRateLimiter(url, "americas", request)
+    #     response = request.get(request.riot_endpoint)
 
-    if cached_data:
-        data = cached_data
-        return JsonResponse(f"{data} already existed", safe=False, status=status.HTTP_208_ALREADY_REPORTED)
+    #     # Calculate elapsed time
+    #     elapsed_time = time.time() - start_time
 
-    else:
-        data = request.query_params.get('test')
-        redis_conn.set("EXKEY", data, ex=15)
+    #     i += 1
+    #     print("okay", i, "Elapsed Time:", elapsed_time, "seconds")
 
-    return JsonResponse(f"{data} WROTE", safe=False, status=status.HTTP_202_ACCEPTED)
-
-
-
+    return JsonResponse(request.json(), safe=False, status=200)
 
 
 
@@ -709,25 +763,31 @@ def cachetest(request):
 ############################
 @api_view(['GET'])
 def ratelimittest(request):
-    url_page1 = f'https://{request.query_params.get("platform")}.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=1'
-    url2 = f"https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/vanilli%vanilli/vv2"
+
+    try:
+        url_page1 = f'https://{request.query_params.get("platform")}.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=1'
+        url2 = f"https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/vanilli%vanilli/vv2"
 
 
-    custom_request = RiotRateLimiter(url_page1)
-    response1 = custom_request.get(url_page1)
-    print(response1.json()[0], "ok1")
+        custom_request = RiotRateLimiter(url_page1)
+        response1 = custom_request.get(url_page1)
+        print(response1.json()[0], "ok1")
 
-    custom_request = RiotRateLimiter(url2)
-    response2 = custom_request.get(url2)
-    print(response2.json(), "ok2")
+        custom_request = RiotRateLimiter(url2)
+        response2 = custom_request.get(url2)
+        print(response2.json(), "ok2")
 
-    custom_request = RiotRateLimiter(url2)
-    response2 = custom_request.get(url2)
-    print(response2.json(), "ok2")
+        custom_request = RiotRateLimiter(url2)
+        response2 = custom_request.get(url2)
+        print(response2.json(), "ok2")
 
-    custom_request = RiotRateLimiter(url2)
-    response2 = custom_request.get(url2)
-    print(response2.json(), "ok2")
+        custom_request = RiotRateLimiter(url2)
+        response2 = custom_request.get(url2)
+        print(response2.json(), "ok2")
+
+    except RiotRateLimitError as err:
+        return JsonResponse(json.dumps(err.to_dict()), status=status.HTTP_429_TOO_MANY_REQUESTS)
+
 
     # response1 = CustomRequests.get(request, url_page1)
     # response2 = CustomRequests.get(request, url_page2)
