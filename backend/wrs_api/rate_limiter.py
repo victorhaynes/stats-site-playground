@@ -9,13 +9,13 @@ from django.core.cache import cache
 from .utilities import test_rate_limit_key
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
-
+from rest_framework.response import Response
 
 headers = {'X-Riot-Token': os.environ["RIOT_KEY"]}
 production = False if os.environ["PRODUCTION"] == 'false' else True
 
 
-def rate_limited_RIOT_get(riot_endpoint, region, request):
+def rate_limited_RIOT_get(riot_endpoint, region, platform, request):
     cleaned_endpoint = None
     service = None
     application_seconds_ratelimit = '20/s' # Higher in Prod
@@ -23,7 +23,7 @@ def rate_limited_RIOT_get(riot_endpoint, region, request):
     method_seconds_ratelimit = None
     method_minutes_ratelimit = None
     
-    application_rate_limit_key = os.environ["RIOT_KEY"] + region
+    application_rate_limit_key = os.environ["RIOT_KEY"] + region + platform
 
     if production:
         # SUMMONER V4
@@ -106,7 +106,7 @@ def rate_limited_RIOT_get(riot_endpoint, region, request):
                 cleaned_endpoint = '/lol/match/v5/matches/'
             service = 'Match v5'
 
-        method_rate_limit_key = cleaned_endpoint + region
+        method_rate_limit_key = cleaned_endpoint + region + platform
 
     else:
         method_seconds_ratelimit = '20/s' # DEV/PERSONAL Default limit
@@ -115,7 +115,7 @@ def rate_limited_RIOT_get(riot_endpoint, region, request):
         application_minutes_ratelimit = '100/2m' # DEV/PERSONAL Default limit
         service = 'n/a'
         cleaned_endpoint = os.environ["RIOT_KEY"] # Ignore method-specifics, just use API KEY
-        method_rate_limit_key = cleaned_endpoint + region
+        method_rate_limit_key = cleaned_endpoint + region + platform
 
     def get_application_rate_limit_seconds_key(request, *args, **kwargs):
         return str(application_rate_limit_key) + "seconds" + "_application"
@@ -143,27 +143,24 @@ def rate_limited_RIOT_get(riot_endpoint, region, request):
         print("method_seconds_ratelimit:", method_seconds_ratelimit)
         print("get_method_rate_limit_minutes_key:", get_method_rate_limit_minutes_key(request))
         print("method_minutes_ratelimit:", method_minutes_ratelimit)
-        if not production and cleaned_endpoint == os.environ["RIOT_KEY"]:
-            print("API KEY")
-        else:
-            print("REAL KEY", cleaned_endpoint)
+
 
         response = requests.get(riot_endpoint, headers=headers)
 
         if response.status_code == 429:
-            print("Likely Service Limited By Riot")
-
+            print("Likely Service Limited By Riot / App & Method Limits Not Reached")
             ratelimit_type = response.headers.get('X-Rate-Limit-Type')
             retry_after = response.headers.get('Retry-After')
+            if retry_after == None:
+                retry_after = 30
             details = json.dumps({"type": ratelimit_type, "retry_after": int(retry_after) + 1})
             cache.set(429, details, timeout=int(retry_after) + 1)
-            print(cache.get(429))
-            return JsonResponse({"error": f"Too Many Requests. Retry in {retry_after}"}, status=429)
-        elif str(response.status_code)[0] == 4 or str(response.status_code)[0] == 5: # any other 400 error
-                return JsonResponse({"Riot API returned error": response.status_code, "message": response.json(), "meta": "custom getter"}, status=response.status_code)
-            
+            return response.json()
+        elif str(response.status_code)[0] == '4' or str(response.status_code)[0] == '5': # any other 400 error
+            print("ERRORED")
+            return response.json()
 
-        return response
+        return response.json()
 
     # Call the get_request function with the provided arguments
     return get_request(request, riot_endpoint)

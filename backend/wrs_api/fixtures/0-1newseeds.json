@@ -1,0 +1,6952 @@
+[
+    {
+      "model": "wrs_api.Role",
+      "fields": {
+          "name": "TOP"
+      }
+  },
+  {
+      "model": "wrs_api.Role",
+      "fields": {
+          "name": "JUNGLE"
+      }
+  },
+  {
+      "model": "wrs_api.Role",
+      "fields": {
+          "name": "MIDDLE"
+      }
+  },
+  {
+      "model": "wrs_api.Role",
+      "fields": {
+          "name": "BOTTOM"
+      }
+  },
+  {
+      "model": "wrs_api.Role",
+      "fields": {
+          "name": "UTILITY"
+      }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Unranked"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Iron 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Iron 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Iron 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Iron 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Bronze 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Bronze 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Bronze 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Bronze 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Silver 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Silver 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Silver 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Silver 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Gold 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Gold 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Gold 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Gold 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Platinum 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Platinum 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Platinum 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Platinum 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Emerald 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Emerald 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Emerald 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Emerald 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Diamond 4"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Diamond 3"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Diamond 2"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Diamond 1"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Master"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Grandmaster"
+    }
+  },
+  {
+    "model": "wrs_api.Rank",
+    "fields": {
+        "elo": "Challenger"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 21,
+      "name": "Barrier"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 1,
+      "name": "Cleanse"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 4,
+      "name": "Flash"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 2202,
+      "name": "Cherry Flash"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 2201,
+      "name": "Flee"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 14,
+      "name": "Ignite"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 3,
+      "name": "Exhaust"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 6,
+      "name": "Ghost"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 7,
+      "name": "Heal"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 13,
+      "name": "Clarity"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 30,
+      "name": "To the King!"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 31,
+      "name": "Poro Toss"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 11,
+      "name": "Smite"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 32,
+      "name": "Mark"
+    }
+  },
+  {
+    "model": "wrs_api.SummonerSpell",
+    "fields": {
+      "spellId": 12,
+      "name": "Teleport"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8008,
+      "name": "Lethal Tempo"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8112,
+      "name": "Electrocute"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8128,
+      "name": "Dark Harvest"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 9923,
+      "name": "Hail of Blades"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8351,
+      "name": "Glacial Augment"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8360,
+      "name": "Unsealed Spellbook"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8369,
+      "name": "First Strike"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8005,
+      "name": "Press the Attack"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8021,
+      "name": "Fleet Footwork"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8010,
+      "name": "Conqueror"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8437,
+      "name": "Grasp of the Undying"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8439,
+      "name": "Aftershock"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8465,
+      "name": "Guardian"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8214,
+      "name": "Summon Aery"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8229,
+      "name": "Arcane Comet"
+    }
+  },
+  {
+    "model": "wrs_api.Keystone",
+    "fields": {
+      "keystone_id": 8230,
+      "name": "Phase Rush"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 9101,
+      "name": "Overheal"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8126,
+      "name": "Cheap Shot"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8139,
+      "name": "Taste of Blood"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8143,
+      "name": "Sudden Impact"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8306,
+      "name": "Hextech Flashtraption"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8304,
+      "name": "Magical Footwear"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8321,
+      "name": "Cash Back"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 9101,
+      "name": "Absorb Life"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 9111,
+      "name": "Triumph"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8009,
+      "name": "Presence of Mind"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8446,
+      "name": "Demolish"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8463,
+      "name": "Font of Life"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8401,
+      "name": "Shield Bash"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8224,
+      "name": "Nullifying Orb"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8226,
+      "name": "Manaflow Band"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkOne",
+    "fields": {
+      "perk_id": 8275,
+      "name": "Nimbus Cloak"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8136,
+      "name": "Zombie Ward"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8120,
+      "name": "Ghost Poro"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8138,
+      "name": "Eyeball Collection"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8313,
+      "name": "Triple Tonic"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8352,
+      "name": "Time Warp Tonic"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8345,
+      "name": "Biscuit Delivery"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 9104,
+      "name": "Legend: Alacrity"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 9105,
+      "name": "Legend: Haste"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 9103,
+      "name": "Legend: Bloodline"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8429,
+      "name": "Conditioning"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8444,
+      "name": "Second Wind"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8473,
+      "name": "Bone Plating"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8210,
+      "name": "Transcendence"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8234,
+      "name": "Celerity"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkTwo",
+    "fields": {
+      "perk_id": 8233,
+      "name": "Absolute Focus"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8135,
+      "name": "Treasure Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8105,
+      "name": "Relentless Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8106,
+      "name": "Ultimate Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8347,
+      "name": "Cosmic Insight"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8410,
+      "name": "Approach Velocity"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8316,
+      "name": "Jack Of All Trades"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8014,
+      "name": "Coup de Grace"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8017,
+      "name": "Cut Down"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8299,
+      "name": "Last Stand"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8451,
+      "name": "Overgrowth"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8453,
+      "name": "Revitalize"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8242,
+      "name": "Unflinching"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8237,
+      "name": "Scorch"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8232,
+      "name": "Waterwalking"
+    }
+  },
+  {
+    "model": "wrs_api.PrimaryPerkThree",
+    "fields": {
+      "perk_id": 8236,
+      "name": "Gathering Storm"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8126,
+      "name": "Cheap Shot"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8139,
+      "name": "Taste of Blood"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8143,
+      "name": "Sudden Impact"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8306,
+      "name": "Hextech Flashtraption"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8304,
+      "name": "Magical Footwear"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8321,
+      "name": "Cash Back"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 9101,
+      "name": "Absorb Life"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 9111,
+      "name": "Triumph"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8009,
+      "name": "Presence of Mind"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8446,
+      "name": "Demolish"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8463,
+      "name": "Font of Life"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8401,
+      "name": "Shield Bash"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8224,
+      "name": "Nullifying Orb"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8226,
+      "name": "Manaflow Band"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8275,
+      "name": "Nimbus Cloak"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8136,
+      "name": "Zombie Ward"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8120,
+      "name": "Ghost Poro"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8138,
+      "name": "Eyeball Collection"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8313,
+      "name": "Triple Tonic"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8352,
+      "name": "Time Warp Tonic"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8345,
+      "name": "Biscuit Delivery"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 9104,
+      "name": "Legend: Alacrity"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 9105,
+      "name": "Legend: Haste"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 9103,
+      "name": "Legend: Bloodline"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8429,
+      "name": "Conditioning"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8444,
+      "name": "Second Wind"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8473,
+      "name": "Bone Plating"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8210,
+      "name": "Transcendence"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8234,
+      "name": "Celerity"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8233,
+      "name": "Absolute Focus"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8135,
+      "name": "Treasure Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8105,
+      "name": "Relentless Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8106,
+      "name": "Ultimate Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8347,
+      "name": "Cosmic Insight"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8410,
+      "name": "Approach Velocity"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8316,
+      "name": "Jack Of All Trades"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8014,
+      "name": "Coup de Grace"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8017,
+      "name": "Cut Down"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8299,
+      "name": "Last Stand"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8451,
+      "name": "Overgrowth"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8453,
+      "name": "Revitalize"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8242,
+      "name": "Unflinching"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8237,
+      "name": "Scorch"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8232,
+      "name": "Waterwalking"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkOne",
+    "fields": {
+      "perk_id": 8236,
+      "name": "Gathering Storm"
+    }
+  },
+
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8126,
+      "name": "Cheap Shot"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8139,
+      "name": "Taste of Blood"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8143,
+      "name": "Sudden Impact"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8306,
+      "name": "Hextech Flashtraption"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8304,
+      "name": "Magical Footwear"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8321,
+      "name": "Cash Back"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 9101,
+      "name": "Absorb Life"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 9111,
+      "name": "Triumph"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8009,
+      "name": "Presence of Mind"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8446,
+      "name": "Demolish"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8463,
+      "name": "Font of Life"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8401,
+      "name": "Shield Bash"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8224,
+      "name": "Nullifying Orb"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8226,
+      "name": "Manaflow Band"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8275,
+      "name": "Nimbus Cloak"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8136,
+      "name": "Zombie Ward"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8120,
+      "name": "Ghost Poro"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8138,
+      "name": "Eyeball Collection"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8313,
+      "name": "Triple Tonic"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8352,
+      "name": "Time Warp Tonic"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8345,
+      "name": "Biscuit Delivery"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 9104,
+      "name": "Legend: Alacrity"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 9105,
+      "name": "Legend: Haste"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 9103,
+      "name": "Legend: Bloodline"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8429,
+      "name": "Conditioning"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8444,
+      "name": "Second Wind"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8473,
+      "name": "Bone Plating"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8210,
+      "name": "Transcendence"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8234,
+      "name": "Celerity"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8233,
+      "name": "Absolute Focus"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8135,
+      "name": "Treasure Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8105,
+      "name": "Relentless Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8106,
+      "name": "Ultimate Hunter"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8347,
+      "name": "Cosmic Insight"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8410,
+      "name": "Approach Velocity"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8316,
+      "name": "Jack Of All Trades"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8014,
+      "name": "Coup de Grace"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8017,
+      "name": "Cut Down"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8299,
+      "name": "Last Stand"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8451,
+      "name": "Overgrowth"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8453,
+      "name": "Revitalize"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8242,
+      "name": "Unflinching"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8237,
+      "name": "Scorch"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8232,
+      "name": "Waterwalking"
+    }
+  },
+  {
+    "model": "wrs_api.SecondaryPerkTwo",
+    "fields": {
+      "perk_id": 8236,
+      "name": "Gathering Storm"
+    }
+  },
+  {
+    "model": "wrs_api.StatShardOne",
+    "fields": {
+        "shard_id": 5008,
+        "name": "Adaptive Force"
+    }
+  },
+  {
+      "model": "wrs_api.StatShardOne",
+      "fields": {
+          "shard_id": 5005,
+          "name": "Attack Speed"
+      }
+  },
+  {
+      "model": "wrs_api.StatShardOne",
+      "fields": {
+          "shard_id": 5007,
+          "name": "Ability Haste"
+      }
+  },
+  {
+    "model": "wrs_api.StatShardTwo",
+    "fields": {
+        "shard_id": 5008,
+        "name": "Adaptive Force"
+    }
+  },
+  {
+      "model": "wrs_api.StatShardTwo",
+      "fields": {
+          "shard_id": 5010,
+          "name": "Move Speed"
+      }
+  },
+  {
+      "model": "wrs_api.StatShardTwo",
+      "fields": {
+          "shard_id": 5001,
+          "name": "Health Scaling"
+      }
+  },
+  {
+    "model": "wrs_api.StatShardThree",
+    "fields": {
+        "shard_id": 5011,
+        "name": "Health"
+    }
+  },
+  {
+      "model": "wrs_api.StatShardThree",
+      "fields": {
+          "shard_id": 5013,
+          "name": "Tenacity And Slow Resist"
+      }
+  },
+  {
+      "model": "wrs_api.StatShardThree",
+      "fields": {
+          "shard_id": 5001,
+          "name": "Health Scaling"
+      }
+  },
+  {
+    "model": "wrs_api.Season",
+    "fields": {
+      "season": 14,
+      "split": 1
+    }
+  },
+  {
+    "model": "wrs_api.Season",
+    "fields": {
+      "season": 14,
+      "split": 2
+    }
+  },
+  {
+    "model": "wrs_api.Season",
+    "fields": {
+      "season": 14,
+      "split": 3
+    }
+  },
+  {
+      "model": "wrs_api.Patch",
+      "fields": {
+        "full_version": "14.1.552.7117",
+        "version": "14.1",
+        "season_id": 1
+      }
+  },
+  {
+    "model": "wrs_api.Patch",
+    "fields": {
+      "full_version": "14.1.553.2414",
+      "version": "14.1",
+      "season_id": 1
+    }
+  },
+  {
+      "model": "wrs_api.Region",
+      "fields": {
+        "name": "americas"
+      }
+    },
+    {
+      "model": "wrs_api.Region",
+      "fields": {
+        "name": "asia"
+      }
+    },
+    {
+      "model": "wrs_api.Region",
+      "fields": {
+        "name": "europe"
+      }
+    },
+    {
+      "model": "wrs_api.Region",
+      "fields": {
+        "name": "sea"
+      }
+    },
+    {
+      "model": "wrs_api.Region",
+      "fields": {
+        "name": "esports"
+      }
+    },
+    {
+      "model": "wrs_api.Platform",
+      "fields": {
+        "code": "na1",
+        "region": "americas"
+      }
+    },
+    {
+      "model": "wrs_api.Platform",
+      "fields": {
+        "code": "euw1",
+        "region": "europe"
+      }
+    },
+    {
+      "model": "wrs_api.Platform",
+      "fields": {
+        "code": "br1",
+        "region": "americas"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 420,
+        "name": "Solo Ranked"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 400,
+        "name": "Normal"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 490,
+        "name": "Quick Play"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 450,
+        "name": "ARAM"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 1300,
+        "name": "Nexus Blitz"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 1700,
+        "name": "Arena"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 440,
+        "name": "Flex"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 700,
+        "name": "Clash"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 900,
+        "name": "ARUF"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 1900,
+        "name": "Pick URF"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 1020,
+        "name": "One For All"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 470,
+        "name": "(N) Twisted Treeline"
+      }
+    },
+    {
+      "model": "wrs_api.GameMode",
+      "fields": {
+        "queueId": 720,
+        "name": "ARAM Clash"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": -1,
+        "name": "None"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 1,
+        "name": "Annie"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 2,
+        "name": "Olaf"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 3,
+        "name": "Galio"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 4,
+        "name": "Twisted Fate"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 5,
+        "name": "Xin Zhao"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 6,
+        "name": "Urgot"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 7,
+        "name": "LeBlanc"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 8,
+        "name": "Vladimir"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 9,
+        "name": "Fiddlesticks"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 10,
+        "name": "Kayle"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 11,
+        "name": "Master Yi"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 12,
+        "name": "Alistar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 13,
+        "name": "Ryze"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 14,
+        "name": "Sion"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 15,
+        "name": "Sivir"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 16,
+        "name": "Soraka"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 17,
+        "name": "Teemo"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 18,
+        "name": "Tristana"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 19,
+        "name": "Warwick"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 20,
+        "name": "Nunu & Willump"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 21,
+        "name": "Miss Fortune"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 22,
+        "name": "Ashe"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 23,
+        "name": "Tryndamere"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 24,
+        "name": "Jax"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 25,
+        "name": "Morgana"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 26,
+        "name": "Zilean"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 27,
+        "name": "Singed"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 28,
+        "name": "Evelynn"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 29,
+        "name": "Twitch"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 30,
+        "name": "Karthus"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 31,
+        "name": "Cho'Gath"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 32,
+        "name": "Amumu"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 33,
+        "name": "Rammus"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 34,
+        "name": "Anivia"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 35,
+        "name": "Shaco"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 36,
+        "name": "Dr. Mundo"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 37,
+        "name": "Sona"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 38,
+        "name": "Kassadin"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 39,
+        "name": "Irelia"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 40,
+        "name": "Janna"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 41,
+        "name": "Gangplank"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 42,
+        "name": "Corki"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 43,
+        "name": "Karma"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 44,
+        "name": "Taric"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 45,
+        "name": "Veigar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 48,
+        "name": "Trundle"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 50,
+        "name": "Swain"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 51,
+        "name": "Caitlyn"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 53,
+        "name": "Blitzcrank"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 54,
+        "name": "Malphite"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 55,
+        "name": "Katarina"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 56,
+        "name": "Nocturne"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 57,
+        "name": "Maokai"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 58,
+        "name": "Renekton"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 59,
+        "name": "Jarvan IV"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 60,
+        "name": "Elise"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 61,
+        "name": "Orianna"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 62,
+        "name": "Wukong"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 63,
+        "name": "Brand"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 64,
+        "name": "Lee Sin"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 67,
+        "name": "Vayne"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 68,
+        "name": "Rumble"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 69,
+        "name": "Cassiopeia"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 72,
+        "name": "Skarner"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 74,
+        "name": "Heimerdinger"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 75,
+        "name": "Nasus"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 76,
+        "name": "Nidalee"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 77,
+        "name": "Udyr"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 78,
+        "name": "Poppy"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 79,
+        "name": "Gragas"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 80,
+        "name": "Pantheon"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 81,
+        "name": "Ezreal"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 82,
+        "name": "Mordekaiser"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 83,
+        "name": "Yorick"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 84,
+        "name": "Akali"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 85,
+        "name": "Kennen"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 86,
+        "name": "Garen"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 89,
+        "name": "Leona"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 90,
+        "name": "Malzahar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 91,
+        "name": "Talon"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 92,
+        "name": "Riven"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 96,
+        "name": "Kog'Maw"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 98,
+        "name": "Shen"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 99,
+        "name": "Lux"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 101,
+        "name": "Xerath"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 102,
+        "name": "Shyvana"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 103,
+        "name": "Ahri"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 104,
+        "name": "Graves"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 105,
+        "name": "Fizz"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 106,
+        "name": "Volibear"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 107,
+        "name": "Rengar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 110,
+        "name": "Varus"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 111,
+        "name": "Nautilus"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 112,
+        "name": "Viktor"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 113,
+        "name": "Sejuani"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 114,
+        "name": "Fiora"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 115,
+        "name": "Ziggs"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 117,
+        "name": "Lulu"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 119,
+        "name": "Draven"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 120,
+        "name": "Hecarim"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 121,
+        "name": "Kha'Zix"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 122,
+        "name": "Darius"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 126,
+        "name": "Jayce"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 127,
+        "name": "Lissandra"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 131,
+        "name": "Diana"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 133,
+        "name": "Quinn"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 134,
+        "name": "Syndra"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 136,
+        "name": "Aurelion Sol"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 141,
+        "name": "Kayn"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 142,
+        "name": "Zoe"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 143,
+        "name": "Zyra"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 145,
+        "name": "Kai'Sa"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 147,
+        "name": "Seraphine"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 150,
+        "name": "Gnar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 154,
+        "name": "Zac"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 157,
+        "name": "Yasuo"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 161,
+        "name": "Vel'Koz"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 163,
+        "name": "Taliyah"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 164,
+        "name": "Camille"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 166,
+        "name": "Akshan"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 200,
+        "name": "Bel'Veth"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 201,
+        "name": "Braum"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 202,
+        "name": "Jhin"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 203,
+        "name": "Kindred"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 221,
+        "name": "Zeri"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 222,
+        "name": "Jinx"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 223,
+        "name": "Tahm Kench"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 233,
+        "name": "Briar"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 234,
+        "name": "Viego"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 235,
+        "name": "Senna"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 236,
+        "name": "Lucian"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 238,
+        "name": "Zed"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 240,
+        "name": "Kled"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 245,
+        "name": "Ekko"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 246,
+        "name": "Qiyana"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 254,
+        "name": "Vi"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 266,
+        "name": "Aatrox"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 267,
+        "name": "Nami"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 268,
+        "name": "Azir"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 350,
+        "name": "Yuumi"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 360,
+        "name": "Samira"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 412,
+        "name": "Thresh"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 420,
+        "name": "Illaoi"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 421,
+        "name": "Rek'Sai"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 427,
+        "name": "Ivern"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 429,
+        "name": "Kalista"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 432,
+        "name": "Bard"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 497,
+        "name": "Rakan"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 498,
+        "name": "Xayah"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 516,
+        "name": "Ornn"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 517,
+        "name": "Sylas"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 518,
+        "name": "Neeko"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 523,
+        "name": "Aphelios"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 526,
+        "name": "Rell"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 555,
+        "name": "Pyke"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 711,
+        "name": "Vex"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 777,
+        "name": "Yone"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 875,
+        "name": "Sett"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 876,
+        "name": "Lillia"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 887,
+        "name": "Gwen"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 888,
+        "name": "Renata Glasc"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 895,
+        "name": "Nilah"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 897,
+        "name": "K'Sante"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 901,
+        "name": "Smolder"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 902,
+        "name": "Milio"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 910,
+        "name": "Hwei"
+      }
+    },
+    {
+      "model": "wrs_api.Champion",
+      "fields": {
+        "championId": 950,
+        "name": "Naafiri"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": -1,
+        "name": "No First Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": -2,
+        "name": "No Second Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": -3,
+        "name": "No Third Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": -4,
+        "name": "No Forth Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": -5,
+        "name": "No Fifth Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": -6,
+        "name": "No Sixth Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1001,
+        "name": "Boots"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1004,
+        "name": "Faerie Charm"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1006,
+        "name": "Rejuvenation Bead"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1011,
+        "name": "Giant's Belt"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1018,
+        "name": "Cloak of Agility"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1026,
+        "name": "Blasting Wand"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1027,
+        "name": "Sapphire Crystal"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1028,
+        "name": "Ruby Crystal"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1029,
+        "name": "Cloth Armor"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1031,
+        "name": "Chain Vest"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1033,
+        "name": "Null-Magic Mantle"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1035,
+        "name": "Emberknife"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1036,
+        "name": "Long Sword"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1037,
+        "name": "Pickaxe"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1038,
+        "name": "B. F. Sword"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1039,
+        "name": "Hailblade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1040,
+        "name": "Obsidian Edge"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1042,
+        "name": "Dagger"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1043,
+        "name": "Recurve Bow"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1052,
+        "name": "Amplifying Tome"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1053,
+        "name": "Vampiric Scepter"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1054,
+        "name": "Doran's Shield"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1055,
+        "name": "Doran's Blade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1056,
+        "name": "Doran's Ring"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1057,
+        "name": "Negatron Cloak"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1058,
+        "name": "Needlessly Large Rod"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1082,
+        "name": "Dark Seal"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1083,
+        "name": "Cull"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1101,
+        "name": "Scorchclaw Pup"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1102,
+        "name": "Gustwalker Hatchling"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1103,
+        "name": "Mosstomper Seedling"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1104,
+        "name": "Eye of the Herald"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 126697,
+        "name": "Hubris<br>"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 127008,
+        "name": "Ataraxia"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1500,
+        "name": "Penetrating Bullets"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1501,
+        "name": "Fortification"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1502,
+        "name": "Reinforced Armor"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1503,
+        "name": "Warden's Eye"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1504,
+        "name": "Vanguard"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1506,
+        "name": "Reinforced Armor"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1507,
+        "name": "Overcharged"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1508,
+        "name": "Anti-tower Socks"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1509,
+        "name": "Gusto"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1510,
+        "name": "Phreakish Gusto"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1511,
+        "name": "Super Mech Armor"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1512,
+        "name": "Super Mech Power Field"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1515,
+        "name": "Turret Plating"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1516,
+        "name": "Structure Bounty"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1517,
+        "name": "Structure Bounty"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1518,
+        "name": "Structure Bounty"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1519,
+        "name": "Structure Bounty"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1520,
+        "name": "OvererchargedHA"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1521,
+        "name": "Fortification"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 1522,
+        "name": "Tower Power-Up"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2003,
+        "name": "Health Potion"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2010,
+        "name": "Total Biscuit of Everlasting Will"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2015,
+        "name": "Kircheis Shard"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2019,
+        "name": "Steel Sigil"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2020,
+        "name": "The Brutalizer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2021,
+        "name": "Tunneler"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2022,
+        "name": "Glowing Mote"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2031,
+        "name": "Refillable Potion"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2033,
+        "name": "Corrupting Potion"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2049,
+        "name": "Guardian's Amulet"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2050,
+        "name": "Guardian's Shroud"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2051,
+        "name": "Guardian's Horn"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2052,
+        "name": "Poro-Snax"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2055,
+        "name": "Control Ward"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2056,
+        "name": "Stealth Ward"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2065,
+        "name": "Shurelya's Battlesong"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2138,
+        "name": "Elixir of Iron"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2139,
+        "name": "Elixir of Sorcery"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2140,
+        "name": "Elixir of Wrath"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2141,
+        "name": "Cappa Juice"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2142,
+        "name": "Juice of Power"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2143,
+        "name": "Juice of Vitality"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2144,
+        "name": "Juice of Haste"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2145,
+        "name": "Lucky Dice"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2150,
+        "name": "Elixir of Skill"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2151,
+        "name": "Elixir of Avarice"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2152,
+        "name": "Elixir of Force"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 220000,
+        "name": "Stat Bonus"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 220001,
+        "name": "Legendary Fighter Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 220002,
+        "name": "Legendary Marksman Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 220003,
+        "name": "Legendary Assassin Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 220004,
+        "name": "Legendary Mage Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 220005,
+        "name": "Legendary Tank Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 220006,
+        "name": "Legendary Support Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 220007,
+        "name": "Prismatic Item"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 221011,
+        "name": "Giant's Belt"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 221026,
+        "name": "Blasting Wand"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 221031,
+        "name": "Chain Vest"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 221038,
+        "name": "B. F. Sword"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 221043,
+        "name": "Recurve Bow"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 221053,
+        "name": "Vampiric Scepter"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 221057,
+        "name": "Negatron Cloak"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 221058,
+        "name": "Needlessly Large Rod"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 222022,
+        "name": "Glowing Mote"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 222051,
+        "name": "Guardian's Horn"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 222065,
+        "name": "Shurelya's Battlesong"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 222141,
+        "name": "Cappa Juice"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 222502,
+        "name": "Unending Despair"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 222503,
+        "name": "Blackfire Torch"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 222504,
+        "name": "Kaenic Rookern"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223001,
+        "name": "Evenshroud"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223002,
+        "name": "Trailblazer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223003,
+        "name": "Archangel's Staff"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223004,
+        "name": "Manamune"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223005,
+        "name": "Ghostcrawlers"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223006,
+        "name": "Berserker's Greaves"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223009,
+        "name": "Boots of Swiftness"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223011,
+        "name": "Chemtech Putrifier"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223020,
+        "name": "Sorcerer's Shoes"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223026,
+        "name": "Guardian Angel"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223031,
+        "name": "Infinity Edge"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223032,
+        "name": "Yun Tal Wildarrows"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223033,
+        "name": "Mortal Reminder"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223036,
+        "name": "Lord Dominik's Regards"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223039,
+        "name": "Atma's Reckoning"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223040,
+        "name": "Seraph's Embrace"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223042,
+        "name": "Muramana"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223046,
+        "name": "Phantom Dancer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223047,
+        "name": "Plated Steelcaps"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223050,
+        "name": "Zeke's Convergence"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223053,
+        "name": "Sterak's Gage"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223057,
+        "name": "Sheen"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223065,
+        "name": "Spirit Visage"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223067,
+        "name": "Kindlegem"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223068,
+        "name": "Sunfire Aegis"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223071,
+        "name": "Black Cleaver"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223072,
+        "name": "Bloodthirster"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223073,
+        "name": "Experimental Hexplate"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223074,
+        "name": "Ravenous Hydra"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223075,
+        "name": "Thornmail"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223078,
+        "name": "Trinity Force"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223084,
+        "name": "Heartsteel"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223085,
+        "name": "Runaan's Hurricane"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223087,
+        "name": "Statikk Shiv"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223089,
+        "name": "Rabadon's Deathcap"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223091,
+        "name": "Wit's End"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223094,
+        "name": "Rapid Firecannon"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223095,
+        "name": "Stormrazor"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223100,
+        "name": "Lich Bane"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223102,
+        "name": "Banshee's Veil"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223105,
+        "name": "Aegis of the Legion"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223109,
+        "name": "Knight's Vow"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223110,
+        "name": "Frozen Heart"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223111,
+        "name": "Mercury's Treads"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223112,
+        "name": "Guardian's Orb"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223115,
+        "name": "Nashor's Tooth"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223116,
+        "name": "Rylai's Crystal Scepter"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223118,
+        "name": "Malignance"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223119,
+        "name": "Winter's Approach"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223121,
+        "name": "Fimbulwinter"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223124,
+        "name": "Guinsoo's Rageblade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223135,
+        "name": "Void Staff"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223137,
+        "name": "Cryptbloom"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223139,
+        "name": "Mercurial Scimitar"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223142,
+        "name": "Youmuu's Ghostblade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223143,
+        "name": "Randuin's Omen"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223146,
+        "name": "Hextech Gunblade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223152,
+        "name": "Hextech Rocketbelt"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223153,
+        "name": "Blade of The Ruined King"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223156,
+        "name": "Maw of Malmortius"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223157,
+        "name": "Zhonya's Hourglass"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223158,
+        "name": "Ionian Boots of Lucidity"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223161,
+        "name": "Spear of Shojin"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223165,
+        "name": "Morellonomicon"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223172,
+        "name": "Zephyr"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223177,
+        "name": "Guardian's Blade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223181,
+        "name": "Hullbreaker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223184,
+        "name": "Guardian's Hammer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223185,
+        "name": "Guardian's Dirk"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223190,
+        "name": "Locket of the Iron Solari"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223193,
+        "name": "Gargoyle Stoneplate"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223222,
+        "name": "Mikael's Blessing"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223302,
+        "name": "Terminus"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223504,
+        "name": "Ardent Censer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223508,
+        "name": "Essence Reaver"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223742,
+        "name": "Dead Man's Plate"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223748,
+        "name": "Titanic Hydra"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 223814,
+        "name": "Edge of Night"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224004,
+        "name": "Spectral Cutlass"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224005,
+        "name": "Imperial Mandate"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224401,
+        "name": "Force of Nature"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224403,
+        "name": "The Golden Spatula"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224628,
+        "name": "Horizon Focus"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224629,
+        "name": "Cosmic Drive"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224633,
+        "name": "Riftmaker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224636,
+        "name": "Night Harvester"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224637,
+        "name": "Demonic Embrace"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224644,
+        "name": "Crown of the Shattered Queen"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224645,
+        "name": "Shadowflame"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 224646,
+        "name": "Stormsurge"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226035,
+        "name": "Silvermere Dawn"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226333,
+        "name": "Death's Dance"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226609,
+        "name": "Chempunk Chainsword"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226610,
+        "name": "Sundered Sky"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226616,
+        "name": "Staff of Flowing Water"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226617,
+        "name": "Moonstone Renewer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226620,
+        "name": "Echoes of Helia"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226621,
+        "name": "Dawncore"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226630,
+        "name": "Goredrinker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226631,
+        "name": "Stridebreaker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226632,
+        "name": "Divine Sunderer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226653,
+        "name": "Liandry's Torment"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226655,
+        "name": "Luden's Companion"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226656,
+        "name": "Everfrost"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226657,
+        "name": "Rod of Ages"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226662,
+        "name": "Iceborn Gauntlet"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226664,
+        "name": "Hollow Radiance"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226665,
+        "name": "Jak'Sho, The Protean"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226667,
+        "name": "Radiant Virtue"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226671,
+        "name": "Galeforce"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226672,
+        "name": "Kraken Slayer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226673,
+        "name": "Immortal Shieldbow"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226675,
+        "name": "Navori Flickerblade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226676,
+        "name": "The Collector"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226691,
+        "name": "Duskblade of Draktharr"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226692,
+        "name": "Eclipse"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226693,
+        "name": "Prowler's Claw"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226694,
+        "name": "Serylda's Grudge"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226695,
+        "name": "Serpent's Fang"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226696,
+        "name": "Axiom Arc"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226697,
+        "name": "Hubris"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226698,
+        "name": "Profane Hydra"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226699,
+        "name": "Voltaic Cyclosword"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 226701,
+        "name": "Opportunity"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227001,
+        "name": "Syzygy"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227002,
+        "name": "Draktharr's Shadowcarver"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227005,
+        "name": "Frozen Fist"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227006,
+        "name": "Typhoon"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227009,
+        "name": "Icathia's Curse"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227010,
+        "name": "Vespertide"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227011,
+        "name": "Upgraded Aeropack"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227012,
+        "name": "Liandry's Lament"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227013,
+        "name": "Force of Arms"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227014,
+        "name": "Eternal Winter"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227015,
+        "name": "Ceaseless Hunger"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227016,
+        "name": "Dreamshatter"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227017,
+        "name": "Deicide"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227018,
+        "name": "Infinity Force"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227019,
+        "name": "Reliquary of the Golden Dawn"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227020,
+        "name": "Shurelya's Requiem"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227021,
+        "name": "Starcaster"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227023,
+        "name": "Equinox"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227024,
+        "name": "Caesura"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227025,
+        "name": "Leviathan"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227026,
+        "name": "The Unspoken Parasite"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227027,
+        "name": "Primordial Dawn"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227028,
+        "name": "Infinite Convergence"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227029,
+        "name": "Youmuu's Wake"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227030,
+        "name": "Seething Sorrow"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227031,
+        "name": "Edge of Finality"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227032,
+        "name": "Flicker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 227033,
+        "name": "Cry of the Shrieking City"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 228001,
+        "name": "Anathema's Chains"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 228002,
+        "name": "Wooglet's Witchcap"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 228003,
+        "name": "Deathblade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 228004,
+        "name": "Adaptive Helm"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 228005,
+        "name": "Obsidian Cleaver"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 228006,
+        "name": "Sanguine Blade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 228008,
+        "name": "Runeglaive"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 228020,
+        "name": "Abyssal Mask"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2403,
+        "name": "Minion Dematerializer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2420,
+        "name": "Seeker's Armguard"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2421,
+        "name": "Shattered Armguard"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2422,
+        "name": "Slightly Magical Footwear"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2501,
+        "name": "Overlord's Bloodmail"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2502,
+        "name": "Unending Despair"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2503,
+        "name": "Blackfire Torch"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2504,
+        "name": "Kaenic Rookern"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 2508,
+        "name": "Fated Ashes"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3001,
+        "name": "Evenshroud"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3002,
+        "name": "Trailblazer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3003,
+        "name": "Archangel's Staff"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3004,
+        "name": "Manamune"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3005,
+        "name": "Ghostcrawlers"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3006,
+        "name": "Berserker's Greaves"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3009,
+        "name": "Boots of Swiftness"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3010,
+        "name": "Symbiotic Soles"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3013,
+        "name": "Synchronized Soles"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3011,
+        "name": "Chemtech Putrifier"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3012,
+        "name": "Chalice of Blessing"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3013,
+        "name": "Synchronized Souls"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3020,
+        "name": "Sorcerer's Shoes"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3023,
+        "name": "Lifewell Pendant"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3024,
+        "name": "Glacial Buckler"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3026,
+        "name": "Guardian Angel"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3031,
+        "name": "Infinity Edge"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3032,
+        "name": "Yun Tal Wildarrows"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3035,
+        "name": "Last Whisper"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3036,
+        "name": "Lord Dominik's Regards"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3039,
+        "name": "Atma's Reckoning"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3040,
+        "name": "Seraph's Embrace"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3041,
+        "name": "Mejai's Soulstealer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3042,
+        "name": "Muramana"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3044,
+        "name": "Phage"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3046,
+        "name": "Phantom Dancer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3047,
+        "name": "Plated Steelcaps"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3050,
+        "name": "Zeke's Convergence"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3051,
+        "name": "Hearthbound Axe"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3053,
+        "name": "Sterak's Gage"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3057,
+        "name": "Sheen"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3065,
+        "name": "Spirit Visage"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3066,
+        "name": "Winged Moonplate"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3067,
+        "name": "Kindlegem"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3068,
+        "name": "Sunfire Aegis"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3070,
+        "name": "Tear of the Goddess"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3071,
+        "name": "Black Cleaver"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3072,
+        "name": "Bloodthirster"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3073,
+        "name": "Experimental Hexplate"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3074,
+        "name": "Ravenous Hydra"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3075,
+        "name": "Thornmail"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3076,
+        "name": "Bramble Vest"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3077,
+        "name": "Tiamat"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3078,
+        "name": "Trinity Force"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3082,
+        "name": "Warden's Mail"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3083,
+        "name": "Warmog's Armor"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3084,
+        "name": "Heartsteel"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3085,
+        "name": "Runaan's Hurricane"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3086,
+        "name": "Zeal"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3087,
+        "name": "Statikk Shiv"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3089,
+        "name": "Rabadon's Deathcap"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3091,
+        "name": "Wit's End"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3094,
+        "name": "Rapid Firecannon"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3095,
+        "name": "Stormrazor"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3100,
+        "name": "Lich Bane"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3102,
+        "name": "Banshee's Veil"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3105,
+        "name": "Aegis of the Legion"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3107,
+        "name": "Redemption"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3108,
+        "name": "Fiendish Codex"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3109,
+        "name": "Knight's Vow"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3110,
+        "name": "Frozen Heart"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3111,
+        "name": "Mercury's Treads"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3112,
+        "name": "Guardian's Orb"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3113,
+        "name": "Aether Wisp"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3114,
+        "name": "Forbidden Idol"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3115,
+        "name": "Nashor's Tooth"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3116,
+        "name": "Rylai's Crystal Scepter"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3117,
+        "name": "Mobility Boots"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3118,
+        "name": "Malignance"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3119,
+        "name": "Winter's Approach"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3121,
+        "name": "Fimbulwinter"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3123,
+        "name": "Executioner's Calling"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3124,
+        "name": "Guinsoo's Rageblade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3128,
+        "name": "Deathfire Grasp"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3131,
+        "name": "Sword of the Divine"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3133,
+        "name": "Caulfield's Warhammer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3134,
+        "name": "Serrated Dirk"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3135,
+        "name": "Void Staff"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3137,
+        "name": "Cryptbloom"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3139,
+        "name": "Mercurial Scimitar"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3140,
+        "name": "Quicksilver Sash"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3142,
+        "name": "Youmuu's Ghostblade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3143,
+        "name": "Randuin's Omen"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3144,
+        "name": "Scout's Slingshot"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3145,
+        "name": "Hextech Alternator"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3146,
+        "name": "Hextech Gunblade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3147,
+        "name": "Haunting Guise"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3152,
+        "name": "Hextech Rocketbelt"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3153,
+        "name": "Blade of The Ruined King"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3155,
+        "name": "Hexdrinker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3156,
+        "name": "Maw of Malmortius"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3157,
+        "name": "Zhonya's Hourglass"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3158,
+        "name": "Ionian Boots of Lucidity"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3161,
+        "name": "Spear of Shojin"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3165,
+        "name": "Morellonomicon"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3172,
+        "name": "Zephyr"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3177,
+        "name": "Guardian's Blade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3179,
+        "name": "Umbral Glaive"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3181,
+        "name": "Hullbreaker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3184,
+        "name": "Guardian's Hammer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3190,
+        "name": "Locket of the Iron Solari"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3193,
+        "name": "Gargoyle Stoneplate"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3211,
+        "name": "Spectre's Cowl"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3222,
+        "name": "Mikael's Blessing"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3302,
+        "name": "Terminus"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3330,
+        "name": "Scarecrow Effigy"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3340,
+        "name": "Stealth Ward"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3348,
+        "name": "Arcane Sweeper"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3349,
+        "name": "Lucent Singularity"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3363,
+        "name": "Farsight Alteration"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3364,
+        "name": "Oracle Lens"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3400,
+        "name": "Your Cut"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3430,
+        "name": "Rite Of Ruin"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3504,
+        "name": "Ardent Censer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3508,
+        "name": "Essence Reaver"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3513,
+        "name": "Eye of the Herald"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3599,
+        "name": "Kalista's Black Spear"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3600,
+        "name": "Kalista's Black Spear"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3742,
+        "name": "Dead Man's Plate"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3748,
+        "name": "Titanic Hydra"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3801,
+        "name": "Crystalline Bracer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3802,
+        "name": "Lost Chapter"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3803,
+        "name": "Catalyst of Aeons"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3814,
+        "name": "Edge of Night"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3850,
+        "name": "Spellthief's Edge"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3851,
+        "name": "Frostfang"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3853,
+        "name": "Shard of True Ice"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3854,
+        "name": "Steel Shoulderguards"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3855,
+        "name": "Runesteel Spaulders"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3857,
+        "name": "Pauldrons of Whiterock"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3858,
+        "name": "Relic Shield"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3859,
+        "name": "Targon's Buckler"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3860,
+        "name": "Bulwark of the Mountain"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3862,
+        "name": "Spectral Sickle"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3863,
+        "name": "Harrowing Crescent"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3864,
+        "name": "Black Mist Scythe"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3865,
+        "name": "World Atlas"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3866,
+        "name": "Runic Compass"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3867,
+        "name": "Bounty of Worlds"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3869,
+        "name": "Celestial Opposition"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3870,
+        "name": "Dream Maker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3871,
+        "name": "Zaz'Zak's Realmspike"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3876,
+        "name": "Solstice Sleigh"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3877,
+        "name": "Bloodsong"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3901,
+        "name": "<rarityLegendary>Fire at Will</rarityLegendary><br><subtitleLeft><silver>500 Silver Serpents</silver></subtitleLeft>"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3902,
+        "name": "<rarityLegendary>Death's Daughter</rarityLegendary><br><subtitleLeft><silver>500 Silver Serpents</silver></subtitleLeft>"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3903,
+        "name": "<rarityLegendary>Raise Morale</rarityLegendary><br><subtitleLeft><silver>500 Silver Serpents</silver></subtitleLeft>"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 3916,
+        "name": "Oblivion Orb"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4003,
+        "name": "Lifeline"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4004,
+        "name": "Spectral Cutlass"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4005,
+        "name": "Imperial Mandate"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4010,
+        "name": "Bloodletter's Curse"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4011,
+        "name": "Sword of Blossoming Dawn"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4012,
+        "name": "Sin Eater"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4013,
+        "name": "Lightning Braid"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4014,
+        "name": "Frozen Mallet"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4015,
+        "name": "Perplexity"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4016,
+        "name": "Wordless Promise"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4017,
+        "name": "Hellfire Hatchet"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4401,
+        "name": "Force of Nature"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4402,
+        "name": "Innervating Locket"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4403,
+        "name": "The Golden Spatula"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443054,
+        "name": "Darksteel Talons"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443056,
+        "name": "Demon King's Crown"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443058,
+        "name": "Shield of Molten Stone"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443059,
+        "name": "Cloak of Starry Night"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443060,
+        "name": "Sword of the Divine"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443061,
+        "name": "Force Of Entropy"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443062,
+        "name": "Sanguine Gift"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443063,
+        "name": "Eleisa's Miracle"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443064,
+        "name": "Talisman Of Ascension"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443069,
+        "name": "Hamstringer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443079,
+        "name": "Turbo Chemtank"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 443193,
+        "name": "Gargoyle Stoneplate"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 444636,
+        "name": "Night Harvester"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 444637,
+        "name": "Demonic Embrace"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 444644,
+        "name": "Crown of the Shattered Queen"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 446632,
+        "name": "Divine Sunderer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 446656,
+        "name": "Everfrost"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 446667,
+        "name": "Radiant Virtue"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 446671,
+        "name": "Galeforce"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 446691,
+        "name": "Duskblade of Draktharr"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 446693,
+        "name": "Prowler's Claw"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447100,
+        "name": "Mirage Blade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447101,
+        "name": "Gambler's Blade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447102,
+        "name": "Reality Fracture"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447103,
+        "name": "Hemomancer's Helm"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447104,
+        "name": "Innervating Locket"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447105,
+        "name": "Empyrean Promise"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447106,
+        "name": "Dragonheart"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447107,
+        "name": "Decapitator"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447108,
+        "name": "Runecarver"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447109,
+        "name": "Cruelty"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447110,
+        "name": "Moonflair Spellblade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447111,
+        "name": "Overlord's Bloodmail"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447112,
+        "name": "Flesheater"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 447113,
+        "name": "Detonation Orb"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4628,
+        "name": "Horizon Focus"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4629,
+        "name": "Cosmic Drive"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4630,
+        "name": "Blighting Jewel"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4632,
+        "name": "Verdant Barrier"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4633,
+        "name": "Riftmaker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4635,
+        "name": "Leeching Leer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4636,
+        "name": "Night Harvester"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4637,
+        "name": "Demonic Embrace"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4638,
+        "name": "Watchful Wardstone"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4641,
+        "name": "Stirring Wardstone"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4642,
+        "name": "Bandleglass Mirror"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4643,
+        "name": "Vigilant Wardstone"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4644,
+        "name": "Crown of the Shattered Queen"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4645,
+        "name": "Shadowflame"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 4646,
+        "name": "Stormsurge"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6029,
+        "name": "Ironspike Whip"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6035,
+        "name": "Silvermere Dawn"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6333,
+        "name": "Death's Dance"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6609,
+        "name": "Chempunk Chainsword"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6610,
+        "name": "Sundered Sky"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6616,
+        "name": "Staff of Flowing Water"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6617,
+        "name": "Moonstone Renewer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6620,
+        "name": "Echoes of Helia"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6621,
+        "name": "Dawncore"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6630,
+        "name": "Goredrinker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6631,
+        "name": "Stridebreaker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6632,
+        "name": "Divine Sunderer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6653,
+        "name": "Liandry's Torment"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6655,
+        "name": "Luden's Companion"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6656,
+        "name": "Everfrost"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6657,
+        "name": "Rod of Ages"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6660,
+        "name": "Bami's Cinder"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6662,
+        "name": "Iceborn Gauntlet"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6664,
+        "name": "Hollow Radiance"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6665,
+        "name": "Jak'Sho, The Protean"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6667,
+        "name": "Radiant Virtue"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6670,
+        "name": "Noonquiver"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6671,
+        "name": "Galeforce"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6672,
+        "name": "Kraken Slayer"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6673,
+        "name": "Immortal Shieldbow"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6675,
+        "name": "Navori Flickerblade"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6676,
+        "name": "The Collector"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6677,
+        "name": "Rageknife"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6690,
+        "name": "Rectrix"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6691,
+        "name": "Duskblade of Draktharr"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6692,
+        "name": "Eclipse"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6693,
+        "name": "Prowler's Claw"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6694,
+        "name": "Serylda's Grudge"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6695,
+        "name": "Serpent's Fang"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6696,
+        "name": "Axiom Arc"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6697,
+        "name": "Hubris"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6698,
+        "name": "Profane Hydra"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6699,
+        "name": "Voltaic Cyclosword"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6700,
+        "name": "Shield of the Rakkor"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 6701,
+        "name": "Opportunity"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7000,
+        "name": "Sandshrike's Claw"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7001,
+        "name": "Syzygy"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7002,
+        "name": "Draktharr's Shadowcarver"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7003,
+        "name": "Rabadon's Deathcrown"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7004,
+        "name": "Enmity of the Masses"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7005,
+        "name": "Frozen Fist"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7006,
+        "name": "Typhoon"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7007,
+        "name": "Swordnado"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7008,
+        "name": "Ataraxia"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7009,
+        "name": "Icathia's Curse"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7010,
+        "name": "Vespertide"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7011,
+        "name": "Upgraded Aeropack"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7012,
+        "name": "Liandry's Lament"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7013,
+        "name": "Force of Arms"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7014,
+        "name": "Eternal Winter"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7015,
+        "name": "Ceaseless Hunger"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7016,
+        "name": "Dreamshatter"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7017,
+        "name": "Deicide"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7018,
+        "name": "Infinity Force"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7019,
+        "name": "Reliquary of the Golden Dawn"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7020,
+        "name": "Shurelya's Requiem"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7021,
+        "name": "Starcaster"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7022,
+        "name": "Certainty"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7023,
+        "name": "Equinox"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7024,
+        "name": "Caesura"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7025,
+        "name": "Leviathan"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7026,
+        "name": "The Unspoken Parasite"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7027,
+        "name": "Primordial Dawn"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7028,
+        "name": "Infinite Convergence"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7029,
+        "name": "Youmuu's Wake"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7030,
+        "name": "Seething Sorrow"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7031,
+        "name": "Edge of Finality"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7032,
+        "name": "Flicker"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7033,
+        "name": "Cry of the Shrieking City"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7034,
+        "name": "Hope Adrift"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7035,
+        "name": "Daybreak"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7036,
+        "name": "T.U.R.B.O."
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7037,
+        "name": "Obsidian Cleaver"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7038,
+        "name": "Shojin's Resolve"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7039,
+        "name": "Heavensfall"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7040,
+        "name": "Eye of the Storm"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7041,
+        "name": "Wyrmfallen Sacrifice"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7042,
+        "name": "The Baron's Gift"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 7050,
+        "name": "Gangplank Placeholder"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 8001,
+        "name": "Anathema's Chains"
+      }
+    },
+    {
+      "model": "wrs_api.Item",
+      "fields": {
+        "itemId": 8020,
+        "name": "Abyssal Mask"
+      }
+    },
+    {
+      "model": "wrs_api.CompletedBoot",
+      "fields": {
+        "itemId": 3006,
+        "name": "Berserker's Greaves"
+      }
+    },
+    {
+      "model": "wrs_api.CompletedBoot",
+      "fields": {
+        "itemId": 3009,
+        "name": "Boots of Swiftness"
+      }
+    },
+    {
+      "model": "wrs_api.CompletedBoot",
+      "fields": {
+        "itemId": 3111,
+        "name": "Mercury's Treads"
+      }
+    },
+    {
+      "model": "wrs_api.CompletedBoot",
+      "fields": {
+        "itemId": 3117,
+        "name": "Mobility Boots"
+      }
+    },
+    {
+      "model": "wrs_api.CompletedBoot",
+      "fields": {
+        "itemId": 3047,
+        "name": "Plated Steelcaps"
+      }
+    },
+    {
+      "model": "wrs_api.CompletedBoot",
+      "fields": {
+        "itemId": 223172,
+        "name": "Zephyr",
+        "tier_three": true
+      }
+    },
+    {
+      "model": "wrs_api.CompletedBoot",
+      "fields": {
+        "itemId": 3010,
+        "name": "Symbiotic Soles",
+        "tier_three": false
+      }
+    },
+    {
+      "model": "wrs_api.CompletedBoot",
+      "fields": {
+        "itemId": 3013,
+        "name": "Synchronized Soles",
+        "tier_three": true
+      }
+    },
+    {
+      "model": "wrs_api.Summoner",
+      "fields": {
+        "puuid": "f649YxVWblcWTKMjnLYAZTKlbH6b3iNEZXf9-HXZhxxJRBSQ-Zws7v6jErBh0tzyVS9VNo50FHK3rA",
+        "gameName": "vanilli vanilli",
+        "tagLine": "VV2",
+        "platform": "na1",
+        "profileIconId": 3795,
+        "encryptedSummonerId": "ZANL-az6EkuuJc27gyzq8lkb4UrkpFTAisDG82lRU855N1qnDTfKhOyW-w",
+        "most_recent_game": "NA1_4887039076",
+        "created_at": "2024-04-01T18:20:07Z",
+        "updated_at": "2024-04-01T18:20:07Z"
+      }
+    },
+    {
+      "model": "wrs_api.Summoner",
+      "fields": {
+        "puuid": "aYWKw--LdXozLfm-HJ8OFiHW9vKVUZLzwnsLvJFufYsmr4Xdjnac-3-u_2lRJPQZ6Z2Eop0EbJdOwQ",
+        "gameName": "Tallish",
+        "tagLine": "NA1",
+        "platform": "na1",
+        "profileIconId": 5023,
+        "encryptedSummonerId": "8VJm42mkBm06t3w2XuM5WRfvyQcUWnh54ew_JO979wnw3DQl",
+        "most_recent_game": "NA1_4889736532",
+        "created_at": "2024-04-01T18:20:07Z",
+        "updated_at": "2024-04-01T18:20:07Z"
+      }
+    },
+    {
+      "model": "wrs_api.Summoner",
+      "fields": {
+        "puuid": "xadTQjqNKZuYdjt4vMi5hWVemmsjCZZBeVtSaJ-EXPZsZ2UaAHyYJqw_aTzXdA672f5ZyfQqCL9uqQ",
+        "gameName": "Dark Aura",
+        "tagLine": "EUW",
+        "platform": "euw1",
+        "profileIconId": 6051,
+        "encryptedSummonerId": "wMUm2A8D3zo4qajOQ9MvI9B5zX-XUY51wQ7m6UQfDFWyHzUQ",
+        "most_recent_game": "EUW1_6759658609",
+        "created_at": "2024-04-01T18:20:07Z",
+        "updated_at": "2024-04-01T18:20:07Z"
+      }
+    }
+]

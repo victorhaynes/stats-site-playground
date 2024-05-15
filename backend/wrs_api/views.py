@@ -1,6 +1,6 @@
 # from .models import Summoner, Season, SummonerOverview, MatchHistory, MatchDetails
 # from .serializers import  SummonerSerializer, SummonerOverviewSerializer, MatchHistorySerializer, MatchDetailsSerializer, SeasonSerializer
-from .models import Summoner, SummonerOverview, Platform, Season, Patch, Region, GameMode, Champion, LegendaryItem, TierTwoBoot, Match, SummonerMatch
+from .models import Summoner, SummonerOverview, Platform, Season, Patch, Region, GameMode, Champion, Item, CompletedBoot, Match, SummonerMatch
 from django.db import connection, transaction
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
@@ -155,15 +155,17 @@ def get_summoner(request):
                 summoner_elo = json.dumps([d for d in response_overview.json() if d["queueType"] == "RANKED_SOLO_5x5"][0])
             
             with connection.cursor() as cursor:
+                partition_name = "_" + request.query_params.get('platform')
+                formatted_table_names = [partition_name] * 1
                 cursor.execute(
                 """
-                    INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
+                    INSERT INTO wrs_api_summoneroverview{} (puuid, platform, season_id, metadata, created_at, updated_at)
                     VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                     ON CONFLICT (puuid, season_id, platform) 
                     DO UPDATE SET 
                     metadata = EXCLUDED.metadata,
                     updated_at = EXCLUDED.updated_at;
-                """
+                """.format(*formatted_table_names)
                 , [summoner_searched.puuid, platform.code, current_season.id, summoner_elo])
         else:
             return JsonResponse({"Riot API returned error": response_account_details.status_code, "message": response_account_details.json(), "meta": 143}, status=response_account_details.status_code)
@@ -196,7 +198,7 @@ def get_summoner(request):
     print("oldest game", all_matches_played[-1])
 
     print("!!!TESTING ONLY CHECK FOR SOME MATCHES!!!")
-    all_matches_played = all_matches_played[:3]
+    all_matches_played = all_matches_played[0:2]
 
     # GET details for all matches fetched that are not already in database
     with connection.cursor() as cursor:
@@ -296,15 +298,17 @@ def get_summoner(request):
 
                                 with connection.cursor() as cursor:
                                     print("Inserting overview for:", participant_data["puuid"])
+                                    partition_name = "_" + request.query_params.get('platform')
+                                    formatted_table_names = [partition_name] * 1
                                     cursor.execute(
                                     """
-                                        INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
+                                        INSERT INTO wrs_api_summoneroverview{} (puuid, platform, season_id, metadata, created_at, updated_at)
                                         VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                                         ON CONFLICT (puuid, season_id, platform) 
                                         DO UPDATE SET 
                                         metadata = EXCLUDED.metadata,
                                         updated_at = EXCLUDED.updated_at;
-                                    """
+                                    """.format(*formatted_table_names)
                                     , [participant_data["puuid"], platform.code, current_season.id, participant_elo])
                             else:
                                 if len(match_details_not_in_database) == 0:
@@ -320,11 +324,14 @@ def get_summoner(request):
                     # If summoner exists, get current elo from database
                     else:
                         with connection.cursor() as cursor:
+                            partition_name = "_" + request.query_params.get('platform')
+                            formatted_table_names = [partition_name] * 1
                             cursor.execute(
                                 """
-                                    SELECT * FROM wrs_api_summoneroverview WHERE puuid = %s AND platform = %s
+                                    SELECT * FROM wrs_api_summoneroverview{} WHERE puuid = %s AND platform = %s
                                     ORDER BY id DESC;
-                                """,[participant_data["puuid"], request.query_params.get('platform')])
+                                """.format(*formatted_table_names)
+                                ,[participant_data["puuid"], request.query_params.get('platform')])
                             results = dictfetchall(cursor)
                         ov = json.loads(results[0]["metadata"])
 
@@ -373,16 +380,20 @@ def get_summoner(request):
                     patch_tuple = Patch.objects.get_or_create(full_version=match_detail["info"]["gameVersion"], version=version, season_id=current_season)
                     print("Created new patch:", patch_tuple[1])
 
+                    partition_name = "_" + request.query_params.get('platform')
+                    formatted_table_names = [partition_name] * 1
                     print("attempting to write match:", match_detail["metadata"]["matchId"], "to table")
                     cursor.execute(
                         """
-                            INSERT INTO wrs_api_match ("matchId", "queueId", "season_id", "patch", "platform", "elo", "metadata")
+                            INSERT INTO wrs_api_match{} ("matchId", "queueId", "season_id", "patch", "platform", "elo", "metadata")
                             VALUES (%s, %s, %s, %s, %s, %s, %s);
-                        """
+                        """.format(*formatted_table_names)
                     ,[match_detail["metadata"]["matchId"], match_detail["info"]["queueId"], current_season.id, patch_tuple[0].full_version, request.query_params.get('platform'), match_detail["averageElo"], json.dumps(match_detail)])
 
                     # Update ban stats for banned champions for all teams ALL STATS SHOULD ONLY BE FOR RANKED 420
                     if match_detail["info"]["queueId"] == 420:
+                        partition_name = "_" + request.query_params.get('platform')
+                        formatted_table_names = [partition_name] * 2
                         for team in match_detail["info"]["teams"]:
                             bans = team["bans"]
                             for ban in bans:
@@ -390,24 +401,25 @@ def get_summoner(request):
                                 print("Updating ban for", ban["championId"])
                                 cursor.execute(
                                     """
-                                        INSERT INTO wrs_api_banstat ("championId", "elo", "banned", "season_id", "patch", "platform")
+                                        INSERT INTO wrs_api_banstat{} ("championId", "elo", "banned", "season_id", "patch", "platform")
                                         VALUES (%s, %s, %s, %s, %s, %s)
                                         ON CONFLICT ("platform","championId", "patch", "elo", "season_id")
                                         DO UPDATE SET 
-                                        banned = wrs_api_banstat.banned + EXCLUDED.banned;
-                                    """
+                                        banned = wrs_api_banstat{}.banned + EXCLUDED.banned;
+                                    """.format(*formatted_table_names)
                                 ,[ban["championId"], match_detail["averageElo"], ban_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
 
                     
                     # participants = match_detail["metadata"]["participants"]
                     participants = match_detail["info"]["participants"]
                     for participant_object in participants:
-
+                        partition_name = "_" + request.query_params.get('platform')
+                        formatted_table_names = [partition_name] * 1
                         cursor.execute(
                             """
-                                INSERT INTO wrs_api_summonermatch ("matchId", "elo", "queueId", "puuid", "season_id", "patch", "platform")
+                                INSERT INTO wrs_api_summonermatch{} ("matchId", "elo", "queueId", "puuid", "season_id", "patch", "platform")
                                 VALUES (%s, %s, %s, %s, %s, %s, %s);
-                            """
+                            """.format(*formatted_table_names)
                         # ,[match_detail["metadata"]["matchId"], match_detail["averageElo"], match_detail["info"]["queueId"], participant_puuid, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
                         ,[match_detail["metadata"]["matchId"], match_detail["averageElo"], match_detail["info"]["queueId"], participant_object["puuid"], current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
 
@@ -424,16 +436,19 @@ def get_summoner(request):
                                 win_increment = 0
                                 loss_increment = 1
                             pick_increment = 1
+
+                            partition_name = "_" + request.query_params.get('platform')
+                            formatted_table_names = [partition_name] * 4
                             cursor.execute(
                                 """
-                                    INSERT INTO wrs_api_championstat ("championId", "role", "elo", "wins", "losses", "picked", "season_id", "patch", "platform")
+                                    INSERT INTO wrs_api_championstat{} ("championId", "role", "elo", "wins", "losses", "picked", "season_id", "patch", "platform")
                                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                                     ON CONFLICT ("platform","championId", "patch", "role", "elo", "season_id")
                                     DO UPDATE SET 
-                                    wins = wrs_api_championstat.wins + EXCLUDED.wins,
-                                    losses = wrs_api_championstat.losses + EXCLUDED.losses,
-                                    picked = wrs_api_championstat.picked + EXCLUDED.picked;
-                                """
+                                    wins = wrs_api_championstat{}.wins + EXCLUDED.wins,
+                                    losses = wrs_api_championstat{}.losses + EXCLUDED.losses,
+                                    picked = wrs_api_championstat{}.picked + EXCLUDED.picked;
+                                """.format(*formatted_table_names)
                             ,[participant_object["championId"],  participant_object["teamPosition"], match_detail["averageElo"], win_increment, loss_increment, pick_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
 
                             # Write Rune Page Stats Logic
@@ -445,81 +460,102 @@ def get_summoner(request):
                             shard2 = participant_object["perks"]["statPerks"]["flex"]
                             shard3 = participant_object["perks"]["statPerks"]["defense"]
 
+                            partition_name = "_" + request.query_params.get('platform')
+                            formatted_table_names = [partition_name] * 3
                             cursor.execute(
                                 """
-                                    INSERT INTO wrs_api_runepagestat ("keystone", "primary_one", "primary_two", "primary_three", "secondary_one", "secondary_two", "shard_one", "shard_two", "shard_three", "championId", "elo", "role", "wins", "losses", "picked", "season_id", "patch", "platform")
+                                    INSERT INTO wrs_api_runepagestat{} ("keystone", "primary_one", "primary_two", "primary_three", "secondary_one", "secondary_two", "shard_one", "shard_two", "shard_three", "championId", "elo", "role", "wins", "losses", "picked", "season_id", "patch", "platform")
                                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                                     ON CONFLICT ("keystone", "primary_one", "primary_two", "primary_three", "secondary_one", "secondary_two", "shard_one", "shard_two", "shard_three", "championId", "platform", "patch", "role", "elo", "season_id")
                                     DO UPDATE SET 
-                                    wins = wrs_api_runepagestat.wins + EXCLUDED.wins,
-                                    losses = wrs_api_runepagestat.losses + EXCLUDED.losses;
-                                """
+                                    wins = wrs_api_runepagestat{}.wins + EXCLUDED.wins,
+                                    losses = wrs_api_runepagestat{}.losses + EXCLUDED.losses;
+                                """.format(*formatted_table_names)
                             ,[runes_in_order[0], runes_in_order[1], runes_in_order[2], runes_in_order[3], runes_in_order[4], runes_in_order[5], shard1, shard2, shard3, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, pick_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
                             print("pass4")
 
+                            # # Legendary Item Stats writing logic 
+                            # legendary_items_built_by_player = []
+                            # all_legendary_items = list(LegendaryItem.objects.values_list('itemId', flat=True))
+                            # for item_built in participant_object["buildPath"]:
+                            #     if item_built["itemId"] in all_legendary_items:
+                            #         legendary_items_built_by_player.append(item_built["itemId"])
+                            
+                            # cleaned_item_build = check_missing_items(legendary_items_built_by_player)
+
+
                             # Legendary Item Stats writing logic 
-                            legendary_items_built_by_player = []
-                            all_legendary_items = list(LegendaryItem.objects.values_list('itemId', flat=True))
-                            for item_built in participant_object["buildPath"]:
-                                if item_built["itemId"] in all_legendary_items:
-                                    legendary_items_built_by_player.append(item_built["itemId"])
+                            legendary_items_built_by_player = participant_object["challenges"]["legendaryItemUsed"]
+
                             
                             cleaned_item_build = check_missing_items(legendary_items_built_by_player)
-
+                            partition_name = "_" + request.query_params.get('platform')
+                            formatted_table_names = [partition_name] * 3
                             if cleaned_item_build[0] != -1: # If the first item built is a real item (not dummy -1) write entire build to table
                                 cursor.execute(
                                     """
-                                        INSERT INTO wrs_api_itembuildstat ("legendary_one", "legendary_two", "legendary_three", "legendary_four", "legendary_five", "legendary_six", "championId", "elo", "role", "wins", "losses", "season_id", "patch", "platform")
+                                        INSERT INTO wrs_api_itembuildstat{} ("legendary_one", "legendary_two", "legendary_three", "legendary_four", "legendary_five", "legendary_six", "championId", "elo", "role", "wins", "losses", "season_id", "patch", "platform")
                                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                                         ON CONFLICT ("legendary_one", "legendary_two", "legendary_three", "legendary_four", "legendary_five", "legendary_six", "championId", "platform", "patch", "role", "elo", "season_id")
                                         DO UPDATE SET 
-                                        wins = wrs_api_itembuildstat.wins + EXCLUDED.wins,
-                                        losses = wrs_api_itembuildstat.losses + EXCLUDED.losses;
-                                    """
+                                        wins = wrs_api_itembuildstat{}.wins + EXCLUDED.wins,
+                                        losses = wrs_api_itembuildstat{}.losses + EXCLUDED.losses;
+                                    """.format(*formatted_table_names)
                                 ,[cleaned_item_build[0], cleaned_item_build[1], cleaned_item_build[2], cleaned_item_build[3], cleaned_item_build[4], cleaned_item_build[5], participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+                            print("pass5")
 
                             # Tier Two Boots Stats writing logic 
                             boots_built_by_player = []
-                            all_tier_two_boots = list(TierTwoBoot.objects.values_list('itemId', flat=True))
+                            all_completed_boots = list(CompletedBoot.objects.values_list('itemId', flat=True))
                             for item_built in participant_object["buildPath"]:
-                                if item_built["itemId"] in all_tier_two_boots:
+                                if item_built["itemId"] in all_completed_boots:
                                     boots_built_by_player.append(item_built["itemId"])
                             
+                            
+                            
+                            partition_name = "_" + request.query_params.get('platform')
+                            formatted_table_names = [partition_name] * 3
+
                             if boots_built_by_player:
-                                bootId = boots_built_by_player[-1] # Get the last boot built, players sometimes sell and buy a different pair
+                                bootId = boots_built_by_player[0] # Get the first tier two boot built, players sometimes sell and buy a different pair
                                 cursor.execute(
                                     """
-                                        INSERT INTO wrs_api_tiertwobootstat ("tier_two_boot","championId", "elo", "role", "wins", "losses", "season_id", "patch", "platform")
+                                        INSERT INTO wrs_api_completedbootstat{} ("completed_boot","championId", "elo", "role", "wins", "losses", "season_id", "patch", "platform")
                                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                        ON CONFLICT ("platform", "tier_two_boot", "championId","patch", "role", "elo", "season_id")
+                                        ON CONFLICT ("platform", "completed_boot", "championId","patch", "role", "elo", "season_id")
                                         DO UPDATE SET 
-                                        wins = wrs_api_tiertwobootstat.wins + EXCLUDED.wins,
-                                        losses = wrs_api_tiertwobootstat.losses + EXCLUDED.losses;
-                                    """
+                                        wins = wrs_api_completedbootstat{}.wins + EXCLUDED.wins,
+                                        losses = wrs_api_completedbootstat{}.losses + EXCLUDED.losses;
+                                    """.format(*formatted_table_names)
                                 ,[bootId, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+                            print("pass6")
 
+                            partition_name = "_" + request.query_params.get('platform')
+                            formatted_table_names = [partition_name] * 4
                             # Summoner Spell writing logi
                             spell_one = participant_object["summoner1Id"]
                             spell_two = participant_object["summoner2Id"]                                 
                             cursor.execute(
                                 """
-                                    INSERT INTO wrs_api_summonerspellstat ("spell_one", "spell_two", "championId", "elo", "role", "wins", "losses", "picked", "season_id", "patch", "platform")
+                                    INSERT INTO wrs_api_summonerspellstat{} ("spell_one", "spell_two", "championId", "elo", "role", "wins", "losses", "picked", "season_id", "patch", "platform")
                                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                                     ON CONFLICT ("platform", "spell_one", "spell_two", "championId","patch", "role", "elo", "season_id")
                                     DO UPDATE SET 
-                                    wins = wrs_api_summonerspellstat.wins + EXCLUDED.wins,
-                                    losses = wrs_api_summonerspellstat.losses + EXCLUDED.losses,
-                                    picked = wrs_api_summonerspellstat.picked + EXCLUDED.picked;
-                                """
+                                    wins = wrs_api_summonerspellstat{}.wins + EXCLUDED.wins,
+                                    losses = wrs_api_summonerspellstat{}.losses + EXCLUDED.losses,
+                                    picked = wrs_api_summonerspellstat{}.picked + EXCLUDED.picked;
+                                """.format(*formatted_table_names)
                             ,[spell_one, spell_two, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, pick_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
 
         with connection.cursor() as cursor:
+            partition_name = "_" + request.query_params.get('platform')
+            formatted_table_names = [partition_name] * 4
             cursor.execute(
                 """
-                    SELECT "matchId" FROM wrs_api_summonermatch WHERE wrs_api_summonermatch.puuid = %s AND wrs_api_summonermatch.platform = %s
-                    ORDER BY wrs_api_summonermatch."matchId" DESC
+                    SELECT "matchId" FROM wrs_api_summonermatch{} WHERE wrs_api_summonermatch{}.puuid = %s AND wrs_api_summonermatch{}.platform = %s
+                    ORDER BY wrs_api_summonermatch{}."matchId" DESC
                     LIMIT 1;
-                """
+                """.format(*formatted_table_names)
             ,[puuid, request.query_params.get('platform')])
             last_saved_game = cursor.fetchone()[0]
             if summoner_searched.most_recent_game != last_saved_game:
@@ -737,9 +773,10 @@ def testing(request):
 @api_view(['GET'])
 def test2(request):
 
-    request = rate_limited_RIOT_get(riot_endpoint="https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/vanilli%20vanilli/vv2",
-                                region='americas',
-                                request=request)
+    request = rate_limited_RIOT_get(
+        riot_endpoint="https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/vanilli%20vanilli/vv2",
+        region='americas',
+        request=request)
     # # Start the timer
     # start_time = time.time()
 
@@ -755,7 +792,7 @@ def test2(request):
     #     i += 1
     #     print("okay", i, "Elapsed Time:", elapsed_time, "seconds")
 
-    return JsonResponse(request.json(), safe=False, status=200)
+    return JsonResponse(request, safe=False, status=200)
 
 
 
