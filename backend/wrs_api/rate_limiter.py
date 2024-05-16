@@ -4,23 +4,33 @@ import requests
 import os
 from django_redis import get_redis_connection
 import json
-from .utilities import RiotRateLimitError
+from .utilities import RiotRateLimitApiError
 from django.core.cache import cache
 from .utilities import test_rate_limit_key
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from rest_framework.response import Response
+from django.db import transaction
+from .utilities import RiotApiError
 
 headers = {'X-Riot-Token': os.environ["RIOT_KEY"]}
 production = False if os.environ["PRODUCTION"] == 'false' else True
 
 
-def rate_limited_RIOT_get(riot_endpoint, region, platform, request):
+def rate_limited_RIOT_get(riot_endpoint, request):
+    # Method Limits can be thought of as Endpoint Limits
+    # Service Limits are not known in advanced and are enforced by Riot for all 3rd party apps
+    region = request.query_params.get('region')
+    if not region:
+        region = ""
+    platform = request.query_params.get('platform')
+    if not platform:
+        platform = ""
     cleaned_endpoint = None
     service = None
     application_seconds_ratelimit = '20/s' # Higher in Prod
     application_minutes_ratelimit = '100/2m' # Higher in Prod
-    method_seconds_ratelimit = None
+    method_seconds_ratelimit = None 
     method_minutes_ratelimit = None
     
     application_rate_limit_key = os.environ["RIOT_KEY"] + region + platform
@@ -135,19 +145,22 @@ def rate_limited_RIOT_get(riot_endpoint, region, platform, request):
     @ratelimit(key=get_method_rate_limit_seconds_key, rate=method_seconds_ratelimit, method=ratelimit.ALL)
     @ratelimit(key=get_method_rate_limit_minutes_key, rate=method_minutes_ratelimit, method=ratelimit.ALL)
     def get_request(request, riot_endpoint): 
-        print("get_application_rate_limit_seconds_key:", get_application_rate_limit_seconds_key(request))
-        print("application_seconds_ratelimit:", application_seconds_ratelimit)
-        print("get_application_rate_limit_minutes_key:", get_application_rate_limit_minutes_key(request))
-        print("application_minutes_ratelimit:", application_minutes_ratelimit)
-        print("get_method_rate_limit_seconds_key:", get_method_rate_limit_seconds_key(request))
-        print("method_seconds_ratelimit:", method_seconds_ratelimit)
-        print("get_method_rate_limit_minutes_key:", get_method_rate_limit_minutes_key(request))
-        print("method_minutes_ratelimit:", method_minutes_ratelimit)
+        # print("get_application_rate_limit_seconds_key:", get_application_rate_limit_seconds_key(request))
+        # print("application_seconds_ratelimit:", application_seconds_ratelimit)
+        # print("get_application_rate_limit_minutes_key:", get_application_rate_limit_minutes_key(request))
+        # print("application_minutes_ratelimit:", application_minutes_ratelimit)
+        # print("get_method_rate_limit_seconds_key:", get_method_rate_limit_seconds_key(request))
+        # print("method_seconds_ratelimit:", method_seconds_ratelimit)
+        # print("get_method_rate_limit_minutes_key:", get_method_rate_limit_minutes_key(request))
+        # print("method_minutes_ratelimit:", method_minutes_ratelimit)
 
 
         response = requests.get(riot_endpoint, headers=headers)
 
-        if response.status_code == 429:
+        if response.status_code == 200:
+            print("rate limiter called without issue")
+            return response.json()
+        elif response.status_code == 429:
             print("Likely Service Limited By Riot / App & Method Limits Not Reached")
             ratelimit_type = response.headers.get('X-Rate-Limit-Type')
             retry_after = response.headers.get('Retry-After')
@@ -155,12 +168,10 @@ def rate_limited_RIOT_get(riot_endpoint, region, platform, request):
                 retry_after = 30
             details = json.dumps({"type": ratelimit_type, "retry_after": int(retry_after) + 1})
             cache.set(429, details, timeout=int(retry_after) + 1)
-            return response.json()
-        elif str(response.status_code)[0] == '4' or str(response.status_code)[0] == '5': # any other 400 error
+            raise RiotRateLimitApiError(response.json(), response.status_code)
+        else: # any other status code
             print("ERRORED")
-            return response.json()
+            raise RiotApiError(response.json(), response.status_code)
 
-        return response.json()
 
-    # Call the get_request function with the provided arguments
     return get_request(request, riot_endpoint)

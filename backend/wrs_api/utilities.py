@@ -171,43 +171,16 @@ def test_rate_limit_key(self, *args, **kwargs):
 
 
 class RiotApiError(Exception):
-    def __init__(self, code1, message1, code2=None, message2=None):
-        self.errors = []
-        if code1 != 200:
-            self.errors.append({'code': code1, 'message': message1})
-        if code2 and code2 != 200:
-            self.errors.append({'code': code2, 'message': message2})
-        # super().__init__(message1 if code2 == 200 else message1 + " - " + message2)
+    def __init__(self, error_response, error_code):
+        self.error_response = error_response
+        self.error_code = error_code
 
 
-        if message2 is not None:
-            super().__init__(message1 + " - " + message2)
-        else:
-            super().__init__(message1)
-
-    def as_dict(self):
-        return {'errors': self.errors}
-
-    def largest_code(self):
-        return int(max(error['code'] for error in self.errors))
-    
-
-
-class RiotRateLimitError(Exception):
-    def __init__(self, code, details, retry_after):
-        self.code = code
-        self.details = details
-        self.retry_after = retry_after
-    
-    def to_dict(self):
-        return {
-            'code': self.code,
-            'details': self.details,
-            'retry_after': self.retry_after
-        }
-
-def get_rate_limit_key(request, *args, **kwargs):
-    return os.environ["RIOT_KEY"]
+class RiotRateLimitApiError(Exception):
+    def __init__(self, error_response, error_code):
+        self.error_response = error_response
+        self.error_code = error_code
+        
 
 
 # def get_summoner_matches(summoner: Summoner, count: int):

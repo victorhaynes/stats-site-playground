@@ -10,6 +10,9 @@ const Ladder = () => {
     const [selectionUpdate, setSelectionUpdate] = useState('na1americas')
 
 
+
+    // UPDATE THIS SO IT WORKS FOR TIERS !!!!!!!!!!!!!!!!!!
+
     useEffect(() => {
         getLeaderboard();
     }, [selectionUpdate]);
