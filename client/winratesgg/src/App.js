@@ -79,7 +79,7 @@ function App() {
           {/* <Route path="/summoners/:displayRegion/:gameName-:tagLine" */}
           <Route path="/summoners/:displayRegion/:displayNameZipped"
             element={<SummonerDetail region={region} platform={platform}/>}/>
-          <Route path="/ladder/:displayRegion" 
+          <Route path="/ladder/:displayRegion/:pageNumber" 
             element={<Ladder/>}/>
         </Routes>
       </>

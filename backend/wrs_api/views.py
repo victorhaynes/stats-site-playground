@@ -45,15 +45,22 @@ season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
 
 
 
-def check_timeout(view_func):
+def check_riot_enforced_timeout(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         # Check if the key "429" exists in the Redis cache
         redis_conn = get_redis_connection("default")
         timeout_timer = redis_conn.ttl(":1:429")
+        error_message = {
+                            "status": {
+                                "status_code": 429,
+                                "message": f"Rate Limited by Riot. Retry in {timeout_timer}",
+                                "retry_after": int(timeout_timer)
+                            }
+                        }
         if timeout_timer > 0:
             # If the key exists, return error JSON
-            return JsonResponse({"error": f"Too Many Requests. Retry in {timeout_timer}"}, status=429)
+            return JsonResponse(error_message, status=429)
 
         # If the key does not exist, let the function run as normal
         # Note this does not preempt getting a rate limit inside of a loop
@@ -72,7 +79,7 @@ def check_timeout(view_func):
 ######################################################################################
 # Helper Function to check database for existing summoner data before hitting Riot API # special text index on gamename and tagline?
 ######################################################################################
-@check_timeout
+@check_riot_enforced_timeout
 @api_view(['GET'])
 def get_summoner(request):
 
@@ -523,41 +530,52 @@ def get_summoner(request):
 ######################################################################################
 # Get all Challenger Players for a PLATFORM and TIER (300 Challengers for NA1)
 ######################################################################################
+@check_riot_enforced_timeout
 @api_view(['GET'])
 @transaction.atomic
 def get_ranked_ladder(request):
-    # redis_conn = get_redis_connection("default")
-    # cached_ladder = redis_conn.get(f"{request.query_params.get('platform')}_ladder")
 
-
-    # UPDATE THIS SO IT WORKS FOR TIERS !!!!!!!!!!!!!!
-
-    cached_ladder = cache.get(f"{request.query_params.get('platform')}_{request.query_params.get('tier')}_ladder")
+    lader_key = f"{request.query_params.get('platform')}_{request.query_params.get('page')}_ladder"
+    cached_ladder = cache.get(lader_key)
 
     if cached_ladder:
         summoners = json.loads(cached_ladder)
         http_status_code = status.HTTP_208_ALREADY_REPORTED
 
-    else: 
+    else:
         try:
             platform = Platform.objects.get(code=request.query_params.get('platform'))
+            start = int(request.query_params.get('page')) * 10 - 10
+            end = int(request.query_params.get('page')) * 10 
+            # tier = request.query_params.get("tier").upper()
+            tiers = ["CHALLENGER", "GRANDMASTER", "MASTER"]
+            ranked_ladder = []
 
-            url_page1 = f'https://{request.query_params.get("platform")}.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=1'
-            url_page2 = f'https://{request.query_params.get("platform")}.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=2'
+            for tier in tiers:
+                query_page = 1
+                print("iterating!")
+                while True:
+                    url = f'https://{request.query_params.get("platform")}.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/{tier}/I?page={query_page}'
+                    print(url)
+                    ladder_page = rate_limited_RIOT_get(riot_endpoint=url, request=request)
+                    if len(ladder_page) == 0:
+                        break
+                    ranked_ladder = ranked_ladder + ladder_page
+                    query_page += 1
 
-            challenger_page1_response = requests.get(url_page1, headers=headers, verify=True)
-            challenger_page2_response = requests.get(url_page2, headers=headers, verify=True)
-            print("Got all challenger players OK")
-            page1 = challenger_page1_response.json()
-            page2 = challenger_page2_response.json()
-            challenger_players = page1 + page2
-            challenger_players = challenger_players[:25]
+            # challenger_page1_response = requests.get(url_page1, headers=headers, verify=True)
+            # challenger_page2_response = requests.get(url_page2, headers=headers, verify=True)
+            # print("Got all challenger players OK")
+            # page1 = challenger_page1_response.json()
+            # page2 = challenger_page2_response.json()
+            # challenger_players = page1 + page2
+            portion_of_ladder_to_render = ranked_ladder[start:end]
 
             summoners = []
-            for player_overview in challenger_players:
+            for player_overview in portion_of_ladder_to_render:
                 print("attempting for player:", player_overview["summonerId"])
                 try:
-                    existing_challenger = Summoner.objects.get(encryptedSummonerId=player_overview["summonerId"], platform=platform)
+                    existing_high_elo_player = Summoner.objects.get(encryptedSummonerId=player_overview["summonerId"], platform=platform)
                     print("FOUND! UPDATING OVERVIW")
                     # The above is not necessarily optimal, you will fail foreign key constraint if summoner doesn't exist we don't need to check
                     # but remain now for simplcity
@@ -571,9 +589,9 @@ def get_ranked_ladder(request):
                             metadata = EXCLUDED.metadata,
                             updated_at = EXCLUDED.updated_at;
                         """
-                        , [existing_challenger.puuid, request.query_params.get('platform'), current_season.id, json.dumps(player_overview)])
+                        , [existing_high_elo_player.puuid, request.query_params.get('platform'), current_season.id, json.dumps(player_overview)])
 
-                    updated_summoner = model_to_dict(existing_challenger)
+                    updated_summoner = model_to_dict(existing_high_elo_player)
                     updated_summoner["metadata"] = player_overview
                     summoners.append(updated_summoner)
 
@@ -581,44 +599,26 @@ def get_ranked_ladder(request):
                     print("NOT FOUND! FETCHING DETAILS OVERVIW")
                     # GET PUUID from Encrypted summonerId / list of Challenger Players
                     encrypted_sum_id_to_puuid_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/summoner/v4/summoners/{player_overview['summonerId']}"            
-                    puuid_details_response = requests.get(encrypted_sum_id_to_puuid_url, headers=headers, verify=True)
-                    if puuid_details_response.status_code == 200:
-                        print("success ONE")
-                        data = puuid_details_response.json()
-                        puuid = data["puuid"]
-                        profileIconId = data["profileIconId"]
-                    else:
-                        # return JsonResponse({"Riot API returned error": puuid_details_response.status_code, "message": puuid_details_response.json(), "meta": 523}, status=puuid_details_response.status_code)
-                        error_message = puuid_details_response.json()["status"]["message"]
-                        raise RiotApiError(int(puuid_details_response.status_code), error_message)
+                    puuid_details_response = rate_limited_RIOT_get(riot_endpoint=encrypted_sum_id_to_puuid_url, request=request)
+                    print("success ONE")
+                    puuid = puuid_details_response["puuid"]
+                    profileIconId = puuid_details_response["profileIconId"]
+
                     
                     # Get Display Name from PUUID
                     puuid_to_display_name_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-puuid/{puuid}"
-                    display_name_details = requests.get(puuid_to_display_name_url, headers=headers, verify=True)
-                    if display_name_details.status_code == 200:
-                        print("success TWO")
-                        data = display_name_details.json()
-                        gameName = data["gameName"]
-                        tagLine = data["tagLine"]
-                        print("parsed successfully")
-                    else:
-                        # return JsonResponse({"Riot API returned error": display_name_details.status_code, "message": display_name_details.json(), "meta": 531}, status=display_name_details.status_code)
-                        error_message = display_name_details.json()["status"]["message"]
-                        raise RiotApiError(int(display_name_details.status_code), error_message)
+                    display_name_details = rate_limited_RIOT_get(puuid_to_display_name_url, request=request)
+                    print("success TWO")
+                    gameName = display_name_details["gameName"]
+                    tagLine = display_name_details["tagLine"]
+
 
                     print("check here")
                     # Write New Player to database
-                    challenger_player = Summoner.objects.create(puuid=puuid, gameName=gameName, tagLine=tagLine, platform=platform, profileIconId=profileIconId, encryptedSummonerId=player_overview["summonerId"])
-                    print("challenger saved to db")
-                    # account_by_gameName_tagLine_url = f"https://{request.query_params.get('region')}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{request.query_params.get('gameName')}/{request.query_params.get('tagLine')}"
-                    # response_account_details = requests.get(account_by_gameName_tagLine_url, headers=headers, verify=True)
+                    new_high_elo_player = Summoner.objects.create(puuid=puuid, gameName=gameName, tagLine=tagLine, platform=platform, profileIconId=profileIconId, encryptedSummonerId=player_overview["summonerId"])
+                    print(f"{player_overview['tier']} saved to db")
 
-                        
-                    # Write Summoner Overview / Ranked Stats / Elo
-                    # league_elo_by_summonerID_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerID}"
-                    # response_overview = requests.get(league_elo_by_summonerID_url, headers=headers, verify=True)
-                    
-                # if display_name_details.status_code == 200:
+                    # if display_name_details.status_code == 200:
                     print("WRITING OVERVIEW FOR", player_overview["summonerId"])
                     with connection.cursor() as cursor:
                         cursor.execute(
@@ -630,27 +630,22 @@ def get_ranked_ladder(request):
                             metadata = EXCLUDED.metadata,
                             updated_at = EXCLUDED.updated_at;
                         """
-                        , [challenger_player.puuid, request.query_params.get('platform'), current_season.id, json.dumps(player_overview)])
+                        , [new_high_elo_player.puuid, request.query_params.get('platform'), current_season.id, json.dumps(player_overview)])
                     print("Wrote successfully")
 
-                # else:
-                #     # return JsonResponse({"Riot API returned error": response_account_details.status_code, "message": response_account_details.json(), "meta": 143}, status=response_account_details.status_code)   
-                #     error_message = response_account_details.json()["status"]["message"]
-                #     raise RiotApiError(int(response_account_details.status_code), error_message)
 
-                    updated_summoner = model_to_dict(challenger_player)
+                    updated_summoner = model_to_dict(new_high_elo_player)
                     updated_summoner["metadata"] = player_overview
                     summoners.append(updated_summoner)
 
-            cache.set(f"{request.query_params.get('platform')}_{request.query_params.get('tier')}_ladder", json.dumps(summoners), timeout=3600)
-            # redis_conn.set(f"{request.query_params.get('platform')}_ladder", json.dumps(summoners), ex=3600)
+            cache.set(lader_key, json.dumps(summoners), timeout=3600)
             http_status_code = status.HTTP_201_CREATED
-
+            print(http_status_code)
 
         except RiotApiError as err:
-            print("here1", err)
-            print("here2", err.as_dict())
-            return JsonResponse(err.as_dict(), status=err.largest_code(), safe=False)
+            return JsonResponse(err.error_response, status=err.error_code, safe=False)
+        except RiotRateLimitApiError as err:
+            return JsonResponse(err.error_response, status=err.error_code, safe=False)
 
     return JsonResponse(summoners, safe=False, status=http_status_code)
 

@@ -139,11 +139,11 @@ def rate_limited_RIOT_get(riot_endpoint, request):
     def get_method_rate_limit_minutes_key(request, *args, **kwargs):
         return str(method_rate_limit_key) + "minutes" + "_method"
 
-    # Define the get_request function
-    @ratelimit(key=get_application_rate_limit_seconds_key, rate=application_seconds_ratelimit, method=ratelimit.ALL)
-    @ratelimit(key=get_application_rate_limit_minutes_key, rate=application_minutes_ratelimit, method=ratelimit.ALL)
-    @ratelimit(key=get_method_rate_limit_seconds_key, rate=method_seconds_ratelimit, method=ratelimit.ALL)
-    @ratelimit(key=get_method_rate_limit_minutes_key, rate=method_minutes_ratelimit, method=ratelimit.ALL)
+    # @ratelimit decorator returns 403 Error, and this is being enforced by the application, not by Riot
+    # @ratelimit(key=get_application_rate_limit_seconds_key, rate=application_seconds_ratelimit, method=ratelimit.ALL)
+    # @ratelimit(key=get_application_rate_limit_minutes_key, rate=application_minutes_ratelimit, method=ratelimit.ALL)
+    # @ratelimit(key=get_method_rate_limit_seconds_key, rate=method_seconds_ratelimit, method=ratelimit.ALL)
+    # @ratelimit(key=get_method_rate_limit_minutes_key, rate=method_minutes_ratelimit, method=ratelimit.ALL)
     def get_request(request, riot_endpoint): 
         # print("get_application_rate_limit_seconds_key:", get_application_rate_limit_seconds_key(request))
         # print("application_seconds_ratelimit:", application_seconds_ratelimit)
