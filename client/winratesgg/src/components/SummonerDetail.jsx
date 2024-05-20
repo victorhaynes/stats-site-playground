@@ -4,10 +4,10 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import MatchHistory from './MatchHistory'
 
-const SummonerDetail = ({region, platform}) => {
+const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
 
     const params = useParams()
-    // const displayRegion = params.displayRegion
+    const displayRegion = params.displayRegion
     const displayName = params.displayNameZipped
     const [gameName, tagLine] = displayName.split("-")
 
@@ -29,7 +29,27 @@ const SummonerDetail = ({region, platform}) => {
 
     // Get summoner data from db cache, including match details nested as json
     async function getSummonerData(queryLimit=null, update=false, specificQueue=false){
-        let url = `http://127.0.0.1:8000/summoner/?region=${region}&platform=${platform}&gameName=${gameName}&tagLine=${tagLine}`
+
+        const displayedRegion = params.displayRegion
+        const mapDisplayedToRegionToVerboseRegion = {
+            'na': 'americas',
+            'br': 'americas',
+            'euw': 'europe',
+            'kr': 'asia'     
+        }
+        const newRegion = mapDisplayedToRegionToVerboseRegion[displayedRegion]
+
+        const mapDisplayedRegionToPlatform = {
+            'na': 'na1',
+            'br': 'br1',
+            'euw': 'euw1',
+            'kr': 'kr'     
+        }
+        const newPlatform = mapDisplayedRegionToPlatform[displayedRegion]
+
+
+        // let url = `http://127.0.0.1:8000/summoner/?region=${region}&platform=${platform}&gameName=${gameName}&tagLine=${tagLine}`
+        let url = `http://127.0.0.1:8000/summoner/?region=${newRegion}&platform=${newPlatform}&gameName=${gameName}&tagLine=${tagLine}`
         
         url += queryLimit ? `&limit=${queryLimit}` : ''
         url += update ? `&update=${update}` : ''
@@ -39,6 +59,7 @@ const SummonerDetail = ({region, platform}) => {
             let response = await axios.get(url)
             console.log(response.data)
             setSummonerData(response.data)
+            globallyUpdateDisplayedRegion(newPlatform)
             if (!specificQueue && response.data.match_history.length < queryLimit){
                 setShowFetchButtonForAllGames(false)
             } else if (specificQueue && response.data.match_history.length < queryLimit){
@@ -49,8 +70,13 @@ const SummonerDetail = ({region, platform}) => {
         }
     }
 
+    // Upon rendering this page update state at App level using the params
+    // This is necessary so a user can enter the app through a direct summoner profile page
+    // without setting state in the search form
 
-    // Get latest date for the summoner being viewed /w update button
+
+
+    // Get latest update for the summoner being viewed /w update button
     function forceUpdatePage(){
         getSummonerData(null, true)
     }

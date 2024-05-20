@@ -109,6 +109,8 @@ def get_summoner(request):
 
             # print("Get puuid success")
             puuid = response_account_details['puuid']
+            gameName = response_account_details["gameName"]
+            tagLine = response_account_details["tagLine"]
             # GET Encrypted Summoner ID
             encrypted_summonerID_by_puuid_url = f"https://{request.query_params.get('platform')}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}"
             response_summonerID = rate_limited_RIOT_get(riot_endpoint=encrypted_summonerID_by_puuid_url, request=request)
@@ -117,11 +119,11 @@ def get_summoner(request):
             # Check if Summoner with this `puuid` and `platform` already exists in database, If exists and different update. Else create.
             try:
                 summoner_searched = Summoner.objects.get(puuid=puuid, platform=request.query_params.get('platform'))
-                if (request.query_params.get('platform').lower() != summoner_searched.platform.code.lower() or request.query_params.get('gameName').lower() != summoner_searched.gameName.lower() or request.query_params.get('tagLine').lower() != summoner_searched.tagLine.lower() or profile_icon != summoner_searched.profileIconId or summonerID != summoner_searched.encryptedSummonerId):
-                    summoner_searched.custom_update(gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), platform=platform, profileIconId=profile_icon, encryptedSummonerId=summonerID)
+                if (request.query_params.get('platform').lower() != summoner_searched.platform.code.lower() or gameName.lower() != summoner_searched.gameName.lower() or tagLine.lower() != summoner_searched.tagLine.lower() or profile_icon != summoner_searched.profileIconId or summonerID != summoner_searched.encryptedSummonerId):
+                    summoner_searched.custom_update(gameName=gameName, tagLine=tagLine, platform=platform, profileIconId=profile_icon, encryptedSummonerId=summonerID)
             
             except Summoner.DoesNotExist:
-                summoner_searched = Summoner.objects.create(puuid=puuid, gameName=request.query_params.get('gameName'), tagLine=request.query_params.get('tagLine'), platform=platform, profileIconId=profile_icon, encryptedSummonerId=summonerID)
+                summoner_searched = Summoner.objects.create(puuid=puuid, gameName=gameName, tagLine=tagLine, platform=platform, profileIconId=profile_icon, encryptedSummonerId=summonerID)
 
 
             # GET Summoner Overview / Ranked Stats / Elo
