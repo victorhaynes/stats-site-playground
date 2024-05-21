@@ -3,6 +3,8 @@ import { useParams, Link, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import MatchHistory from './MatchHistory'
+import Loading from './Loading'
+import Error from './Error'
 
 const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
 
@@ -16,8 +18,12 @@ const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
     const [queueType, setQueueType] = useState("")
     const [showFetchButtonForQueueType, setShowFetchButtonForQueueType] = useState(true)
     const [showFetchButtonForAllGames, setShowFetchButtonForAllGames] = useState(true)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(false)
     const location = useLocation()
 
+    // introduce a sub-loading component. For only when part of a page loading, in this case the match history?
+    // or just conditionally render the match history all together?
 
     // On URL change (clicking on Game Name hyperlink) re-fetch summoner data
     useEffect(() => {
@@ -29,7 +35,7 @@ const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
 
     // Get summoner data from db cache, including match details nested as json
     async function getSummonerData(queryLimit=null, update=false, specificQueue=false){
-
+        setLoading(true)
         const displayedRegion = params.displayRegion
         const mapDisplayedToRegionToVerboseRegion = {
             'na': 'americas',
@@ -60,13 +66,22 @@ const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
             console.log(response.data)
             setSummonerData(response.data)
             globallyUpdateDisplayedRegion(newPlatform)
+            setLoading(false)
+            setError(false)
             if (!specificQueue && response.data.match_history.length < queryLimit){
                 setShowFetchButtonForAllGames(false)
             } else if (specificQueue && response.data.match_history.length < queryLimit){
                 setShowFetchButtonForQueueType(false)
             }
         } catch (error) {
-            console.log({[error.response.request.status]: error.response.data})
+            // console.log({[error.response.request.status]: error.response.data})
+            console.log(error.response.data)
+            setLoading(false)
+            if (error.response.status == 500){
+                setError({"message": error.response.data, status_code: error.response.status})
+            } else {
+                setError({...error.response.data, status_code: error.response.status})
+            }
         }
     }
 
@@ -171,28 +186,33 @@ const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
 
     return (
         <>
-            <button onClick={()=>undoQueueFilterAndGetRecentMatchDetails()}>All</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(450)}>ARAM</button>
-            <button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(420)}>Ranked Solo/Duo</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(400)}>Normal</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(490)}>Quick Play</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(440)}>Flex</button>
-            <button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(700)}>Clash</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(1300)}>Nexus Blitz</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(1700)}>Arena</button>
-            <h1>{gameName} #{tagLine}</h1>
-            <img width="75" height="75" alt="profile icon" src={process.env.PUBLIC_URL + `/assets/profile_icons/${summonerData?.profileIconId}.png`} /> 
-            <h2>Ranked Solo Queue:</h2>
-            <img width="100" height="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank=${formatRank(summonerOverview)}.png`} /> 
-            <plaintext>{summonerOverview?.tier} {summonerOverview?.rank} {summonerOverview?.leaguePoints} LP</plaintext>
-            <plaintext>Wins: {summonerOverview?.wins} Losses:{summonerOverview?.losses}</plaintext>
-            <plaintext>Win Rate {Math.round(summonerOverview?.wins/(summonerOverview?.wins + summonerOverview?.losses)*100)}%</plaintext>
-            <plaintext>Last Updated {formatLastUpdateTime(summonerData?.updated_at)}</plaintext>
-            <button onClick={()=>forceUpdatePage()}>Update</button>
-            <MatchHistory matchHistory={matchHistory} setSummonerData={setSummonerData} summonerData={summonerData}/>
-            {queueType && showFetchButtonForQueueType ? 
-                <button onClick={()=>getSummonerData(matchHistory?.length + 3, false, queueType)}>Fetch More Games (queue specific, remove this text)</button> : 
-                <>queue button hiiding (delete this)</>
+            { loading ? <Loading/> : 
+              error ? <Error error={error}/> :
+                <>
+                    <button onClick={()=>undoQueueFilterAndGetRecentMatchDetails()}>All</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(450)}>ARAM</button>
+                    <button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(420)}>Ranked Solo/Duo</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(400)}>Normal</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(490)}>Quick Play</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(440)}>Flex</button>
+                    <button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(700)}>Clash</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(1300)}>Nexus Blitz</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(1700)}>Arena</button>
+                    <h1>{gameName} #{tagLine}</h1>
+                    <img width="75" height="75" alt="profile icon" src={process.env.PUBLIC_URL + `/assets/profile_icons/${summonerData?.profileIconId}.png`} /> 
+                    <h2>Ranked Solo Queue:</h2>
+                    <img width="100" height="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank=${formatRank(summonerOverview)}.png`} /> 
+                    <plaintext>{summonerOverview?.tier} {summonerOverview?.rank} {summonerOverview?.leaguePoints} LP</plaintext>
+                    <plaintext>Wins: {summonerOverview?.wins} Losses:{summonerOverview?.losses}</plaintext>
+                    <plaintext>Win Rate {Math.round(summonerOverview?.wins/(summonerOverview?.wins + summonerOverview?.losses)*100)}%</plaintext>
+                    <plaintext>Last Updated {formatLastUpdateTime(summonerData?.updated_at)}</plaintext>
+                    <button onClick={()=>forceUpdatePage()}>Update</button>
+                    <MatchHistory matchHistory={matchHistory} setSummonerData={setSummonerData} summonerData={summonerData}/>
+                    {queueType && showFetchButtonForQueueType ? 
+                        <button onClick={()=>getSummonerData(matchHistory?.length + 3, false, queueType)}>Fetch More Games (queue specific, remove this text)</button> : 
+                        <>queue button hiiding (delete this)</>
+                    }
+                    {!queueType && showFetchButtonForAllGames ? 
+                        <button onClick={()=>getSummonerData(matchHistory?.length + 3, false)}>Fetch More Games (all, remove this text)</button> :
+                        <>all button hiding (delete this)</>
+                    }           
+                </>
             }
-            {!queueType && showFetchButtonForAllGames ? 
-                <button onClick={()=>getSummonerData(matchHistory?.length + 3, false)}>Fetch More Games (all, remove this text)</button> :
-                <>all button hiding (delete this)</>
-            }           
-        </>
+    </>
     )
 }
 

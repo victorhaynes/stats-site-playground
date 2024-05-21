@@ -95,7 +95,7 @@ def get_summoner(request):
         except Summoner.DoesNotExist as e:
             pass # Continue and get details from Riot API
         except Exception as e:
-            return JsonResponse({"message": "There was an issue searching for summoner. Please try again.", "detail": repr(e)}, status=status.HTTP_404_NOT_FOUND, safe=False)
+            return JsonResponse({f"Error: There was an issue searching for summoner. Please try again. Detail: {repr(e)}"}, status=status.HTTP_404_NOT_FOUND, safe=False)
 
     platform = Platform.objects.get(code=request.query_params.get('platform'))
     # Also eventually fix Flex Queue for Overview, it will be the 1st element in the json resposne if flex history exists
@@ -160,6 +160,7 @@ def get_summoner(request):
         return JsonResponse(err.error_response, status=err.error_code, safe=False)
     except Exception as err:
         return JsonResponse(f"error: {repr(err)}", status=status.HTTP_500_INTERNAL_SERVER_ERROR, safe=False)
+
 
     # GET Match History and Elo/Overview of every participant in a Summoner's Match History
     try:
