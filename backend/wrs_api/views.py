@@ -43,8 +43,14 @@ except Exception as error:
     print("Admin must create season records in database." + repr(error))
 season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
 
+def custom403handler(request, exception=None):
+    print("custom handler was hit")
+    if isinstance(exception, Ratelimited):
+        return JsonResponse("WR.GG Enforcing rate limit", safe=False, status=429)
+    return JsonResponse("Forbidden", safe=False, status=403)
 
 
+# Check if my rate limiter failed to prevent any 429s recently OR if Riot issues a Service Rate Limit for all external apps
 def check_riot_enforced_timeout(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
@@ -158,8 +164,8 @@ def get_summoner(request):
         return JsonResponse(err.error_response, status=err.error_code, safe=False)
     except RiotRateLimitApiError as err:
         return JsonResponse(err.error_response, status=err.error_code, safe=False)
-    except Exception as err:
-        return JsonResponse(f"error: {repr(err)}", status=status.HTTP_500_INTERNAL_SERVER_ERROR, safe=False)
+    # except Exception as err:
+    #     return JsonResponse(f"error: {repr(err)}", status=status.HTTP_500_INTERNAL_SERVER_ERROR, safe=False)
 
 
     # GET Match History and Elo/Overview of every participant in a Summoner's Match History
@@ -651,4 +657,23 @@ def get_ranked_ladder(request):
             return JsonResponse(err.error_response, status=err.error_code, safe=False)
 
     return JsonResponse(summoners, safe=False, status=http_status_code)
+
+
+def testkey(request, *args, **kwargs):
+    return "abc"
+
+
+
+@api_view(['GET'])
+def test(request):
+    url = f'https://na1.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=1'
+    print("attempt1")
+    ladder_page = rate_limited_RIOT_get(riot_endpoint=url, request=request)
+    url = f'https://na1.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=2'
+    print("attemp2")
+    ladder_page = rate_limited_RIOT_get(riot_endpoint=url, request=request)
+
+        
+
+    return JsonResponse("no error", safe=False, status=status.HTTP_226_IM_USED)
 

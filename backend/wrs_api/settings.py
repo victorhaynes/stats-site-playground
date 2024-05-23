@@ -80,10 +80,11 @@ MIDDLEWARE = [
 
     # RATE LIMITING CONFIG
     # 'django_ratelimit.middleware.RatelimitMiddleware'
+    'wrs_api.403to429middleware.Custom403to429Middleware'
 
 ]
 
-# RATELIMIT_VIEW = 'wrs_api.views.ratelimited_error'
+# RATELIMIT_VIEW = 'wrs_api.views.custom403handler'
 
 
 ROOT_URLCONF = 'wrs_api.urls'

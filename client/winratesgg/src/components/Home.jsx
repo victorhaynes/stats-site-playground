@@ -7,7 +7,6 @@ const Home = ({handleSummonerNameEntry, handlePlatformSelection, submitAndSearch
         {
         (localStorage.getItem('platform') && localStorage.getItem('region') && localStorage.getItem('displayRegion')) ?
         <div>
-            <h1>WINRATES.GG</h1>
             <form onSubmit={submitAndSearchSummoner}>
                 <label htmlFor='platform'></label>
                     <select value={localStorage.getItem('platform')} onChange={(e) => handlePlatformSelection(e)} name="platform">
@@ -29,7 +28,6 @@ const Home = ({handleSummonerNameEntry, handlePlatformSelection, submitAndSearch
         </div>
         :
         <div>
-            <h1>WINRATES.GG</h1>
             <form onSubmit={submitAndSearchSummoner}>
                 <label htmlFor='platform'></label>
                     <select onChange={(e) => handlePlatformSelection(e)} name="platform">

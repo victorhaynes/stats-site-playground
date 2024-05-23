@@ -10,7 +10,8 @@ const Header = ({displayRegion, handleSummonerNameEntry, handlePlatformSelection
 
     return (
         <>
-            <NavLink to="/">Home</NavLink><NavLink to={`/ladder/${displayRegion}/1`}>Leaderboards</NavLink>
+            <img alt="logo" src={process.env.PUBLIC_URL + `/logo.svg`}/>
+            <NavLink to="/">Home</NavLink> <NavLink to={`/ladder/${displayRegion}/1`}>Leaderboards</NavLink>
             {/* <NavLink to="/">Home</NavLink><NavLink to={`/ladder/${regionUrl}/1`}>Leaderboards</NavLink> */}
             {/* <NavLink to="/">Tier List</NavLink>  */}
             { hideSearchBar ? null :
@@ -83,7 +84,7 @@ const Header = ({displayRegion, handleSummonerNameEntry, handlePlatformSelection
             </>
             }
             <br/>
-            <>------------------</>
+            <>---------------------------------------------------------</>
             <br></br>
         </>
     )

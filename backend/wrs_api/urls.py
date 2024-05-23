@@ -26,6 +26,7 @@ urlpatterns = [
     path('seed-summoner-matches/', seed_functions.seed_summoner_matches),
     path('summoner/', views.get_summoner),
     path('ladder/', views.get_ranked_ladder),
+    path('test/', views.test),
     path('__debug__/', include(debug_toolbar.urls))
     # path('summoner-update/', views.get_summoner_update),
     # path('match-history/', views.get_match_history),
@@ -39,4 +40,4 @@ urlpatterns = [
 ]
 
 # # To Check if a 403 Forbidden is really a 429 raised by a rate limiter
-# handler403 = views.custom403handler
+handler403 = views.custom403handler

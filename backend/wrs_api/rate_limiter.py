@@ -16,7 +16,6 @@ from .utilities import RiotApiError
 headers = {'X-Riot-Token': os.environ["RIOT_KEY"]}
 production = False if os.environ["PRODUCTION"] == 'false' else True
 
-
 def rate_limited_RIOT_get(riot_endpoint, request):
     # Method Limits can be thought of as Endpoint Limits
     # Service Limits are not known in advanced and are enforced by Riot for all 3rd party apps
@@ -140,10 +139,11 @@ def rate_limited_RIOT_get(riot_endpoint, request):
         return str(method_rate_limit_key) + "minutes" + "_method"
 
     # # @ratelimit decorator returns 403 Error, and this is being enforced by the application, not by Riot
-    # @ratelimit(key=get_application_rate_limit_seconds_key, rate=application_seconds_ratelimit, method=ratelimit.ALL)
-    # @ratelimit(key=get_application_rate_limit_minutes_key, rate=application_minutes_ratelimit, method=ratelimit.ALL)
-    # @ratelimit(key=get_method_rate_limit_seconds_key, rate=method_seconds_ratelimit, method=ratelimit.ALL)
-    # @ratelimit(key=get_method_rate_limit_minutes_key, rate=method_minutes_ratelimit, method=ratelimit.ALL)
+    @ratelimit(key=get_application_rate_limit_seconds_key, rate=application_seconds_ratelimit, method=ratelimit.ALL)
+    @ratelimit(key=get_application_rate_limit_minutes_key, rate=application_minutes_ratelimit, method=ratelimit.ALL)
+    @ratelimit(key=get_method_rate_limit_seconds_key, rate=method_seconds_ratelimit, method=ratelimit.ALL)
+    @ratelimit(key=get_method_rate_limit_minutes_key, rate=method_minutes_ratelimit, method=ratelimit.ALL)
+    # @ratelimit(key=get_method_rate_limit_minutes_key, rate='99/h', method=ratelimit.ALL, block=True)
     def get_request(request, riot_endpoint): 
         # print("get_application_rate_limit_seconds_key:", get_application_rate_limit_seconds_key(request))
         # print("application_seconds_ratelimit:", application_seconds_ratelimit)
