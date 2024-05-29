@@ -368,8 +368,41 @@ class SummonerSpellStat(models.Model):
         managed = False
 
 
+class PersonalChampStat(models.Model):
+    puuid = models.ForeignKey(Summoner, on_delete=models.CASCADE, db_column="puuid")
+    platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
+    queueId = models.ForeignKey(GameMode, on_delete=models.CASCADE, db_column="queueId")
+    championId = models.ForeignKey(Champion, on_delete=models.CASCADE, to_field="championId", db_column="championId")
+    games = models.IntegerField()
+    season_id = models.ForeignKey(Season, on_delete=models.CASCADE, db_column="season_id")
+    wins = models.IntegerField()
+    losses = models.IntegerField() 
+    kills = models.IntegerField()
+    deaths = models.IntegerField()
+    assists = models.IntegerField()
+    cs = models.IntegerField()
+    csm = models.FloatField()
+
+    class Meta:
+        unique_together = ["puuid", "platform", "championId", "season_id"]
+        db_table = "wrs_api_personalchampstat"
+        managed = False
 
 
+class PreferredRole(models.Model):
+    puuid = models.ForeignKey(Summoner, on_delete=models.CASCADE, db_column="puuid")
+    platform = models.ForeignKey(Platform, on_delete=models.CASCADE, db_column="platform", to_field="code")
+    season_id = models.ForeignKey(Season, on_delete=models.CASCADE, db_column="season_id")
+    top = models.IntegerField()
+    jungle = models.IntegerField()
+    middle = models.IntegerField()
+    bottom = models.IntegerField()
+    support = models.IntegerField()
+
+    class Meta:
+        unique_together = ["puuid", "platform", "season_id"]
+        db_table = "wrs_api_preferredrole"
+        managed = False
 
 
 

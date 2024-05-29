@@ -382,6 +382,7 @@ def get_summoner(request):
                     # participants = match_detail["metadata"]["participants"]
                     participants = match_detail["info"]["participants"]
                     for participant_object in participants:
+                        print("iterating for:", participant_object["puuid"])
                         partition_name = "_" + request.query_params.get('platform')
                         formatted_table_names = [partition_name] * 1
                         cursor.execute(
@@ -506,6 +507,77 @@ def get_summoner(request):
                                 """.format(*formatted_table_names)
                             ,[spell_one, spell_two, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, pick_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
 
+
+                        remake = participant_object["gameEndedInEarlySurrender"]
+                        win = participant_object["win"]
+                        if win:
+                            win_increment = 1
+                            loss_increment = 0
+                        else:
+                            win_increment = 0
+                            loss_increment = 1
+                        game_increment = 1
+                        if match_detail["info"]["gameMode"] == "CLASSIC" and not remake:
+                            total_cs = int(participant_object["neutralMinionsKilled"]) + int(participant_object["totalMinionsKilled"])
+                            game_length = int(match_detail["info"]["gameDuration"]) / 60
+                            cs_per_minute = float(total_cs/game_length)
+                            cs_per_minute = round(cs_per_minute, 1)
+
+                            partition_name = "_" + request.query_params.get('platform')
+                            formatted_table_names = [partition_name] * 10
+                            # Personal Champion KDA/Stats writing logic                               
+                            cursor.execute(
+                                """
+                                    INSERT INTO wrs_api_personalchampstat{} ("games", "wins", "losses", "kills", "deaths", "assists", "cs", "csm", "championId", "platform", "puuid", "queueId", "season_id")
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                    ON CONFLICT ("puuid", "platform", "championId", "season_id")
+                                    DO UPDATE SET
+                                    games = wrs_api_personalchampstat{}.games + EXCLUDED.games,
+                                    wins = wrs_api_personalchampstat{}.wins + EXCLUDED.wins,
+                                    losses = wrs_api_personalchampstat{}.losses + EXCLUDED.losses,
+                                    kills = wrs_api_personalchampstat{}.kills + EXCLUDED.kills,
+                                    deaths = wrs_api_personalchampstat{}.deaths + EXCLUDED.deaths,
+                                    assists = wrs_api_personalchampstat{}.assists + EXCLUDED.assists,
+                                    cs = wrs_api_personalchampstat{}.cs + EXCLUDED.cs,
+                                    csm = wrs_api_personalchampstat{}.csm + EXCLUDED.csm;
+                                """.format(*formatted_table_names)
+                            ,[game_increment, win_increment, loss_increment, participant_object["kills"], participant_object["deaths"], participant_object["assists"], total_cs, cs_per_minute, participant_object["championId"], request.query_params.get('platform'), participant_object["puuid"], match_detail["info"]["queueId"], current_season.id]) 
+                            print("pass 7")
+
+                            selected_role = participant_object["teamPosition"]
+                            top_increment = 0
+                            jg_increment = 0
+                            mid_increment = 0
+                            bot_increment = 0
+                            sup_increment = 0
+                            if selected_role == "TOP":
+                                top_increment +=1
+                            elif selected_role == "JUNGLE":
+                                jg_increment +=1
+                            elif selected_role == "MIDDLE":
+                                mid_increment +=1
+                            elif selected_role == "BOTTOM":
+                                bot_increment +=1
+                            elif selected_role == "UTILITY":
+                                sup_increment +=1
+
+                            partition_name = "_" + request.query_params.get('platform')
+                            formatted_table_names = [partition_name] * 6
+                            cursor.execute(
+                                """
+                                    INSERT INTO wrs_api_preferredrole{} ("puuid", "top", "jungle", "middle", "bottom", "support", "platform", "season_id")
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                                    ON CONFLICT ("puuid", "platform", "season_id")
+                                    DO UPDATE SET 
+                                    top = wrs_api_preferredrole{}.top + EXCLUDED.top,
+                                    jungle = wrs_api_preferredrole{}.jungle + EXCLUDED.jungle,
+                                    middle = wrs_api_preferredrole{}.middle + EXCLUDED.middle,
+                                    bottom = wrs_api_preferredrole{}.bottom + EXCLUDED.bottom,
+                                    support = wrs_api_preferredrole{}.support + EXCLUDED.support;
+                                """.format(*formatted_table_names)
+                            ,[participant_object["puuid"], top_increment, jg_increment, mid_increment, bot_increment, sup_increment, request.query_params.get('platform'), current_season.id]) 
+                            print("pass 8")                     
+
             with connection.cursor() as cursor:
                 partition_name = "_" + request.query_params.get('platform')
                 formatted_table_names = [partition_name] * 4
@@ -525,8 +597,8 @@ def get_summoner(request):
 
     except RiotApiError as err:
         return JsonResponse(err.error_response, status=err.error_code, safe=False)
-    except Exception as err:
-        return JsonResponse(f"Could not update databse. Error: {str(err)}", safe=False, status=status.HTTP_409_CONFLICT)
+    # except Exception as err:
+    #     return JsonResponse(f"Could not update databse. Error: {str(err)}", safe=False, status=status.HTTP_409_CONFLICT)
 
         
     summoner_searched = Summoner.objects.get(puuid=puuid, platform=request.query_params.get('platform'))
@@ -677,3 +749,48 @@ def test(request):
 
     return JsonResponse("no error", safe=False, status=status.HTTP_226_IM_USED)
 
+
+
+
+    # {
+    #   "model": "wrs_api.Summoner",
+    #   "fields": {
+    #     "puuid": "f649YxVWblcWTKMjnLYAZTKlbH6b3iNEZXf9-HXZhxxJRBSQ-Zws7v6jErBh0tzyVS9VNo50FHK3rA",
+    #     "gameName": "vanilli vanilli",
+    #     "tagLine": "VV2",
+    #     "platform": "na1",
+    #     "profileIconId": 3795,
+    #     "encryptedSummonerId": "ZANL-az6EkuuJc27gyzq8lkb4UrkpFTAisDG82lRU855N1qnDTfKhOyW-w",
+    #     "most_recent_game": "NA1_4887039076",
+    #     "created_at": "2024-04-01T18:20:07Z",
+    #     "updated_at": "2024-04-01T18:20:07Z"
+    #   }
+    # },
+    # {
+    #   "model": "wrs_api.Summoner",
+    #   "fields": {
+    #     "puuid": "aYWKw--LdXozLfm-HJ8OFiHW9vKVUZLzwnsLvJFufYsmr4Xdjnac-3-u_2lRJPQZ6Z2Eop0EbJdOwQ",
+    #     "gameName": "Tallish",
+    #     "tagLine": "NA1",
+    #     "platform": "na1",
+    #     "profileIconId": 5023,
+    #     "encryptedSummonerId": "8VJm42mkBm06t3w2XuM5WRfvyQcUWnh54ew_JO979wnw3DQl",
+    #     "most_recent_game": "NA1_4889736532",
+    #     "created_at": "2024-04-01T18:20:07Z",
+    #     "updated_at": "2024-04-01T18:20:07Z"
+    #   }
+    # },
+    # {
+    #   "model": "wrs_api.Summoner",
+    #   "fields": {
+    #     "puuid": "xadTQjqNKZuYdjt4vMi5hWVemmsjCZZBeVtSaJ-EXPZsZ2UaAHyYJqw_aTzXdA672f5ZyfQqCL9uqQ",
+    #     "gameName": "Dark Aura",
+    #     "tagLine": "EUW",
+    #     "platform": "euw1",
+    #     "profileIconId": 6051,
+    #     "encryptedSummonerId": "wMUm2A8D3zo4qajOQ9MvI9B5zX-XUY51wQ7m6UQfDFWyHzUQ",
+    #     "most_recent_game": "EUW1_6759658609",
+    #     "created_at": "2024-04-01T18:20:07Z",
+    #     "updated_at": "2024-04-01T18:20:07Z"
+    #   }
+    # }

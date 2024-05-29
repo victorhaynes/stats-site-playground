@@ -6906,47 +6906,5 @@
         "name": "Synchronized Soles",
         "tier_three": true
       }
-    },
-    {
-      "model": "wrs_api.Summoner",
-      "fields": {
-        "puuid": "f649YxVWblcWTKMjnLYAZTKlbH6b3iNEZXf9-HXZhxxJRBSQ-Zws7v6jErBh0tzyVS9VNo50FHK3rA",
-        "gameName": "vanilli vanilli",
-        "tagLine": "VV2",
-        "platform": "na1",
-        "profileIconId": 3795,
-        "encryptedSummonerId": "ZANL-az6EkuuJc27gyzq8lkb4UrkpFTAisDG82lRU855N1qnDTfKhOyW-w",
-        "most_recent_game": "NA1_4887039076",
-        "created_at": "2024-04-01T18:20:07Z",
-        "updated_at": "2024-04-01T18:20:07Z"
-      }
-    },
-    {
-      "model": "wrs_api.Summoner",
-      "fields": {
-        "puuid": "aYWKw--LdXozLfm-HJ8OFiHW9vKVUZLzwnsLvJFufYsmr4Xdjnac-3-u_2lRJPQZ6Z2Eop0EbJdOwQ",
-        "gameName": "Tallish",
-        "tagLine": "NA1",
-        "platform": "na1",
-        "profileIconId": 5023,
-        "encryptedSummonerId": "8VJm42mkBm06t3w2XuM5WRfvyQcUWnh54ew_JO979wnw3DQl",
-        "most_recent_game": "NA1_4889736532",
-        "created_at": "2024-04-01T18:20:07Z",
-        "updated_at": "2024-04-01T18:20:07Z"
-      }
-    },
-    {
-      "model": "wrs_api.Summoner",
-      "fields": {
-        "puuid": "xadTQjqNKZuYdjt4vMi5hWVemmsjCZZBeVtSaJ-EXPZsZ2UaAHyYJqw_aTzXdA672f5ZyfQqCL9uqQ",
-        "gameName": "Dark Aura",
-        "tagLine": "EUW",
-        "platform": "euw1",
-        "profileIconId": 6051,
-        "encryptedSummonerId": "wMUm2A8D3zo4qajOQ9MvI9B5zX-XUY51wQ7m6UQfDFWyHzUQ",
-        "most_recent_game": "EUW1_6759658609",
-        "created_at": "2024-04-01T18:20:07Z",
-        "updated_at": "2024-04-01T18:20:07Z"
-      }
     }
 ]
