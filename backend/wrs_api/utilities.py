@@ -31,6 +31,15 @@ def format_overview_strings_as_json(overviews):
             pass
     return overviews
 
+# # Format string representation as JSON instead of string
+# def format_preferred_role_strings_as_json(overviews):
+#     for overview in overviews:
+#         try:
+#             overview["metadata"] = json.loads(overview["metadata"])
+#         except KeyError:
+#             pass
+#     return overviews
+
 
 def ranked_badge(elo_dict: dict):
     rank = elo_dict["rank"] # Roman Numeral Integer

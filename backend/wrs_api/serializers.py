@@ -32,11 +32,37 @@ class SummonerSerializer(serializers.ModelSerializer):
 class SummonerCustomSerializer(serializers.ModelSerializer):
     overviews = serializers.SerializerMethodField('get_related_overviews')
     match_history = serializers.SerializerMethodField('get_related_matches')
+    preferred_role = serializers.SerializerMethodField('get_related_preferred_role')
+    personal_champ_stats = serializers.SerializerMethodField('get_related_personal_champ_stat')
+
+    def get_related_preferred_role(self, instance):
+        sql =   """
+                    SELECT * FROM wrs_api_preferredrole WHERE puuid = %s AND platform = %s
+                    ORDER BY season_id DESC
+                    LIMIT 1;
+                """
+        with connection.cursor() as cursor:
+            cursor.execute(sql, [instance.puuid, instance.platform.code])
+            results = dictfetchall(cursor)
+        return results[0]
+
+
+    def get_related_personal_champ_stat(self, instance):
+        sql =   """
+                    SELECT * FROM wrs_api_personalchampstat WHERE puuid = %s AND platform = %s
+                    ORDER BY season_id DESC
+                    LIMIT 3;
+                """
+        with connection.cursor() as cursor:
+            cursor.execute(sql, [instance.puuid, instance.platform.code])
+            results = dictfetchall(cursor)
+        return (results)
+
 
     def get_related_overviews(self, instance):
         sql =   """
                     SELECT * FROM wrs_api_summoneroverview WHERE puuid = %s AND platform = %s
-                    ORDER BY id DESC;
+                    ORDER BY season_id DESC;
                 """
         with connection.cursor() as cursor:
             cursor.execute(sql,[instance.puuid, instance.platform.code])
@@ -106,7 +132,7 @@ class SummonerCustomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Summoner
-        fields = ['id', 'puuid', 'gameName', 'tagLine', 'platform', 'profileIconId', 'encryptedSummonerId', 'most_recent_game','overviews', 'match_history', 'created_at', 'updated_at'] 
+        fields = ['id', 'puuid', 'gameName', 'tagLine', 'platform', 'profileIconId', 'encryptedSummonerId', 'most_recent_game','overviews', 'preferred_role', 'personal_champ_stats', 'match_history', 'created_at', 'updated_at'] 
 
  
 

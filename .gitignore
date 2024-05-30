@@ -3,3 +3,5 @@ secret.py
 INTERNALNOTES.md
 .DS_Store
 INTERNALNOTES_2.md
+prod.env
+dev.env

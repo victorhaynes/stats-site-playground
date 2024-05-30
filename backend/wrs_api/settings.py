@@ -135,6 +135,18 @@ CACHES = {
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         # 'ENGINE': "psqlextra.backend",
+#         'NAME': os.environ["DB_NAME"],
+#         'USER': os.environ["DB_USERNAME"],
+#         'PASSWORD': os.environ["DB_PASSWORD"],
+#         'HOST': os.environ["DB_ADDRESS"],
+#         'PORT': os.environ["DB_PORT"]
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
