@@ -6,3 +6,5 @@ test.py
 INTERNALNOTES.md
 INTERNALNOTES_2.md
 /old
+db.sqlite3
+notes.py

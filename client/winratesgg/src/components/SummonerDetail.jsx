@@ -55,7 +55,7 @@ const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
 
 
         // let url = `http://127.0.0.1:8000/summoner/?region=${region}&platform=${platform}&gameName=${gameName}&tagLine=${tagLine}`
-        let url = `http://127.0.0.1:8000/summoner/?region=${newRegion}&platform=${newPlatform}&gameName=${gameName}&tagLine=${tagLine}`
+        let url = `http://127.0.0.1/api/summoner/?region=${newRegion}&platform=${newPlatform}&gameName=${gameName}&tagLine=${tagLine}` // port :8000 is factored out, NGINX will route from default port 80 to appropriate server
         
         url += queryLimit ? `&limit=${queryLimit}` : ''
         url += update ? `&update=${update}` : ''

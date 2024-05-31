@@ -21,12 +21,12 @@ from wrs_api import seed_functions
 import debug_toolbar 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('seed-summoner-overviews/', seed_functions.seed_summoner_overviews),
-    path('seed-summoner-matches/', seed_functions.seed_summoner_matches),
-    path('summoner/', views.get_summoner),
-    path('ladder/', views.get_ranked_ladder),
-    path('test/', views.test),
+    path('api/admin/', admin.site.urls),
+    path('api/seed-summoner-overviews/', seed_functions.seed_summoner_overviews),
+    path('api/seed-summoner-matches/', seed_functions.seed_summoner_matches),
+    path('api/summoner/', views.get_summoner),
+    path('api/ladder/', views.get_ranked_ladder),
+    path('api/test/', views.test),
     path('__debug__/', include(debug_toolbar.urls))
     # path('summoner-update/', views.get_summoner_update),
     # path('match-history/', views.get_match_history),
