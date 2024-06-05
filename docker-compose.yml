@@ -22,6 +22,13 @@ services:
     depends_on:
     - backend
     - frontend
+  cronjob:
+    build:
+      context: ./asset_scheduler
+    volumes:
+    - cron_logs:/var/log
+
 
 volumes:
   react_build:
+  cron_logs:

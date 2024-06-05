@@ -85,7 +85,7 @@ def check_riot_enforced_timeout(view_func):
 ######################################################################################
 # Helper Function to check database for existing summoner data before hitting Riot API # special text index on gamename and tagline?
 ######################################################################################
-@check_riot_enforced_timeout
+# @check_riot_enforced_timeout
 @api_view(['GET'])
 def get_summoner(request):
 
@@ -611,7 +611,7 @@ def get_summoner(request):
 ######################################################################################
 # Get all Challenger Players for a PLATFORM and TIER (300 Challengers for NA1)
 ######################################################################################
-@check_riot_enforced_timeout
+# @check_riot_enforced_timeout
 @api_view(['GET'])
 @transaction.atomic
 def get_ranked_ladder(request):

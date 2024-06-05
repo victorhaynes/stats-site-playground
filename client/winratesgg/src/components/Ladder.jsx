@@ -44,7 +44,8 @@ async function getLeaderboard() {
             }
             const newPlatform = mapDisplayedRegionToPlatform[displayedRegion]
 
-            let response = await axios.get(`http://127.0.0.1/api/ladder/?&platform=${newPlatform}&region=${newRegion}&page=${params.pageNumber}`);  // port :8000 is factored out, NGINX will route from default port 80 to appropriate server
+            let response = await axios.get(`http://127.0.0.1/8000/api/ladder/?&platform=${newPlatform}&region=${newRegion}&page=${params.pageNumber}`);  // dev (npm start command)
+            // let response = await axios.get(`http://127.0.0.1/api/ladder/?&platform=${newPlatform}&region=${newRegion}&page=${params.pageNumber}`);  // prod port :8000 is factored out, NGINX will route from default port 80 to appropriate server
             console.log(response.data);
             // localStorage.setItem('platform', newPlatform);
             // localStorage.setItem('region', newRegion);

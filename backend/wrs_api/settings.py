@@ -56,9 +56,6 @@ INSTALLED_APPS = [
     'rest_framework',
     # CORS Config
     "corsheaders",
-    # PSQL Extras--support table partitioning
-    # "django.contrib.postgres",
-    # "psqlextra",
     # REDIS CONFIG
     'debug_toolbar'
 
