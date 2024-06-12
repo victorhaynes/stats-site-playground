@@ -477,7 +477,7 @@ def get_summoner(request):
                             formatted_table_names = [partition_name] * 3
 
                             if boots_built_by_player:
-                                bootId = boots_built_by_player[0] # Get the first tier two boot built, players sometimes sell and buy a different pair
+                                bootId = boots_built_by_player[-1] # Get the last completed boot built, players sometimes sell and buy a different pair
                                 cursor.execute(
                                     """
                                         INSERT INTO wrs_api_completedbootstat{} ("completed_boot","championId", "elo", "role", "wins", "losses", "season_id", "patch", "platform")

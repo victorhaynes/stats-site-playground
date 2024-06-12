@@ -6,27 +6,13 @@ from dotenv import load_dotenv
 import requests
 from datetime import datetime
 from botocore.exceptions import ClientError
+from utilities import compare_latest_version_to_last_saved_version
+
+print("Starting summoner spell icon job...", datetime.now())
+
 
 load_dotenv()
 
-# Ex. Compare 14.11.1 to 14.5.1 and determine which patch is "larger" (i.e. most recent)
-def compare_latest_version_to_last_saved_version(latest_version, last_saved_version):
-    # Split the 2 patch versions into parts
-    latest_parts = [int(part) for part in latest_version.split('.')]
-    saved_parts = [int(part) for part in last_saved_version.split('.')]
-    
-    # Compare the chunks one by one
-    for latest_part, saved_part in zip(latest_parts, saved_parts):
-        if latest_part < saved_part:
-            return False  # latest_version is less than last_saved_version
-        elif latest_part > saved_part:
-            return True   # latest_version is greater than last_saved_version
-    
-    # If all compared parts are equal, check if one version has more parts
-    if len(latest_parts) <= len(saved_parts):
-        return False # latest_version is less than or equal to last_saved_version
-    else:
-        return True   # latest_version is greater than last_saved_version
 
 
 # Note: unlike item icons & champion icons, summoner spell icons do not frequently change. So this function checks if exists first
@@ -85,7 +71,7 @@ def get_and_upload_latest_summoner_spell_icons():
 
 
             else:
-                print("No profile icons update performed", datetime.now())
+                print("No profile summoner spell update performed", datetime.now())
         else:
             print("Error getting latest API version from Data Dragon.", datetime.now())
 
@@ -95,22 +81,3 @@ def get_and_upload_latest_summoner_spell_icons():
 get_and_upload_latest_summoner_spell_icons()
 
 
-# update URL https://developer.riotgames.com/docs/lol#data-dragon_items
-url = "https://ddragon.leagueoflegends.com/cdn/14.3.1/data/en_US/summoner.json"
-
-
-count = 1
-response = requests.get(url)
-if response.status_code == 200:
-    allSums = response.json()["data"]
-    for sumspell in allSums:
-        print(allSums[sumspell]["name"], count)
-        path = f"./summoner_spell_icons/{allSums[sumspell]['key']}.png"
-        res = requests.get(f"https://ddragon.leagueoflegends.com/cdn/14.3.1/img/spell/{allSums[sumspell]['id']}.png")
-        if res.status_code == 200:
-            with open(path, "wb") as file:
-                file.write(res.content)
-        else:
-            print(res.status_code, res.content)
-        count+=1
-        time.sleep(0.1)

@@ -6,33 +6,24 @@ import tarfile
 import io
 from dotenv import load_dotenv
 from datetime import datetime
+from utilities import compare_latest_version_to_last_saved_version
 # requests provided by ARN arn:aws:lambda:us-east-2:770693421928:layer:Klayers-p310-arm64-requests:10
 # https://github.com/keithrozario/Klayers?tab=readme-ov-file#list-of-arns
 
+print("Starting champ icon job...", datetime.now())
 
 load_dotenv()
 
-# Ex. Compare 14.11.1 to 14.5.1 and determine which patch is "larger"
-def compare_latest_version_to_last_saved_version(latest_version, last_saved_version):
-    # Split the 2 patch versions into parts
-    latest_parts = [int(part) for part in latest_version.split('.')]
-    saved_parts = [int(part) for part in last_saved_version.split('.')]
-    
-    # Compare the chunks one by one
-    for latest_part, saved_part in zip(latest_parts, saved_parts):
-        if latest_part < saved_part:
-            return False  # latest_version is less than last_saved_version
-        elif latest_part > saved_part:
-            return True   # latest_version is greater than last_saved_version
-    
-    # If all compared parts are equal, check if one version has more parts
-    if len(latest_parts) <= len(saved_parts):
-        return False # latest_version is less than or equal to last_saved_version
-    else:
-        return True   # latest_version is greater than last_saved_version
 
 
 
+######## Note TO SELF , BEFORE MOVING ON WRITE A SCRIPT FOR THE STAT MODS
+######## Note TO SELF , BEFORE MOVING ON WRITE A SCRIPT FOR THE STAT MODS
+######## Note TO SELF , BEFORE MOVING ON WRITE A SCRIPT FOR THE STAT MODS
+######## Note TO SELF , BEFORE MOVING ON WRITE A SCRIPT FOR THE STAT MODS
+
+### AND WE NEED A WAY TO AUTOMATICALLY ADD ITEMS/RUNES/SUMMONER SPELLS/STAT MODS PROGRAMMATICALLY
+### TO DATABASE IF THEY ARE PRESENT IN THE API/MATCH HISTORY/AS THEY ARE ADDED
 
 
 def get_and_upload_latests_champ_icons():

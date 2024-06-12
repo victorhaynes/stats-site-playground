@@ -21,6 +21,10 @@ from django.core.exceptions import ValidationError
 # make sure the model that needs partitioning is unmanaged, give it a name that fits name convention
 # then add raw runSQL() in the appropriate place in the migration
 
+class RiotApiVersion(models.Model):
+    name = models.CharField(max_length=40, primary_key=True)
+
+
 # Seeded
 class Role(models.Model):
     role_options = [("TOP", "TOP"), ("JUNGLE", "JUNGLE"), ("MIDDLE", "MIDDLE"), ("BOTTOM", "BOTTOM"), ("UTILITY", "UTILITY")]
@@ -86,81 +90,91 @@ class GameMode(models.Model):
 class Champion(models.Model):
     championId = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=30)
+    metadata = models.JSONField(default=dict)
 
 
 # Seeded
 class SummonerSpell(models.Model):
     spellId = models.IntegerField(primary_key=True, db_column="spellId")
     name = models.CharField(max_length=20)
+    metadata = models.JSONField(default=dict)
 
 # Seeded
 class Keystone(models.Model):
     keystone_id = models.IntegerField(primary_key=True, db_column="keystone_id") # maps to the first perk in the style match v5 JSON
     name = models.CharField(max_length=40)
+    metadata = models.JSONField(default=dict)
 
 
 # Seeded
 class PrimaryPerkOne(models.Model):
     perk_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=40)
+    metadata = models.JSONField(default=dict)
 
     
 # Seeded
 class PrimaryPerkTwo(models.Model):
     perk_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=40)
+    metadata = models.JSONField(default=dict)
 
 
 # Seeded
 class PrimaryPerkThree(models.Model):
     perk_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=40)
+    metadata = models.JSONField(default=dict)
 
 
 # Seeded
 class SecondaryPerkOne(models.Model):
     perk_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=40)
-    
+    metadata = models.JSONField(default=dict)
+
 
 
 # Seeded
 class SecondaryPerkTwo(models.Model):
     perk_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=40)
-    
+    metadata = models.JSONField(default=dict)
+
 
 # Seeded
 class StatShardOne(models.Model):
     shard_id = models.IntegerField(primary_key=True, db_column="shard_id")
     name = models.CharField(max_length=40)
+    metadata = models.JSONField(default=dict)
 
 
 # Seeded
 class StatShardTwo(models.Model):
     shard_id = models.IntegerField(primary_key=True, db_column="shard_id")
     name = models.CharField(max_length=40)
+    metadata = models.JSONField(default=dict)
 
 
 # Seeded
 class StatShardThree(models.Model):
     shard_id = models.IntegerField(primary_key=True, db_column="shard_id")
     name = models.CharField(max_length=40)
+    metadata = models.JSONField(default=dict)
 
 
 # Seeded
 class Item(models.Model):
     itemId = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=120)
-    legendary = models.BooleanField(default=False)
-    t2_boot = models.BooleanField(default=False)
-    t3_boot = models.BooleanField(default=False)
+    metadata = models.JSONField(default=dict)
+
 
 # Seeded
 class CompletedBoot(models.Model):
     itemId = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=30)
-    tier_three = models.BooleanField(default=False)
+    metadata = models.JSONField(default=dict)
 
 class Summoner(models.Model):
     puuid = models.CharField(max_length=100)

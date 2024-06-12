@@ -6,36 +6,19 @@ import tarfile
 import io
 from dotenv import load_dotenv
 from datetime import datetime
+from utilities import compare_latest_version_to_last_saved_version
 # requests provided by ARN arn:aws:lambda:us-east-2:770693421928:layer:Klayers-p310-arm64-requests:10
 # https://github.com/keithrozario/Klayers?tab=readme-ov-file#list-of-arns
+
+print("Starting rune & stat mod icon job...", datetime.now())
 
 
 load_dotenv()
 
-# Ex. Compare 14.11.1 to 14.5.1 and determine which patch is "larger"
-def compare_latest_version_to_last_saved_version(latest_version, last_saved_version):
-    # Split the 2 patch versions into parts
-    latest_parts = [int(part) for part in latest_version.split('.')]
-    saved_parts = [int(part) for part in last_saved_version.split('.')]
-    
-    # Compare the chunks one by one
-    for latest_part, saved_part in zip(latest_parts, saved_parts):
-        if latest_part < saved_part:
-            return False  # latest_version is less than last_saved_version
-        elif latest_part > saved_part:
-            return True   # latest_version is greater than last_saved_version
-    
-    # If all compared parts are equal, check if one version has more parts
-    if len(latest_parts) <= len(saved_parts):
-        return False # latest_version is less than or equal to last_saved_version
-    else:
-        return True   # latest_version is greater than last_saved_version
 
 
 
-
-
-def get_and_upload_latest_major_and_minor_rune_icons():
+def get_and_uploadlatest_major_rune_minor_rune_stat_mod_icons():
     try:
         s3 = boto3.client(
             's3',
@@ -64,7 +47,7 @@ def get_and_upload_latest_major_and_minor_rune_icons():
             if compare_latest_version_to_last_saved_version(latest_version, last_saved_game_version):
                 # Download the tarball
                 url = f"https://ddragon.leagueoflegends.com/cdn/dragontail-{latest_version}.tgz"
-                print("fetch1ok")
+                print("Getting tarbal")
                 tgz_response = requests.get(url)
                 if tgz_response.status_code == 200:
 
@@ -72,22 +55,35 @@ def get_and_upload_latest_major_and_minor_rune_icons():
                     # Note: rune ids are not available in the data dragon .tgz file, must look them up directly form Riot 
                     url = f"https://ddragon.leagueoflegends.com/cdn/{latest_version}/data/en_US/runesReforged.json"
                     runes_response = requests.get(url)
-                    if runes_response.status_code == 200:
-                        print("fetch2 ok")
+
+                    url = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perks.json"
+                    perks_and_stat_mod_response = requests.get(url)
+
+                    if runes_response.status_code == 200 and perks_and_stat_mod_response.status_code == 200:
+                        print("Got runes and stat mods json")
                         all_runes_data = runes_response.json()
 
-                        rune_name_to_id_map = {}
+                        rune_icon_name_to_id_filename_map = {}
                         for category in all_runes_data:
                             for slot in category['slots']:
                                 for rune in slot['runes']:
                                     rune_key = rune['key']
                                     rune_id = rune['id']
-                                    rune_name_to_id_map[rune_key] = rune_id
+                                    rune_icon_name_to_id_filename_map[rune_key] = rune_id
 
-                        print(rune_name_to_id_map)
+
+                        all_cd_perks = perks_and_stat_mod_response.json()
+                        print("here", all_cd_perks[0:2])
+
+                        all_stat_mods = [d for d in all_cd_perks if "StatMods".lower() in d["iconPath"].lower()]
+                        print("here", all_stat_mods)
+                        stat_mod_icon_name_to_id_filename_map = {}
+                        for mod in all_stat_mods:
+                            stat_mod_name_with_file_extension = mod["iconPath"].split("/StatMods/")[-1].lower()
+                            stat_mod_icon_name_to_id_filename_map[stat_mod_name_with_file_extension] = mod["id"]
+
                         with tarfile.open(fileobj=io.BytesIO(tgz_response.content)) as tar:
                             for member in tar.getmembers():
-                                print()
                                 if member.name.startswith(f"img/perk-images/Styles") and member.name.endswith('.png'):
                                     print("inside", member.name)
                                     file_obj = tar.extractfile(member)
@@ -97,7 +93,7 @@ def get_and_upload_latest_major_and_minor_rune_icons():
                                         rune_name_no_file_extension = file_name.split('.')[0]
 
                                         try:
-                                            rune_id_for_key = rune_name_to_id_map[rune_name_no_file_extension]
+                                            rune_id_for_key = rune_icon_name_to_id_filename_map[rune_name_no_file_extension]
                                         except KeyError:
                                             rune_id_for_key = rune_name_no_file_extension
 
@@ -106,6 +102,22 @@ def get_and_upload_latest_major_and_minor_rune_icons():
                                         s3.put_object(Bucket=bucket, Key=s3_rune_key, Body=file_obj.read())
                                         print(f"Uploaded {s3_rune_key} to S3 _", datetime.now())
 
+                                if member.name.startswith(f"img/perk-images/StatMods") and member.name.endswith('.png'):
+
+                                    stat_mod_icon_name = member.name.split("/StatMods/")[-1].lower()
+                                    print("inside", member.name)
+                                    print(stat_mod_icon_name)
+                                    file_obj = tar.extractfile(member)
+                                    print(stat_mod_icon_name_to_id_filename_map)
+                                    if file_obj is not None:                                        
+                                        stat_mod_file_name_for_key = stat_mod_icon_name_to_id_filename_map[stat_mod_icon_name]
+
+
+                                        s3_mod_key = f"major_and_minor_rune_icons/{stat_mod_file_name_for_key}.png"
+                                        print(s3_mod_key)
+                                        s3.put_object(Bucket=bucket, Key=s3_mod_key, Body=file_obj.read())
+                                        print(f"Uploaded {s3_mod_key} to S3 _", datetime.now())
+
 
 
 
@@ -113,7 +125,7 @@ def get_and_upload_latest_major_and_minor_rune_icons():
                         print("Updated latest patch to:", latest_version, "_", datetime.now())
 
                     else:
-                        print("Error fetching runes json from Data Dragon", datetime.now())
+                        print("Error fetching runes json from Data Dragon or stat mods from Community Dragon", datetime.now())
 
                 else:
                     print("Error Downloading .tgz file from Data Dragon", datetime.now())
@@ -129,46 +141,7 @@ def get_and_upload_latest_major_and_minor_rune_icons():
 
 
 
-get_and_upload_latest_major_and_minor_rune_icons()
+get_and_uploadlatest_major_rune_minor_rune_stat_mod_icons()
 
 
 
-
-# import json
-# import boto3
-# import os
-# import requests
-# import tarfile
-# import io
-# import random
-# from dotenv import load_dotenv
-
-# # requests provided by ARN arn:aws:lambda:us-east-2:770693421928:layer:Klayers-p310-arm64-requests:10
-# # https://github.com/keithrozario/Klayers?tab=readme-ov-file#list-of-arns
-
-
-
-
-# load_dotenv()
-
-# def get_and_upload_latests_champ_icons():
-
-
-#     random_string = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz') for i in range(5))
-
-#     s3_client = boto3.client(
-#         's3',
-#         region_name='us-east-2',
-#         aws_access_key_id=os.environ["AWS_IAM_ACCESS_KEY"],
-#         aws_secret_access_key=os.environ["AWS_IAM_SECRET_ACCESS_KEY"]
-#     )
-
-#     print('the test is running')
-#     s3_client.put_object(Bucket='wr-gg-images-bucket', Key='test', Body=json.dumps({"this is a test": f"{random_string}"}))
-
-
-# get_and_upload_latests_champ_icons()
-
-
-
-# # successfully uplodated "{"this is a test": "azhnt"}"!!!!!!!! download again in a minute

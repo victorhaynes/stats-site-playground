@@ -24,11 +24,17 @@ services:
     - frontend
   cronjob:
     build:
-      context: ./asset_scheduler
+      context: ./content_scheduler
     volumes:
-    - cron_logs:/var/log
+    - crong_logs_icons:/var/log/icons
+    # - cron_logs_champion_icons_job:/var/log/champions
+    # - cron_logs_item_icons_job:/var/log/items
+    # - cron_logs_rune_icons_job:/var/log/runes/
+    # - cron_logs_profile_icons_job:/var/log/profile_icons/
+    # - cron_logs_summoner_spell_icons_job:/var/log/summoner_spells/
 
 
 volumes:
   react_build:
-  cron_logs:
+  crong_logs_icons:
+
