@@ -24,6 +24,6 @@
 
 0 10 * * *  /usr/local/bin/python /app/get_latest_champion_icons.py >> /var/log/icons/champion_icons_job.log 2>&1
 0 10 * * *  /usr/local/bin/python /app/get_latest_item_icons.py >> /var/log/icons/item_icons_job.log 2>&1
-0 10 * * *  /usr/local/bin/python /app/get_latest_major_rune_minor_rune_stat_mod_icons.py >> /var/log/icons/rune_icons_job.log 2>&1
+0 10 * * *  /usr/local/bin/python /app/get_latest_runes_icons.py >> /var/log/icons/rune_icons_job.log 2>&1
 0 10 * * * /usr/local/bin/python /app/get_profile_icons.py >> /var/log/icons/profile_icons_job.log 2>&1
 0 10 * * *  /usr/local/bin/python /app/get_latest_summoner_spell_icons.py >> /var/log/icons/summoner_spell_icons_job.log 2>&1

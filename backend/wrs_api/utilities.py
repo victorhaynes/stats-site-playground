@@ -3,7 +3,7 @@ from django.db import connection
 from .models import Summoner, SummonerOverview
 import os
 
-# UTILITY METHOD TO "SERIALIZER" RAW UNMANAGED QUERY RESULTS AS A LIST OF DICTS
+# UTILITY METHOD TO "SERIALIZE" RAW UNMANAGED QUERY RESULTS AS A LIST OF DICTS
 def dictfetchall(cursor):
     """
     Return all rows from a cursor as a dict.

@@ -6,7 +6,7 @@ import tarfile
 import io
 from dotenv import load_dotenv
 from datetime import datetime
-from utilities import compare_latest_version_to_last_saved_version
+from utilities import update_required
 # requests provided by ARN arn:aws:lambda:us-east-2:770693421928:layer:Klayers-p310-arm64-requests:10
 # https://github.com/keithrozario/Klayers?tab=readme-ov-file#list-of-arns
 
@@ -52,7 +52,7 @@ def get_and_upload_latests_champ_icons():
             last_saved_game_version = json.loads(file_content)['version']
 
             # Compare Latest Version to Last Saved Version
-            if compare_latest_version_to_last_saved_version(latest_version, last_saved_game_version):
+            if update_required(latest_version, last_saved_game_version):
                 # Download the tarball
                 url = f"https://ddragon.leagueoflegends.com/cdn/dragontail-{latest_version}.tgz"
                 response = requests.get(url)

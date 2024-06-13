@@ -22,8 +22,8 @@ from django.core.exceptions import ValidationError
 # then add raw runSQL() in the appropriate place in the migration
 
 class RiotApiVersion(models.Model):
-    name = models.CharField(max_length=40, primary_key=True)
-
+    asset = models.CharField(max_length=30, primary_key=True)
+    version = models.CharField(max_length=30)
 
 # Seeded
 class Role(models.Model):
@@ -96,7 +96,7 @@ class Champion(models.Model):
 # Seeded
 class SummonerSpell(models.Model):
     spellId = models.IntegerField(primary_key=True, db_column="spellId")
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=35)
     metadata = models.JSONField(default=dict)
 
 # Seeded

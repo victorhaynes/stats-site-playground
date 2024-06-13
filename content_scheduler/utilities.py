@@ -1,5 +1,9 @@
 # Ex. Compare 14.11.1 to 14.5.1 and determine which patch is "larger"
-def compare_latest_version_to_last_saved_version(latest_version, last_saved_version):
+def update_required(latest_version, last_saved_version):
+
+    if not last_saved_version: # if it is falsey/doesn't exist
+        return True
+
     # Split the 2 patch versions into parts
     latest_parts = [int(part) for part in latest_version.split('.')]
     saved_parts = [int(part) for part in last_saved_version.split('.')]
@@ -16,3 +20,4 @@ def compare_latest_version_to_last_saved_version(latest_version, last_saved_vers
         return False # latest_version is less than or equal to last_saved_version
     else:
         return True   # latest_version is greater than last_saved_version
+

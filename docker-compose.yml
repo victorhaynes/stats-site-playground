@@ -26,15 +26,10 @@ services:
     build:
       context: ./content_scheduler
     volumes:
-    - crong_logs_icons:/var/log/icons
-    # - cron_logs_champion_icons_job:/var/log/champions
-    # - cron_logs_item_icons_job:/var/log/items
-    # - cron_logs_rune_icons_job:/var/log/runes/
-    # - cron_logs_profile_icons_job:/var/log/profile_icons/
-    # - cron_logs_summoner_spell_icons_job:/var/log/summoner_spells/
+    - cron_logs_icons:/var/log/icons
 
 
 volumes:
   react_build:
-  crong_logs_icons:
+  cron_logs_icons:
 

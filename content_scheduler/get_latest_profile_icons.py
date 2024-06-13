@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import requests
 from datetime import datetime
 from botocore.exceptions import ClientError
-from utilities import compare_latest_version_to_last_saved_version
+from utilities import update_required
 
 print("Starting profile icon job...", datetime.now())
 
@@ -42,7 +42,7 @@ def get_and_upload_latest_profile_icons():
             last_saved_game_version = json.loads(file_content)['version']
 
             # Compare Latest Version to Last Saved Version
-            if compare_latest_version_to_last_saved_version(latest_version, last_saved_game_version):
+            if update_required(latest_version, last_saved_game_version):
                 # Fetch (all) item(s).json from Riot Data Dragon
                 url = f"https://ddragon.leagueoflegends.com/cdn/{latest_version}/data/en_US/profileicon.json"
                 response = requests.get(url)

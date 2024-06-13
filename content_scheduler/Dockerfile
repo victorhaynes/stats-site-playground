@@ -13,9 +13,9 @@ COPY utilities.py .
 # Copy icon-getting script files
 COPY get_latest_champion_icons.py .
 COPY get_latest_item_icons.py .
-COPY get_latest_major_rune_minor_rune_stat_mod_icons.py .
+COPY get_latest_runes_icons.py .
 COPY get_latest_profile_icons.py .
-COPY get_latest_summoner_spell_icons.py .
+COPY get_latest_summoner_spells_icons.py .
 
 
 # Install cron and log rotate
