@@ -44,7 +44,11 @@ class SummonerCustomSerializer(serializers.ModelSerializer):
         with connection.cursor() as cursor:
             cursor.execute(sql, [instance.puuid, instance.platform.code])
             results = dictfetchall(cursor)
-        return results[0]
+            try:
+                results = results[0]
+            except IndexError:
+                pass
+        return results
 
 
     def get_related_personal_champ_stat(self, instance):

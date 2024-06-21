@@ -1,0 +1,29 @@
+# 0 10 * * * /usr/local/bin/python /app/get_latest_champion_icons.py >> /var/log/cron.log 2>&1
+
+# 0 10 * * * /usr/local/bin/python /app/get_latest_item_icons.py >> /var/log/cron.log 2>&1
+
+# 0 10 * * * /usr/local/bin/python /app/get_major_and_minor_rune_icons.py >> /var/log/cron.log 2>&1
+
+# 0 10 * * * /usr/local/bin/python /app/get_profile_icons.py >> /var/log/cron.log 2>&1
+
+# 0 10 * * * /usr/local/bin/python /app/get_latest_summoner_spell_icons.py >> /var/log/cron.log 2>&1
+
+
+
+
+# 0 10 * * * /usr/local/bin/python /app/get_latest_champion_icons.py >> /var/log/champion_icons_job.log 2>&1
+
+# 0 10 * * * /usr/local/bin/python /app/get_latest_item_icons.py >> /var/log/item_icons_job.log 2>&1
+
+# 0 10 * * * /usr/local/bin/python /app/get_major_and_minor_rune_icons.py >> /var/log/rune_icons_job.log 2>&1
+
+# 0 10 * * * /usr/local/bin/python /app/get_profile_icons.py >> /var/log/profile_icons_job.log 2>&1
+
+# 0 10 * * * /usr/local/bin/python /app/get_latest_summoner_spell_icons.py >> /var/log/summoner_spell_icons_job.log 2>&1
+
+
+0 10 * * *  /usr/local/bin/python /app/get_latest_champion_details.py >> /var/log/assets/champion_details_job.log 2>&1
+0 10 * * *  /usr/local/bin/python /app/get_latest_gamde_modes_details.py >> /var/log/assets/game_mode_details_job.log 2>&1
+0 10 * * *  /usr/local/bin/python /app/get_latest_item_details.py >> /var/log/assets/item_details_job.log 2>&1
+0 10 * * * /usr/local/bin/python /app/get_latest_runes_details.py >> /var/log/assets/rune_details_job.log 2>&1
+0 10 * * *  /usr/local/bin/python /app/get_latest_summoner_spells_details.py >> /var/log/assets/summoner_spell_details_job.log 2>&1

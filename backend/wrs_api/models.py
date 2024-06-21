@@ -83,98 +83,98 @@ class Platform(models.Model):
 # Seeded
 class GameMode(models.Model):
     queueId = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=45)
 
 
 # Seeded
 class Champion(models.Model):
     championId = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=30)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=30, null=True, blank=True)
+    metadata = models.JSONField(default=dict, null=True, blank=True)
 
 
 # Seeded
 class SummonerSpell(models.Model):
     spellId = models.IntegerField(primary_key=True, db_column="spellId")
-    name = models.CharField(max_length=35)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=40, blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
 # Seeded
 class Keystone(models.Model):
     keystone_id = models.IntegerField(primary_key=True, db_column="keystone_id") # maps to the first perk in the style match v5 JSON
-    name = models.CharField(max_length=40)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=40, blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
 
 # Seeded
 class PrimaryPerkOne(models.Model):
     perk_id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=40)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=40, blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
     
 # Seeded
 class PrimaryPerkTwo(models.Model):
     perk_id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=40)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=40, blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
 
 # Seeded
 class PrimaryPerkThree(models.Model):
     perk_id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=40)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=40, blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
 
 # Seeded
 class SecondaryPerkOne(models.Model):
     perk_id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=40)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=40, blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
 
 
 # Seeded
 class SecondaryPerkTwo(models.Model):
     perk_id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=40)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=40, blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
 
 # Seeded
 class StatShardOne(models.Model):
     shard_id = models.IntegerField(primary_key=True, db_column="shard_id")
-    name = models.CharField(max_length=40)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=40, blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
 
 # Seeded
 class StatShardTwo(models.Model):
     shard_id = models.IntegerField(primary_key=True, db_column="shard_id")
-    name = models.CharField(max_length=40)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=40, blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
 
 # Seeded
 class StatShardThree(models.Model):
     shard_id = models.IntegerField(primary_key=True, db_column="shard_id")
-    name = models.CharField(max_length=40)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=40, blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
 
 # Seeded
 class Item(models.Model):
     itemId = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=120)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=120, null=True, blank=True)
+    metadata = models.JSONField(default=dict, null=True, blank=True)
 
 
 # Seeded
 class CompletedBoot(models.Model):
     itemId = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=30)
-    metadata = models.JSONField(default=dict)
+    name = models.CharField(max_length=40, blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
 class Summoner(models.Model):
     puuid = models.CharField(max_length=100)

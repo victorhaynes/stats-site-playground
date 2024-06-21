@@ -1,10 +1,10 @@
 import React from 'react'
-import { useParams, Link, useLocation } from 'react-router-dom'
+import { useParams, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import MatchHistory from './MatchHistory'
 import Loading from './Loading'
-import Error from './Error'
+import SummonerDetailError from '../errors/SummonerDetailError'
 
 const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
 
@@ -61,8 +61,16 @@ const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
         url += update ? `&update=${update}` : ''
         url += specificQueue ? `&queueId=${specificQueue}` : ''
 
+        // Config to abort get request on timeout (45s), without this even if I redirect via the loading component the GET request will still process in this component & re-render
+        const controller = new AbortController()
+        const signal = controller.signal;
+        const timeout = setTimeout(() => {
+            controller.abort()
+        }, 45000)
+
         try {
-            let response = await axios.get(url)
+            let response = await axios.get(url, {signal})
+            clearTimeout(timeout)
             console.log(response.data)
             setSummonerData(response.data)
             globallyUpdateDisplayedRegion(newPlatform)
@@ -75,12 +83,17 @@ const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
             }
         } catch (error) {
             // console.log({[error.response.request.status]: error.response.data})
-            console.log(error.response.data)
+            clearTimeout(timeout)
             setLoading(false)
-            if (error.response.status == 500){
+            if (axios.isCancel(error)){
+                console.log(error)
+                setError({"message": "Request took excessively long. Please try again momentarily", status_code: 408})
+            } else if (error.response) {
+                console.log(error.response.data);
                 setError({"message": error.response.data, status_code: error.response.status})
             } else {
-                setError({...error.response.data, status_code: error.response.status})
+                console.log(error.message);
+                setError({ "message": "Unexpected error occurred. Please try again later.", status_code: error.code || "UNKNOWN" });
             }
         }
     }
@@ -183,36 +196,38 @@ const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
         return capitalizedFirstLetter + remainingLetters
     }
 
+    if (loading){
+        return <Loading/>
+    }
+
+    if (error) {
+        return <SummonerDetailError error={error}/>
+    }
 
     return (
-        <>
-            { loading ? <Loading/> : 
-              error ? <Error error={error}/> :
-                <>
-                    <button onClick={()=>undoQueueFilterAndGetRecentMatchDetails()}>All</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(450)}>ARAM</button>
-                    <button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(420)}>Ranked Solo/Duo</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(400)}>Normal</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(490)}>Quick Play</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(440)}>Flex</button>
-                    <button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(700)}>Clash</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(1300)}>Nexus Blitz</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(1700)}>Arena</button>
-                    <h1>{gameName} #{tagLine}</h1>
-                    <img width="75" height="75" alt="profile icon" src={process.env.PUBLIC_URL + `/assets/profile_icons/${summonerData?.profileIconId}.png`} /> 
-                    <h2>Ranked Solo Queue:</h2>
-                    <img width="100" height="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank=${formatRank(summonerOverview)}.png`} /> 
-                    <plaintext>{summonerOverview?.tier} {summonerOverview?.rank} {summonerOverview?.leaguePoints} LP</plaintext>
-                    <plaintext>Wins: {summonerOverview?.wins} Losses:{summonerOverview?.losses}</plaintext>
-                    <plaintext>Win Rate {Math.round(summonerOverview?.wins/(summonerOverview?.wins + summonerOverview?.losses)*100)}%</plaintext>
-                    <plaintext>Last Updated {formatLastUpdateTime(summonerData?.updated_at)}</plaintext>
-                    <button onClick={()=>forceUpdatePage()}>Update</button>
-                    <MatchHistory matchHistory={matchHistory} setSummonerData={setSummonerData} summonerData={summonerData}/>
-                    {queueType && showFetchButtonForQueueType ? 
-                        <button onClick={()=>getSummonerData(matchHistory?.length + 3, false, queueType)}>Fetch More Games (queue specific, remove this text)</button> : 
-                        <>queue button hiiding (delete this)</>
-                    }
-                    {!queueType && showFetchButtonForAllGames ? 
-                        <button onClick={()=>getSummonerData(matchHistory?.length + 3, false)}>Fetch More Games (all, remove this text)</button> :
-                        <>all button hiding (delete this)</>
-                    }           
-                </>
-            }
-    </>
+            <>
+                <button onClick={()=>undoQueueFilterAndGetRecentMatchDetails()}>All</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(450)}>ARAM</button>
+                <button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(420)}>Ranked Solo/Duo</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(400)}>Normal</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(490)}>Quick Play</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(440)}>Flex</button>
+                <button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(700)}>Clash</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(1300)}>Nexus Blitz</button><button onClick={()=>updateQueueFilterAndGetRecentMatchDetails(1700)}>Arena</button>
+                <h1>{gameName} #{tagLine}</h1>
+                <img width="75" height="75" alt="profile icon" src={process.env.PUBLIC_URL + `/assets/profile_icons/${summonerData?.profileIconId}.png`} /> 
+                <h2>Ranked Solo Queue:</h2>
+                <img width="100" height="100" alt="ranked icons" src={process.env.PUBLIC_URL + `/assets/ranked_icons/Rank=${formatRank(summonerOverview)}.png`} /> 
+                <plaintext>{summonerOverview?.tier} {summonerOverview?.rank} {summonerOverview?.leaguePoints} LP</plaintext>
+                <plaintext>Wins: {summonerOverview?.wins} Losses:{summonerOverview?.losses}</plaintext>
+                <plaintext>Win Rate {Math.round(summonerOverview?.wins/(summonerOverview?.wins + summonerOverview?.losses)*100)}%</plaintext>
+                <plaintext>Last Updated {formatLastUpdateTime(summonerData?.updated_at)}</plaintext>
+                <button onClick={()=>forceUpdatePage()}>Update</button>
+                <MatchHistory matchHistory={matchHistory} setSummonerData={setSummonerData} summonerData={summonerData}/>
+                {queueType && showFetchButtonForQueueType ? 
+                    <button onClick={()=>getSummonerData(matchHistory?.length + 3, false, queueType)}>Fetch More Games (queue specific, remove this text)</button> : 
+                    <>queue button hiiding (delete this)</>
+                }
+                {!queueType && showFetchButtonForAllGames ? 
+                    <button onClick={()=>getSummonerData(matchHistory?.length + 3, false)}>Fetch More Games (all, remove this text)</button> :
+                    <>all button hiding (delete this)</>
+                }           
+            </>
     )
 }
 

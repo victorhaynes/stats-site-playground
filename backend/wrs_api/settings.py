@@ -52,6 +52,8 @@ INSTALLED_APPS = [
 
     # Name of App
     'wrs_api',
+    # # Start up configuration
+    # 'wrs_api.apps.AppInitializationConfig',
     # Django DRF
     'rest_framework',
     # CORS Config

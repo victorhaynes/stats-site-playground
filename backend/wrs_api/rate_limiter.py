@@ -4,7 +4,7 @@ import requests
 import os
 from django_redis import get_redis_connection
 import json
-from .utilities import RiotRateLimitApiError
+from .utilities import RiotApiRateLimitError
 from django.core.cache import cache
 from .utilities import test_rate_limit_key
 from rest_framework.decorators import api_view
@@ -168,7 +168,7 @@ def rate_limited_RIOT_get(riot_endpoint, request):
                 retry_after = 30
             details = json.dumps({"type": ratelimit_type, "retry_after": int(retry_after) + 1})
             cache.set(429, details, timeout=int(retry_after) + 1)
-            raise RiotRateLimitApiError(response.json(), response.status_code)
+            raise RiotApiRateLimitError(response.json(), response.status_code)
         else: # any other status code
             print("ERRORED")
             raise RiotApiError(response.json(), response.status_code)

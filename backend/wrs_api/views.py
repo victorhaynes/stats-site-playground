@@ -1,12 +1,13 @@
 # from .models import Summoner, Season, SummonerOverview, MatchHistory, MatchDetails
 # from .serializers import  SummonerSerializer, SummonerOverviewSerializer, MatchHistorySerializer, MatchDetailsSerializer, SeasonSerializer
 from .models import Summoner, SummonerOverview, Platform, Season, Patch, Region, GameMode, Champion, Item, CompletedBoot, Match, SummonerMatch
-from django.db import connection, transaction
+from django.db import connection, transaction, IntegrityError
+import psycopg2
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
 from django.db.utils import DatabaseError
 from .serializers import SummonerSerializer, SummonerCustomSerializer, SummonerOverviewSerializer
-from .utilities import dictfetchall, ranked_badge, calculate_average_elo, check_missing_items, RiotApiError, RiotRateLimitApiError, test_rate_limit_key
+from .utilities import dictfetchall, ranked_badge, calculate_average_elo, check_missing_items, RiotApiError, RiotApiRateLimitError, test_rate_limit_key
 from functools import wraps
 from django.forms.models import model_to_dict
 from django_redis import get_redis_connection
@@ -162,7 +163,7 @@ def get_summoner(request):
 
     except RiotApiError as err:
         return JsonResponse(err.error_response, status=err.error_code, safe=False)
-    except RiotRateLimitApiError as err:
+    except RiotApiRateLimitError as err:
         return JsonResponse(err.error_response, status=err.error_code, safe=False)
     # except Exception as err:
     #     return JsonResponse(f"error: {repr(err)}", status=status.HTTP_500_INTERNAL_SERVER_ERROR, safe=False)
@@ -194,7 +195,7 @@ def get_summoner(request):
             print("oldest game", all_matches_played[-1])
 
             print("!!!TESTING ONLY CHECK FOR SOME MATCHES!!!")
-            all_matches_played = all_matches_played[0:5]
+            all_matches_played = all_matches_played[0:3]
 
             # GET details for all matches fetched that are not already in database
             with connection.cursor() as cursor:
@@ -327,7 +328,7 @@ def get_summoner(request):
                         match_detail["averageElo"] = average_elo
                         match_details_not_in_database.append(match_detail)
                                 
-                    except RiotRateLimitApiError:
+                    except RiotApiRateLimitError:
                         break
                 else:
                     print("skipped:", game, "already found")
@@ -369,14 +370,55 @@ def get_summoner(request):
                                 ban_increment = 1
                                 cursor.execute(
                                     """
-                                        INSERT INTO wrs_api_banstat{} ("championId", "elo", "banned", "season_id", "patch", "platform")
-                                        VALUES (%s, %s, %s, %s, %s, %s)
-                                        ON CONFLICT ("platform","championId", "patch", "elo", "season_id")
-                                        DO UPDATE SET 
-                                        banned = wrs_api_banstat{}.banned + EXCLUDED.banned;
+                                        DO $$
+                                        DECLARE
+                                            v_champion_id INTEGER;
+                                            v_elo TEXT;
+                                            v_banned INTEGER;
+                                            v_season_id INTEGER;
+                                            v_patch TEXT;
+                                            v_platform TEXT;
+                                        BEGIN
+                                            v_champion_id := %s;
+                                            v_elo := %s;
+                                            v_banned := %s;
+                                            v_season_id := %s;
+                                            v_patch := %s;
+                                            v_platform := %s;
+
+                                            -- Set all constraints to immediate check, foreign key constraints are deffered and won't trigger exception handling
+                                            SET CONSTRAINTS ALL IMMEDIATE;
+
+                                            -- Attempt insertion into wrs_api_banstat
+                                            BEGIN
+                                                INSERT INTO wrs_api_banstat ("championId", "elo", "banned", "season_id", "patch", "platform")
+                                                VALUES (v_champion_id, v_elo, v_banned, v_season_id, v_patch, v_platform)
+                                                ON CONFLICT ("platform", "championId", "patch", "elo", "season_id")
+                                                DO UPDATE SET 
+                                                banned = wrs_api_banstat.banned + EXCLUDED.banned;
+                                            EXCEPTION
+                                                WHEN foreign_key_violation THEN
+                                                    -- Handle the foreign key violation
+                                                    RAISE NOTICE 'Champion id %% does not exist. Must insert: %%', v_champion_id, SQLERRM;
+
+                                                    -- Write referenced row to wrs_api_champion
+                                                    INSERT INTO wrs_api_champion ("championId", "name", metadata)
+                                                    VALUES (v_champion_id, NULL, NULL)
+                                                    ON CONFLICT ("championId") DO NOTHING;
+
+                                                    -- Retry the insert into wrs_api_banstat
+                                                    INSERT INTO wrs_api_banstat ("championId", "elo", "banned", "season_id", "patch", "platform")
+                                                    VALUES (v_champion_id, v_elo, v_banned, v_season_id, v_patch, v_platform)
+                                                    ON CONFLICT ("platform", "championId", "patch", "elo", "season_id")
+                                                    DO UPDATE SET 
+                                                    banned = wrs_api_banstat.banned + EXCLUDED.banned;
+                                            END;
+                                        END $$;
                                     """.format(*formatted_table_names)
                                 ,[ban["championId"], match_detail["averageElo"], ban_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
                                 print("Updated ban for", ban["championId"])
+                                # Note: re-check the query plan and make sure we don't explictly need to include the "_<platform>" suffix
+                                # if query plan is not selecting partitions optimally then pass in the table suffixes. Right now does nothing
 
                     
                     # participants = match_detail["metadata"]["participants"]
@@ -411,15 +453,63 @@ def get_summoner(request):
                             formatted_table_names = [partition_name] * 4
                             cursor.execute(
                                 """
-                                    INSERT INTO wrs_api_championstat{} ("championId", "role", "elo", "wins", "losses", "picked", "season_id", "patch", "platform")
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                    ON CONFLICT ("platform","championId", "patch", "role", "elo", "season_id")
-                                    DO UPDATE SET 
-                                    wins = wrs_api_championstat{}.wins + EXCLUDED.wins,
-                                    losses = wrs_api_championstat{}.losses + EXCLUDED.losses,
-                                    picked = wrs_api_championstat{}.picked + EXCLUDED.picked;
+                                DO $$
+                                DECLARE
+                                    v_champion_id INTEGER;
+                                    v_role TEXT;
+                                    v_elo TEXT;
+                                    v_wins INTEGER;
+                                    v_losses INTEGER;
+                                    v_picked INTEGER;
+                                    v_season_id INTEGER;
+                                    v_patch TEXT;
+                                    v_platform TEXT;
+                                BEGIN
+                                    v_champion_id := %s;
+                                    v_role := %s;
+                                    v_elo := %s;
+                                    v_wins := %s;
+                                    v_losses := %s;
+                                    v_picked := %s;
+                                    v_season_id := %s;
+                                    v_patch := %s;
+                                    v_platform := %s;
+
+                                    -- Set all constraints to immediate check to ensure we catch foreign key violations immediately
+                                    SET CONSTRAINTS ALL IMMEDIATE;
+
+                                    -- Attempt insertion into wrs_api_championstat
+                                    BEGIN
+                                        INSERT INTO wrs_api_championstat ("championId", "role", "elo", "wins", "losses", "picked", "season_id", "patch", "platform")
+                                        VALUES (v_champion_id, v_role, v_elo, v_wins, v_losses, v_picked, v_season_id, v_patch, v_platform)
+                                        ON CONFLICT ("platform", "championId", "patch", "role", "elo", "season_id")
+                                        DO UPDATE SET 
+                                        wins = wrs_api_championstat.wins + EXCLUDED.wins,
+                                        losses = wrs_api_championstat.losses + EXCLUDED.losses,
+                                        picked = wrs_api_championstat.picked + EXCLUDED.picked;
+                                    EXCEPTION
+                                        WHEN foreign_key_violation THEN
+                                            -- Handle the foreign key violation
+                                            RAISE NOTICE 'Champion id %% does not exist. Must insert: %%', v_champion_id, SQLERRM;
+
+                                            -- Write referenced row to wrs_api_champion
+                                            INSERT INTO wrs_api_champion ("championId", "name", metadata)
+                                            VALUES (v_champion_id, NULL, NULL)
+                                            ON CONFLICT ("championId") DO NOTHING;
+
+                                            -- Retry the insert into wrs_api_championstat
+                                            INSERT INTO wrs_api_championstat ("championId", "role", "elo", "wins", "losses", "picked", "season_id", "patch", "platform")
+                                            VALUES (v_champion_id, v_role, v_elo, v_wins, v_losses, v_picked, v_season_id, v_patch, v_platform)
+                                            ON CONFLICT ("platform", "championId", "patch", "role", "elo", "season_id")
+                                            DO UPDATE SET 
+                                            wins = wrs_api_championstat.wins + EXCLUDED.wins,
+                                            losses = wrs_api_championstat.losses + EXCLUDED.losses,
+                                            picked = wrs_api_championstat.picked + EXCLUDED.picked;
+                                    END;
+                                END $$;
                                 """.format(*formatted_table_names)
                             ,[participant_object["championId"],  participant_object["teamPosition"], match_detail["averageElo"], win_increment, loss_increment, pick_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+                            print("Updated Champion Stats for:", participant_object["puuid"], "'s champion")
 
                             # Write Rune Page Stats Logic
                             runes_in_order = []
@@ -434,15 +524,148 @@ def get_summoner(request):
                             formatted_table_names = [partition_name] * 3
                             cursor.execute(
                                 """
-                                    INSERT INTO wrs_api_runepagestat{} ("keystone", "primary_one", "primary_two", "primary_three", "secondary_one", "secondary_two", "shard_one", "shard_two", "shard_three", "championId", "elo", "role", "wins", "losses", "picked", "season_id", "patch", "platform")
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                    ON CONFLICT ("keystone", "primary_one", "primary_two", "primary_three", "secondary_one", "secondary_two", "shard_one", "shard_two", "shard_three", "championId", "platform", "patch", "role", "elo", "season_id")
-                                    DO UPDATE SET 
-                                    wins = wrs_api_runepagestat{}.wins + EXCLUDED.wins,
-                                    losses = wrs_api_runepagestat{}.losses + EXCLUDED.losses;
+                                DO $$
+                                DECLARE
+                                    v_keystone INTEGER;
+                                    v_primary_one INTEGER;
+                                    v_primary_two INTEGER;
+                                    v_primary_three INTEGER;
+                                    v_secondary_one INTEGER;
+                                    v_secondary_two INTEGER;
+                                    v_shard_one INTEGER;
+                                    v_shard_two INTEGER;
+                                    v_shard_three INTEGER;
+                                    v_champion_id INTEGER;
+                                    v_elo TEXT;
+                                    v_role TEXT;
+                                    v_wins INTEGER;
+                                    v_losses INTEGER;
+                                    v_picked INTEGER;
+                                    v_season_id INTEGER;
+                                    v_patch TEXT;
+                                    v_platform TEXT;
+                                BEGIN
+                                    v_keystone := %s;
+                                    v_primary_one := %s;
+                                    v_primary_two := %s;
+                                    v_primary_three := %s;
+                                    v_secondary_one := %s;
+                                    v_secondary_two := %s;
+                                    v_shard_one := %s;
+                                    v_shard_two := %s;
+                                    v_shard_three := %s;
+                                    v_champion_id := %s;
+                                    v_elo := %s;
+                                    v_role := %s;
+                                    v_wins := %s;
+                                    v_losses := %s;
+                                    v_picked := %s;
+                                    v_season_id := %s;
+                                    v_patch := %s;
+                                    v_platform := %s;
+
+                                    -- Set all constraints to immediate check to ensure we catch foreign key violations immediately
+                                    SET CONSTRAINTS ALL IMMEDIATE;
+
+                                    -- Attempt insertion into wrs_api_runepagestat
+                                    BEGIN
+                                        INSERT INTO wrs_api_runepagestat (keystone, primary_one, primary_two, primary_three, secondary_one, secondary_two, shard_one, shard_two, shard_three, "championId", elo, role, wins, losses, picked, season_id, patch, platform)
+                                        VALUES (v_keystone, v_primary_one, v_primary_two, v_primary_three, v_secondary_one, v_secondary_two, v_shard_one, v_shard_two, v_shard_three, v_champion_id, v_elo, v_role, v_wins, v_losses, v_picked, v_season_id, v_patch, v_platform)
+                                        ON CONFLICT (keystone, primary_one, primary_two, primary_three, secondary_one, secondary_two, shard_one, shard_two, shard_three, "championId", platform, patch, role, elo, season_id)
+                                        DO UPDATE SET 
+                                        wins = EXCLUDED.wins,
+                                        losses = EXCLUDED.losses;
+                                    EXCEPTION
+                                        WHEN foreign_key_violation THEN
+                                            -- Handle the foreign key violation
+                                            RAISE NOTICE 'Foreign key violation caught: %%', SQLERRM;
+
+                                            -- Write referenced rows to their respective tables and retry insertion into wrs_api_runepagestat
+                                            BEGIN
+                                                -- Insert into wrs_api_champion table
+                                                BEGIN
+                                                    INSERT INTO wrs_api_champion ("championId", "name", metadata)
+                                                    VALUES (v_champion_id, NULL, NULL)
+                                                    ON CONFLICT ("championId") DO NOTHING;
+                                                END;
+                                                -- Insert into wrs_api_keystone table
+                                                BEGIN
+                                                    INSERT INTO wrs_api_keystone (keystone_id, name, metadata)
+                                                    VALUES (v_keystone, NULL, NULL)
+                                                    ON CONFLICT (keystone_id) DO NOTHING;
+                                                END;
+
+                                                -- Insert into wrs_api_primaryperkone table
+                                                BEGIN
+                                                    INSERT INTO wrs_api_primaryperkone (perk_id, name, metadata)
+                                                    VALUES (v_primary_one, NULL, NULL)
+                                                    ON CONFLICT (perk_id) DO NOTHING;
+                                                END;
+
+                                                -- Insert into wrs_api_primaryperktwo table
+                                                BEGIN
+                                                    INSERT INTO wrs_api_primaryperktwo (perk_id, name, metadata)
+                                                    VALUES (v_primary_two, NULL, NULL)
+                                                    ON CONFLICT (perk_id) DO NOTHING;
+                                                END;
+
+                                                -- Insert into wrs_api_primaryperkthree table
+                                                BEGIN
+                                                    INSERT INTO wrs_api_primaryperkthree (perk_id, name, metadata)
+                                                    VALUES (v_primary_three, NULL, NULL)
+                                                    ON CONFLICT (perk_id) DO NOTHING;
+                                                END;
+
+                                                -- Insert into wrs_api_secondaryperkone table
+                                                BEGIN
+                                                    INSERT INTO wrs_api_secondaryperkone (perk_id, name, metadata)
+                                                    VALUES (v_secondary_one, NULL, NULL)
+                                                    ON CONFLICT (perk_id) DO NOTHING;
+                                                END;
+
+                                                -- Insert into wrs_api_secondaryperktwo table
+                                                BEGIN
+                                                    INSERT INTO wrs_api_secondaryperktwo (perk_id, name, metadata)
+                                                    VALUES (v_secondary_two, NULL, NULL)
+                                                    ON CONFLICT (perk_id) DO NOTHING;
+                                                END;
+
+                                                -- Insert into wrs_api_statshardone table
+                                                BEGIN
+                                                    INSERT INTO wrs_api_statshardone (shard_id, name, metadata)
+                                                    VALUES (v_shard_one, NULL, NULL)
+                                                    ON CONFLICT (shard_id) DO NOTHING;
+                                                END;
+
+                                                -- Insert into wrs_api_statshardtwo table
+                                                BEGIN
+                                                    INSERT INTO wrs_api_statshardtwo (shard_id, name, metadata)
+                                                    VALUES (v_shard_two, NULL, NULL)
+                                                    ON CONFLICT (shard_id) DO NOTHING;
+                                                END;
+
+                                                -- Insert into wrs_api_statshardthree table
+                                                BEGIN
+                                                    INSERT INTO wrs_api_statshardthree (shard_id, name, metadata)
+                                                    VALUES (v_shard_three, NULL, NULL)
+                                                    ON CONFLICT (shard_id) DO NOTHING;
+                                                END;
+
+                                                -- Retry insertion into wrs_api_runepagestat
+                                                BEGIN
+                                                    INSERT INTO wrs_api_runepagestat (keystone, primary_one, primary_two, primary_three, secondary_one, secondary_two, shard_one, shard_two, shard_three, "championId", elo, role, wins, losses, picked, season_id, patch, platform)
+                                                    VALUES (v_keystone, v_primary_one, v_primary_two, v_primary_three, v_secondary_one, v_secondary_two, v_shard_one, v_shard_two, v_shard_three, v_champion_id, v_elo, v_role, v_wins, v_losses, v_picked, v_season_id, v_patch, v_platform)
+                                                    ON CONFLICT (keystone, primary_one, primary_two, primary_three, secondary_one, secondary_two, shard_one, shard_two, shard_three, "championId", platform, patch, role, elo, season_id)
+                                                    DO UPDATE SET 
+                                                    wins = EXCLUDED.wins,
+                                                    losses = EXCLUDED.losses;
+                                                END;
+                                            END;
+                                    END;
+                                END $$;
                                 """.format(*formatted_table_names)
                             ,[runes_in_order[0], runes_in_order[1], runes_in_order[2], runes_in_order[3], runes_in_order[4], runes_in_order[5], shard1, shard2, shard3, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, pick_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
-                            print("pass4")
+                            print("Updated rune page stats for", participant_object["puuid"])
 
 
                             # Legendary Item Stats writing logic 
@@ -455,12 +678,105 @@ def get_summoner(request):
                             if cleaned_item_build[0] != -1: # If the first item built is a real item (not dummy -1) write entire build to table
                                 cursor.execute(
                                     """
-                                        INSERT INTO wrs_api_itembuildstat{} ("legendary_one", "legendary_two", "legendary_three", "legendary_four", "legendary_five", "legendary_six", "championId", "elo", "role", "wins", "losses", "season_id", "patch", "platform")
-                                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                        ON CONFLICT ("legendary_one", "legendary_two", "legendary_three", "legendary_four", "legendary_five", "legendary_six", "championId", "platform", "patch", "role", "elo", "season_id")
-                                        DO UPDATE SET 
-                                        wins = wrs_api_itembuildstat{}.wins + EXCLUDED.wins,
-                                        losses = wrs_api_itembuildstat{}.losses + EXCLUDED.losses;
+                                    DO $$
+                                    DECLARE
+                                        v_legendary_one INTEGER;
+                                        v_legendary_two INTEGER;
+                                        v_legendary_three INTEGER;
+                                        v_legendary_four INTEGER;
+                                        v_legendary_five INTEGER;
+                                        v_legendary_six INTEGER;
+                                        v_champion_id INTEGER;
+                                        v_elo TEXT;
+                                        v_role TEXT;
+                                        v_wins INTEGER;
+                                        v_losses INTEGER;
+                                        v_season_id INTEGER;
+                                        v_patch TEXT;
+                                        v_platform TEXT;
+                                    BEGIN
+                                        v_legendary_one := %s;
+                                        v_legendary_two := %s;
+                                        v_legendary_three := %s;
+                                        v_legendary_four := %s;
+                                        v_legendary_five := %s;
+                                        v_legendary_six := %s;
+                                        v_champion_id := %s;
+                                        v_elo := %s;
+                                        v_role := %s;
+                                        v_wins := %s;
+                                        v_losses := %s;
+                                        v_season_id := %s;
+                                        v_patch := %s;
+                                        v_platform := %s;
+
+                                        -- Set all constraints to immediate check to ensure we catch foreign key violations immediately
+                                        SET CONSTRAINTS ALL IMMEDIATE;
+
+                                        -- Attempt insertion into wrs_api_itembuildstat
+                                        BEGIN
+                                            INSERT INTO wrs_api_itembuildstat (legendary_one, legendary_two, legendary_three, legendary_four, legendary_five, legendary_six, "championId", elo, role, wins, losses, season_id, patch, platform)
+                                            VALUES (v_legendary_one, v_legendary_two, v_legendary_three, v_legendary_four, v_legendary_five, v_legendary_six, v_champion_id, v_elo, v_role, v_wins, v_losses, v_season_id, v_patch, v_platform)
+                                            ON CONFLICT (legendary_one, legendary_two, legendary_three, legendary_four, legendary_five, legendary_six, "championId", platform, patch, role, elo, season_id)
+                                            DO UPDATE SET 
+                                            wins = EXCLUDED.wins,
+                                            losses = EXCLUDED.losses;
+                                        EXCEPTION
+                                            WHEN foreign_key_violation THEN
+                                                -- Handle the foreign key violation
+                                                RAISE NOTICE 'Foreign key violation caught: %%', SQLERRM;
+
+                                                -- Write referenced rows to their respective tables and retry insertion into wrs_api_itembuildstat
+                                                BEGIN
+                                                    -- Insert into wrs_api_item table for each legendary item
+                                                    BEGIN
+                                                        INSERT INTO wrs_api_item ("itemId", name, metadata)
+                                                        VALUES (v_legendary_one, NULL, NULL)
+                                                        ON CONFLICT ("itemId") DO NOTHING;
+                                                    END;
+
+                                                    BEGIN
+                                                        INSERT INTO wrs_api_item ("itemId", name, metadata)
+                                                        VALUES (v_legendary_two, NULL, NULL)
+                                                        ON CONFLICT ("itemId") DO NOTHING;
+                                                    END;
+
+                                                    BEGIN
+                                                        INSERT INTO wrs_api_item ("itemId", name, metadata)
+                                                        VALUES (v_legendary_three, NULL, NULL)
+                                                        ON CONFLICT ("itemId") DO NOTHING;
+                                                    END;
+
+                                                    BEGIN
+                                                        INSERT INTO wrs_api_item ("itemId", name, metadata)
+                                                        VALUES (v_legendary_four, NULL, NULL)
+                                                        ON CONFLICT ("itemId") DO NOTHING;
+                                                    END;
+
+                                                    BEGIN
+                                                        INSERT INTO wrs_api_item ("itemId", name, metadata)
+                                                        VALUES (v_legendary_five, NULL, NULL)
+                                                        ON CONFLICT ("itemId") DO NOTHING;
+                                                    END;
+
+                                                    BEGIN
+                                                        INSERT INTO wrs_api_item ("itemId", name, metadata)
+                                                        VALUES (v_legendary_six, NULL, NULL)
+                                                        ON CONFLICT ("itemId") DO NOTHING;
+                                                    END;
+
+                                                    -- Retry insertion into wrs_api_itembuildstat
+                                                    BEGIN
+                                                        INSERT INTO wrs_api_itembuildstat (legendary_one, legendary_two, legendary_three, legendary_four, legendary_five, legendary_six, "championId", elo, role, wins, losses, season_id, patch, platform)
+                                                        VALUES (v_legendary_one, v_legendary_two, v_legendary_three, v_legendary_four, v_legendary_five, v_legendary_six, v_champion_id, v_elo, v_role, v_wins, v_losses, v_season_id, v_patch, v_platform)
+                                                        ON CONFLICT (legendary_one, legendary_two, legendary_three, legendary_four, legendary_five, legendary_six, "championId", platform, patch, role, elo, season_id)
+                                                        DO UPDATE SET 
+                                                        wins = EXCLUDED.wins,
+                                                        losses = EXCLUDED.losses;
+                                                    END;
+                                                END;
+                                        END;
+                                    END $$;
                                     """.format(*formatted_table_names)
                                 ,[cleaned_item_build[0], cleaned_item_build[1], cleaned_item_build[2], cleaned_item_build[3], cleaned_item_build[4], cleaned_item_build[5], participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
                             print("pass5")
@@ -477,17 +793,66 @@ def get_summoner(request):
                             formatted_table_names = [partition_name] * 3
 
                             if boots_built_by_player:
-                                bootId = boots_built_by_player[-1] # Get the last completed boot built, players sometimes sell and buy a different pair
+                                boot_id = boots_built_by_player[-1] # Get the last completed boot built, players sometimes sell and buy a different pair
                                 cursor.execute(
                                     """
-                                        INSERT INTO wrs_api_completedbootstat{} ("completed_boot","championId", "elo", "role", "wins", "losses", "season_id", "patch", "platform")
-                                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                        ON CONFLICT ("platform", "completed_boot", "championId","patch", "role", "elo", "season_id")
-                                        DO UPDATE SET 
-                                        wins = wrs_api_completedbootstat{}.wins + EXCLUDED.wins,
-                                        losses = wrs_api_completedbootstat{}.losses + EXCLUDED.losses;
+                                    DO $$
+                                    DECLARE
+                                        v_completed_boot INTEGER;
+                                        v_champion_id INTEGER;
+                                        v_elo TEXT;
+                                        v_role TEXT;
+                                        v_wins INTEGER;
+                                        v_losses INTEGER;
+                                        v_season_id INTEGER;
+                                        v_patch TEXT;
+                                        v_platform TEXT;
+                                    BEGIN
+                                        v_completed_boot := %s;
+                                        v_champion_id := %s;
+                                        v_elo := %s;
+                                        v_role := %s;
+                                        v_wins := %s;
+                                        v_losses := %s;
+                                        v_season_id := %s;
+                                        v_patch := %s;
+                                        v_platform := %s;
+
+                                        -- Set all constraints to immediate check to ensure we catch foreign key violations immediately
+                                        SET CONSTRAINTS ALL IMMEDIATE;
+
+                                        -- Attempt insertion into wrs_api_completedbootstat
+                                        BEGIN
+                                            INSERT INTO wrs_api_completedbootstat ("completed_boot", "championId", "elo", "role", "wins", "losses", "season_id", "patch", "platform")
+                                            VALUES (v_completed_boot, v_champion_id, v_elo, v_role, v_wins, v_losses, v_season_id, v_patch, v_platform)
+                                            ON CONFLICT ("platform", "completed_boot", "championId", "patch", "role", "elo", "season_id")
+                                            DO UPDATE SET 
+                                            wins = wrs_api_completedbootstat.wins + EXCLUDED.wins,
+                                            losses = wrs_api_completedbootstat.losses + EXCLUDED.losses;
+                                        EXCEPTION
+                                            WHEN foreign_key_violation THEN
+                                                -- Handle the foreign key violation
+                                                RAISE NOTICE 'Foreign key violation caught: %%', SQLERRM;
+
+                                                -- Write referenced row to wrs_api_boot and retry the insertion into wrs_api_completedbootstat
+                                                BEGIN
+                                                    -- Insert into wrs_api_completedboot
+                                                    INSERT INTO wrs_api_completedboot ("itemId", name, metadata)
+                                                    VALUES (v_completed_boot, NULL, NULL)
+                                                    ON CONFLICT ("itemId") DO NOTHING;
+
+                                                    -- Retry insertion into wrs_api_completedbootstat
+                                                    INSERT INTO wrs_api_completedbootstat ("completed_boot", "championId", "elo", "role", "wins", "losses", "season_id", "patch", "platform")
+                                                    VALUES (v_completed_boot, v_champion_id, v_elo, v_role, v_wins, v_losses, v_season_id, v_patch, v_platform)
+                                                    ON CONFLICT ("platform", "completed_boot", "championId", "patch", "role", "elo", "season_id")
+                                                    DO UPDATE SET 
+                                                    wins = wrs_api_completedbootstat.wins + EXCLUDED.wins,
+                                                    losses = wrs_api_completedbootstat.losses + EXCLUDED.losses;
+                                                END;
+                                        END;
+                                    END $$;
                                     """.format(*formatted_table_names)
-                                ,[bootId, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
+                                ,[boot_id, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
                             print("pass6")
 
                             partition_name = "_" + request.query_params.get('platform')
@@ -497,13 +862,67 @@ def get_summoner(request):
                             spell_two = participant_object["summoner2Id"]                                 
                             cursor.execute(
                                 """
-                                    INSERT INTO wrs_api_summonerspellstat{} ("spell_one", "spell_two", "championId", "elo", "role", "wins", "losses", "picked", "season_id", "patch", "platform")
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                    ON CONFLICT ("platform", "spell_one", "spell_two", "championId","patch", "role", "elo", "season_id")
-                                    DO UPDATE SET 
-                                    wins = wrs_api_summonerspellstat{}.wins + EXCLUDED.wins,
-                                    losses = wrs_api_summonerspellstat{}.losses + EXCLUDED.losses,
-                                    picked = wrs_api_summonerspellstat{}.picked + EXCLUDED.picked;
+                                DO $$
+                                DECLARE
+                                    v_spell_one INTEGER;
+                                    v_spell_two INTEGER;
+                                    v_champion_id INTEGER;
+                                    v_elo TEXT;
+                                    v_role TEXT;
+                                    v_wins INTEGER;
+                                    v_losses INTEGER;
+                                    v_picked INTEGER;
+                                    v_season_id INTEGER;
+                                    v_patch TEXT;
+                                    v_platform TEXT;
+                                BEGIN
+                                    v_spell_one := %s;
+                                    v_spell_two := %s;
+                                    v_champion_id := %s;
+                                    v_elo := %s;
+                                    v_role := %s;
+                                    v_wins := %s;
+                                    v_losses := %s;
+                                    v_picked := %s;
+                                    v_season_id := %s;
+                                    v_patch := %s;
+                                    v_platform := %s;
+
+                                    -- Set all constraints to immediate check to ensure we catch foreign key violations immediately
+                                    SET CONSTRAINTS ALL IMMEDIATE;
+
+                                    -- Attempt insertion into wrs_api_summonerspellstat
+                                    BEGIN
+                                        INSERT INTO wrs_api_summonerspellstat ("spell_one", "spell_two", "championId", "elo", "role", "wins", "losses", "picked", "season_id", "patch", "platform")
+                                        VALUES (v_spell_one, v_spell_two, v_champion_id, v_elo, v_role, v_wins, v_losses, v_picked, v_season_id, v_patch, v_platform)
+                                        ON CONFLICT ("platform", "spell_one", "spell_two", "championId", "patch", "role", "elo", "season_id")
+                                        DO UPDATE SET 
+                                        wins = wrs_api_summonerspellstat.wins + EXCLUDED.wins,
+                                        losses = wrs_api_summonerspellstat.losses + EXCLUDED.losses,
+                                        picked = wrs_api_summonerspellstat.picked + EXCLUDED.picked;
+                                    EXCEPTION
+                                        WHEN foreign_key_violation THEN
+                                            -- Handle the foreign key violation
+                                            RAISE NOTICE 'Foreign key violation caught: %%', SQLERRM;
+
+                                            -- Write referenced row to wrs_api_summonerspell and retry the insertion into wrs_api_summonerspellstat
+                                            BEGIN
+                                                -- Insert into wrs_api_summonerspell
+                                                INSERT INTO wrs_api_summonerspell ("spellId", "name", "metadata")
+                                                VALUES (v_spell_one, NULL, NULL), (v_spell_two, NULL, NULL)
+                                                ON CONFLICT ("spellId") DO NOTHING;
+
+                                                -- Retry insertion into wrs_api_summonerspellstat
+                                                INSERT INTO wrs_api_summonerspellstat ("spell_one", "spell_two", "championId", "elo", "role", "wins", "losses", "picked", "season_id", "patch", "platform")
+                                                VALUES (v_spell_one, v_spell_two, v_champion_id, v_elo, v_role, v_wins, v_losses, v_picked, v_season_id, v_patch, v_platform)
+                                                ON CONFLICT ("platform", "spell_one", "spell_two", "championId", "patch", "role", "elo", "season_id")
+                                                DO UPDATE SET 
+                                                wins = wrs_api_summonerspellstat.wins + EXCLUDED.wins,
+                                                losses = wrs_api_summonerspellstat.losses + EXCLUDED.losses,
+                                                picked = wrs_api_summonerspellstat.picked + EXCLUDED.picked;
+                                            END;
+                                    END;
+                                END $$;
                                 """.format(*formatted_table_names)
                             ,[spell_one, spell_two, participant_object["championId"], match_detail["averageElo"], participant_object["teamPosition"], win_increment, loss_increment, pick_increment, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
 
@@ -725,7 +1144,7 @@ def get_ranked_ladder(request):
 
         except RiotApiError as err:
             return JsonResponse(err.error_response, status=err.error_code, safe=False)
-        except RiotRateLimitApiError as err:
+        except RiotApiRateLimitError as err:
             return JsonResponse(err.error_response, status=err.error_code, safe=False)
 
     return JsonResponse(summoners, safe=False, status=http_status_code)

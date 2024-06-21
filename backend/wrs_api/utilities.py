@@ -185,7 +185,7 @@ class RiotApiError(Exception):
         self.error_code = error_code
 
 
-class RiotRateLimitApiError(Exception):
+class RiotApiRateLimitError(Exception):
     def __init__(self, error_response, error_code):
         self.error_response = error_response
         self.error_code = error_code

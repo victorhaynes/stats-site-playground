@@ -81,3 +81,36 @@ class Migration(migrations.Migration):
            values=["br1"],
         )
     ]
+
+
+BEGIN
+    -- Set all constraints to immediate check, deferred foreign key constraint won't catch exception
+    SET CONSTRAINTS ALL IMMEDIATE;
+
+    -- Attempt insertion into wrs_api_banstat
+    BEGIN
+        INSERT INTO wrs_api_banstat ("championId", "elo", "banned", "season_id", "patch", "platform")
+        VALUES (-68, 'Silver 2', 1, 1, '14.12.594.4901', 'na1')
+        ON CONFLICT ("platform", "championId", "patch", "elo", "season_id")
+        DO UPDATE SET 
+        banned = wrs_api_banstat.banned + EXCLUDED.banned;
+    EXCEPTION
+        WHEN foreign_key_violation THEN
+            -- Handle the foreign key violation
+            RAISE NOTICE 'Foreign key violation caught: %', SQLERRM;
+
+            -- Write referenced row to wrs_api_champion
+       
+            INSERT INTO wrs_api_champion ("championId", "name", metadata)
+            VALUES (-68, NULL, NULL)
+            ON CONFLICT ("championId") DO NOTHING;
+            
+
+            -- Retry  insertion into wrs_api_banstat
+            INSERT INTO wrs_api_banstat ("championId", "elo", "banned", "season_id", "patch", "platform")
+            VALUES (-68, 'Silver 2', 1, 1, '14.12.594.4901', 'na1')
+            ON CONFLICT ("platform", "championId", "patch", "elo", "season_id")
+            DO UPDATE SET 
+            banned = wrs_api_banstat.banned + EXCLUDED.banned;
+    END;
+END $$;

@@ -27,9 +27,11 @@ services:
       context: ./content_scheduler
     volumes:
     - cron_logs_icons:/var/log/icons
+    - cron_logs_game_content:/var/log/assets
 
 
 volumes:
   react_build:
   cron_logs_icons:
+  crong_logs_game_content:
 

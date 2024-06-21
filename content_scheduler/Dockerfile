@@ -17,6 +17,13 @@ COPY get_latest_runes_icons.py .
 COPY get_latest_profile_icons.py .
 COPY get_latest_summoner_spells_icons.py .
 
+# Copy asset-detail-getting script files
+COPY get_latest_champion_details.py .
+COPY get_latest_gamde_modes_details.py .
+COPY get_latest_item_details.py .
+COPY get_latest_runes_details.py .
+COPY get_latest_summoner_spells_details.py .
+
 
 # Install cron and log rotate
 RUN apk update && apk add --no-cache gcc musl-dev libffi-dev openssl-dev logrotate
@@ -26,13 +33,14 @@ RUN pip install -r requirements.txt
 
 # Copy cron definitions
 COPY get_icons_cron /etc/cron.d/get_icons_cron
+COPY get_details_cron /etc/cron.d/get_details_cron
 COPY logrotate_cron /etc/cron.d/logrotate_cron
 
 # Copy log rotate configuration / rules for rotating logs
 COPY logrotate.conf /etc/logrotate.d/
 
-# Give execution permissions to cron job file & logrotate
-RUN chmod 0644 /etc/cron.d/get_icons_cron /etc/cron.d/logrotate_cron
+# Give execution permissions to cron job files & logrotate
+RUN chmod 0644 /etc/cron.d/get_icons_cron /etc/cron.d/get_details_cron /etc/cron.d/logrotate_cron
 
 # Make directories & files for the job logs/volume to read from
 RUN mkdir -p /var/log/icons \
@@ -40,7 +48,12 @@ RUN mkdir -p /var/log/icons \
              /var/log/icons/item_icons_job.log \
              /var/log/icons/rune_icons_job.log \
              /var/log/icons/profile_icons_job.log \
-             /var/log/icons/summoner_spell_icons_job.log
+             /var/log/icons/summoner_spell_icons_job.log \
+             /var/log/assets/champion_details_job.log \
+             /var/log/assets/game_mode_details_job.log \
+             /var/log/assets/item_details_job.log \
+             /var/log/assets/rune_details_job.log \
+             /var/log/assets/summoner_spell_details_job.log
 
 
 CMD ["crond", "-f"]
