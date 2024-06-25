@@ -83,7 +83,7 @@ class Platform(models.Model):
 # Seeded
 class GameMode(models.Model):
     queueId = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=45)
+    name = models.CharField(max_length=45, null=True, blank=True)
 
 
 # Seeded

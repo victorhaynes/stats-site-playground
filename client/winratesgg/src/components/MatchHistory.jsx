@@ -178,7 +178,7 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
         let redSide = []
         let topFourArenaTeams = []
 
-        if (match?.info?.queueId != 1700){ // If NOT Arena Game Mode, split teams by red & blue
+        if (match?.info?.queueId !== 1700){ // If NOT Arena Game Mode, split teams by red & blue
             blueSide = match?.info?.participants?.filter((participant) => {
                 return parseInt(participant.teamId) === 100
             })
@@ -194,7 +194,7 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
         // STYLE THIS AND MAKE BOLD EVENTUALLY
         // STYLE THIS AND MAKE BOLD EVENTUALLY
         // STYLE THIS AND MAKE BOLD EVENTUALLY
-        if (match?.info?.queueId != 1700){
+        if (match?.info?.queueId !== 1700){
             return (
                 <div>
                     <h3>Blue Team:</h3>
@@ -219,7 +219,7 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
                         })}
                 </div>
             )
-        } else if (match?.info?.queueId == 1700) {
+        } else if (match?.info?.queueId === 1700) {
             return (
                 <div>
                     <h3>Top Four Teams:</h3> 
@@ -241,8 +241,9 @@ const MatchHistory = ({matchHistory, setSummonerData, summonerData}) => {
 
     function calculateKda(individualStats){
         let kda = individualStats?.challenges?.perfectGame ? "Perfect" : (individualStats?.challenges?.kda)?.toFixed(1)
+        let kp =  String(individualStats?.challenges?.perfectGame) === "1" ? "100" : (individualStats?.challenges?.killParticipation)?.toFixed(2).substring(2)
         return (
-            <plaintext>KDA: ({kda}) {individualStats?.kills}/{individualStats?.deaths}/{individualStats?.assists} ({(individualStats?.challenges?.killParticipation)?.toFixed(2).substring(2)}%)</plaintext>
+            <plaintext>KDA: ({kda}) {individualStats?.kills}/{individualStats?.deaths}/{individualStats?.assists} ({kp}%)</plaintext>
         )
     }
 

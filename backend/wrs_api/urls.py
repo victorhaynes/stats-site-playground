@@ -39,5 +39,5 @@ urlpatterns = [
     # path('get-timeline/', views.get_one_timeline)
 ]
 
-# # To Check if a 403 Forbidden is really a 429 raised by a rate limiter
-handler403 = views.custom403handler
+# # # To Check if a 403 Forbidden is really a 429 raised by a rate limiter
+# handler403 = views.custom403handler // not needed?

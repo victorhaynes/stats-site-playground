@@ -44,11 +44,11 @@ except Exception as error:
     print("Admin must create season records in database." + repr(error))
 season_schedule = json.loads(os.environ["SEASON_SCHEDULE"])
 
-def custom403handler(request, exception=None):
-    print("custom handler was hit")
-    if isinstance(exception, Ratelimited):
-        return JsonResponse("WR.GG Enforcing rate limit", safe=False, status=429)
-    return JsonResponse("Forbidden", safe=False, status=403)
+# def custom403handler(request, exception=None): // Not needed?
+#     print("custom handler was hit")
+#     if isinstance(exception, Ratelimited):
+#         return JsonResponse("WR.GG Enforcing rate limit", safe=False, status=429)
+#     return JsonResponse("Forbidden", safe=False, status=403)
 
 
 # Check if my rate limiter failed to prevent any 429s recently OR if Riot issues a Service Rate Limit for all external apps
@@ -86,7 +86,7 @@ def check_riot_enforced_timeout(view_func):
 ######################################################################################
 # Helper Function to check database for existing summoner data before hitting Riot API # special text index on gamename and tagline?
 ######################################################################################
-# @check_riot_enforced_timeout
+@check_riot_enforced_timeout
 @api_view(['GET'])
 def get_summoner(request):
 
@@ -165,8 +165,8 @@ def get_summoner(request):
         return JsonResponse(err.error_response, status=err.error_code, safe=False)
     except RiotApiRateLimitError as err:
         return JsonResponse(err.error_response, status=err.error_code, safe=False)
-    # except Exception as err:
-    #     return JsonResponse(f"error: {repr(err)}", status=status.HTTP_500_INTERNAL_SERVER_ERROR, safe=False)
+    except Exception as err:
+        return JsonResponse(f"error: {repr(err)}", status=status.HTTP_500_INTERNAL_SERVER_ERROR, safe=False)
 
 
     # GET Match History and Elo/Overview of every participant in a Summoner's Match History
@@ -295,7 +295,7 @@ def get_summoner(request):
                                     formatted_table_names = [partition_name] * 1
                                     cursor.execute(
                                     """
-                                        INSERT INTO wrs_api_summoneroverview{} (puuid, platform, season_id, metadata, created_at, updated_at)
+                                        INSERT INTO wrs_api_summoneroverview (puuid, platform, season_id, metadata, created_at, updated_at)
                                         VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                                         ON CONFLICT (puuid, season_id, platform) 
                                         DO UPDATE SET 
@@ -311,7 +311,7 @@ def get_summoner(request):
                                     formatted_table_names = [partition_name] * 1
                                     cursor.execute(
                                         """
-                                            SELECT * FROM wrs_api_summoneroverview{} WHERE puuid = %s AND platform = %s
+                                            SELECT * FROM wrs_api_summoneroverview WHERE puuid = %s AND platform = %s
                                             ORDER BY id DESC;
                                         """.format(*formatted_table_names)
                                         ,[participant_data["puuid"], request.query_params.get('platform')])
@@ -353,10 +353,50 @@ def get_summoner(request):
                     partition_name = "_" + request.query_params.get('platform')
                     formatted_table_names = [partition_name] * 1
                     print("attempting to write match:", match_detail["metadata"]["matchId"], "to table")
+                    # Write match to wrs_api_match
                     cursor.execute(
                         """
-                            INSERT INTO wrs_api_match{} ("matchId", "queueId", "season_id", "patch", "platform", "elo", "metadata")
-                            VALUES (%s, %s, %s, %s, %s, %s, %s);
+                            DO $$
+                            DECLARE
+                                v_match_id TEXT;
+                                v_queue_id INTEGER;
+                                v_season_id INTEGER;
+                                v_patch TEXT;
+                                v_platform TEXT;
+                                v_elo TEXT;
+                                v_metadata JSONB;
+                            BEGIN
+                                v_match_id := %s;
+                                v_queue_id := %s;
+                                v_season_id := %s;
+                                v_patch := %s;
+                                v_platform := %s;
+                                v_elo := %s;
+                                v_metadata := %s::JSONB;
+
+                                -- Set all constraints to immediate check, foreign key constraints are deffered and won't trigger exception handling
+                                SET CONSTRAINTS ALL IMMEDIATE;
+
+                                -- Attempt insertion into wrs_api_match
+                                BEGIN
+                                    INSERT INTO wrs_api_match ("matchId", "queueId", "season_id", "patch", "platform", "elo", "metadata")
+                                    VALUES (v_match_id, v_queue_id, v_season_id, v_patch, v_platform, v_elo, v_metadata);
+
+                                EXCEPTION
+                                    WHEN foreign_key_violation THEN
+                                        -- Handle the foreign key violation
+                                        RAISE NOTICE 'Queue id %% does not exist. Must insert: %%', v_queue_id, SQLERRM;
+
+                                        -- Write referenced row to wrs_api_gamemode
+                                        INSERT INTO wrs_api_gamemode ("queueId", "name")
+                                        VALUES (v_queue_id, NULL)
+                                        ON CONFLICT ("queueId") DO NOTHING;
+
+                                        -- Retry the insert into wrs_api_match
+                                        INSERT INTO wrs_api_match ("matchId", "queueId", "season_id", "patch", "platform", "elo", "metadata")
+                                        VALUES (v_match_id, v_queue_id, v_season_id, v_patch, v_platform, v_elo, v_metadata);   
+                                END;
+                            END $$;                           
                         """.format(*formatted_table_names)
                     ,[match_detail["metadata"]["matchId"], match_detail["info"]["queueId"], current_season.id, patch_tuple[0].full_version, request.query_params.get('platform'), match_detail["averageElo"], json.dumps(match_detail)])
 
@@ -429,13 +469,13 @@ def get_summoner(request):
                         formatted_table_names = [partition_name] * 1
                         cursor.execute(
                             """
-                                INSERT INTO wrs_api_summonermatch{} ("matchId", "elo", "queueId", "puuid", "season_id", "patch", "platform")
+                                INSERT INTO wrs_api_summonermatch ("matchId", "elo", "queueId", "puuid", "season_id", "patch", "platform")
                                 VALUES (%s, %s, %s, %s, %s, %s, %s);
                             """.format(*formatted_table_names)
                         # ,[match_detail["metadata"]["matchId"], match_detail["averageElo"], match_detail["info"]["queueId"], participant_puuid, current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
                         ,[match_detail["metadata"]["matchId"], match_detail["averageElo"], match_detail["info"]["queueId"], participant_object["puuid"], current_season.id, patch_tuple[0].full_version, request.query_params.get('platform')])
 
-                        if match_detail["info"]["queueId"] == 420:
+                        if match_detail["info"]["queueId"] == 420 and match_detail["info"]["endOfGameResult"] == "GameComplete": # Ranked & Not Terminated by Vanguard Anti-cheat
                             win = participant_object["win"]
                             remake = participant_object["gameEndedInEarlySurrender"]
                             if remake:
@@ -451,6 +491,7 @@ def get_summoner(request):
 
                             partition_name = "_" + request.query_params.get('platform')
                             formatted_table_names = [partition_name] * 4
+                            # Logic for champion win/loss/pick/role stat writing
                             cursor.execute(
                                 """
                                 DO $$
@@ -936,7 +977,7 @@ def get_summoner(request):
                             win_increment = 0
                             loss_increment = 1
                         game_increment = 1
-                        if match_detail["info"]["gameMode"] == "CLASSIC" and not remake:
+                        if match_detail["info"]["gameMode"] == "CLASSIC" and not remake and match_detail["info"]["endOfGameResult"] == "GameComplete":
                             total_cs = int(participant_object["neutralMinionsKilled"]) + int(participant_object["totalMinionsKilled"])
                             game_length = int(match_detail["info"]["gameDuration"]) / 60
                             cs_per_minute = float(total_cs/game_length)
@@ -947,18 +988,79 @@ def get_summoner(request):
                             # Personal Champion KDA/Stats writing logic                               
                             cursor.execute(
                                 """
-                                    INSERT INTO wrs_api_personalchampstat{} ("games", "wins", "losses", "kills", "deaths", "assists", "cs", "csm", "championId", "platform", "puuid", "queueId", "season_id")
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                    ON CONFLICT ("puuid", "platform", "championId", "season_id")
-                                    DO UPDATE SET
-                                    games = wrs_api_personalchampstat{}.games + EXCLUDED.games,
-                                    wins = wrs_api_personalchampstat{}.wins + EXCLUDED.wins,
-                                    losses = wrs_api_personalchampstat{}.losses + EXCLUDED.losses,
-                                    kills = wrs_api_personalchampstat{}.kills + EXCLUDED.kills,
-                                    deaths = wrs_api_personalchampstat{}.deaths + EXCLUDED.deaths,
-                                    assists = wrs_api_personalchampstat{}.assists + EXCLUDED.assists,
-                                    cs = wrs_api_personalchampstat{}.cs + EXCLUDED.cs,
-                                    csm = wrs_api_personalchampstat{}.csm + EXCLUDED.csm;
+                                DO $$
+                                DECLARE
+                                    v_games INTEGER;
+                                    v_wins INTEGER;
+                                    v_losses INTEGER;
+                                    v_kills INTEGER;
+                                    v_deaths INTEGER;
+                                    v_assists INTEGER;
+                                    v_cs INTEGER;
+                                    v_csm NUMERIC;
+                                    v_championId INTEGER;
+                                    v_platform TEXT;
+                                    v_puuid TEXT;
+                                    v_queueId INTEGER;
+                                    v_season_id INTEGER;
+                                BEGIN
+                                    v_games := %s;
+                                    v_wins := %s;
+                                    v_losses := %s;
+                                    v_kills := %s;
+                                    v_deaths := %s;
+                                    v_assists := %s;
+                                    v_cs := %s;
+                                    v_csm := %s;
+                                    v_championId := %s;
+                                    v_platform := %s;
+                                    v_puuid := %s;
+                                    v_queueId := %s;
+                                    v_season_id := %s;
+
+                                    -- Set all constraints to immediate check, foreign key constraints are deferred and won't trigger exception handling
+                                    SET CONSTRAINTS ALL IMMEDIATE;
+
+                                    -- Attempt insertion into wrs_api_personalchampstat
+                                    BEGIN
+                                        INSERT INTO wrs_api_personalchampstat ("games", "wins", "losses", "kills", "deaths", "assists", "cs", "csm", "championId", "platform", "puuid", "queueId", "season_id")
+                                        VALUES (v_games, v_wins, v_losses, v_kills, v_deaths, v_assists, v_cs, v_csm, v_championId, v_platform, v_puuid, v_queueId, v_season_id)
+                                        ON CONFLICT ("puuid", "platform", "championId", "season_id")
+                                        DO UPDATE SET
+                                        games = wrs_api_personalchampstat.games + EXCLUDED.games,
+                                        wins = wrs_api_personalchampstat.wins + EXCLUDED.wins,
+                                        losses = wrs_api_personalchampstat.losses + EXCLUDED.losses,
+                                        kills = wrs_api_personalchampstat.kills + EXCLUDED.kills,
+                                        deaths = wrs_api_personalchampstat.deaths + EXCLUDED.deaths,
+                                        assists = wrs_api_personalchampstat.assists + EXCLUDED.assists,
+                                        cs = wrs_api_personalchampstat.cs + EXCLUDED.cs,
+                                        csm = wrs_api_personalchampstat.csm + EXCLUDED.csm;
+
+                                    EXCEPTION
+                                        WHEN foreign_key_violation THEN
+                                            -- Handle the foreign key violation
+                                            RAISE NOTICE 'Foreign key violation for championId %%. Must insert missing reference.', v_championId;
+
+                                            -- Write referenced row to wrs_api_champion
+                                            INSERT INTO wrs_api_champion ("championId", "name", "metadata")
+                                            VALUES (v_championId, NULL, NULL)
+                                            ON CONFLICT ("championId") DO NOTHING;
+
+                                            -- Retry the insert into wrs_api_personalchampstat
+                                            INSERT INTO wrs_api_personalchampstat ("games", "wins", "losses", "kills", "deaths", "assists", "cs", "csm", "championId", "platform", "puuid", "queueId", "season_id")
+                                            VALUES (v_games, v_wins, v_losses, v_kills, v_deaths, v_assists, v_cs, v_csm, v_championId, v_platform, v_puuid, v_queueId, v_season_id)
+                                            ON CONFLICT ("puuid", "platform", "championId", "season_id")
+                                            DO UPDATE SET
+                                            games = wrs_api_personalchampstat.games + EXCLUDED.games,
+                                            wins = wrs_api_personalchampstat.wins + EXCLUDED.wins,
+                                            losses = wrs_api_personalchampstat.losses + EXCLUDED.losses,
+                                            kills = wrs_api_personalchampstat.kills + EXCLUDED.kills,
+                                            deaths = wrs_api_personalchampstat.deaths + EXCLUDED.deaths,
+                                            assists = wrs_api_personalchampstat.assists + EXCLUDED.assists,
+                                            cs = wrs_api_personalchampstat.cs + EXCLUDED.cs,
+                                            csm = wrs_api_personalchampstat.csm + EXCLUDED.csm;
+                                    END;
+                                END $$;
                                 """.format(*formatted_table_names)
                             ,[game_increment, win_increment, loss_increment, participant_object["kills"], participant_object["deaths"], participant_object["assists"], total_cs, cs_per_minute, participant_object["championId"], request.query_params.get('platform'), participant_object["puuid"], match_detail["info"]["queueId"], current_season.id]) 
                             print("pass 7")
@@ -984,15 +1086,15 @@ def get_summoner(request):
                             formatted_table_names = [partition_name] * 6
                             cursor.execute(
                                 """
-                                    INSERT INTO wrs_api_preferredrole{} ("puuid", "top", "jungle", "middle", "bottom", "support", "platform", "season_id")
+                                    INSERT INTO wrs_api_preferredrole ("puuid", "top", "jungle", "middle", "bottom", "support", "platform", "season_id")
                                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                                     ON CONFLICT ("puuid", "platform", "season_id")
                                     DO UPDATE SET 
-                                    top = wrs_api_preferredrole{}.top + EXCLUDED.top,
-                                    jungle = wrs_api_preferredrole{}.jungle + EXCLUDED.jungle,
-                                    middle = wrs_api_preferredrole{}.middle + EXCLUDED.middle,
-                                    bottom = wrs_api_preferredrole{}.bottom + EXCLUDED.bottom,
-                                    support = wrs_api_preferredrole{}.support + EXCLUDED.support;
+                                    top = wrs_api_preferredrole.top + EXCLUDED.top,
+                                    jungle = wrs_api_preferredrole.jungle + EXCLUDED.jungle,
+                                    middle = wrs_api_preferredrole.middle + EXCLUDED.middle,
+                                    bottom = wrs_api_preferredrole.bottom + EXCLUDED.bottom,
+                                    support = wrs_api_preferredrole.support + EXCLUDED.support;
                                 """.format(*formatted_table_names)
                             ,[participant_object["puuid"], top_increment, jg_increment, mid_increment, bot_increment, sup_increment, request.query_params.get('platform'), current_season.id]) 
                             print("pass 8")                     
@@ -1016,8 +1118,8 @@ def get_summoner(request):
 
     except RiotApiError as err:
         return JsonResponse(err.error_response, status=err.error_code, safe=False)
-    # except Exception as err:
-    #     return JsonResponse(f"Could not update databse. Error: {str(err)}", safe=False, status=status.HTTP_409_CONFLICT)
+    except Exception as err:
+        return JsonResponse(f"Could not update databse. Error: {str(err)}", safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         
     summoner_searched = Summoner.objects.get(puuid=puuid, platform=request.query_params.get('platform'))
@@ -1030,7 +1132,7 @@ def get_summoner(request):
 ######################################################################################
 # Get all Challenger Players for a PLATFORM and TIER (300 Challengers for NA1)
 ######################################################################################
-# @check_riot_enforced_timeout
+@check_riot_enforced_timeout
 @api_view(['GET'])
 @transaction.atomic
 def get_ranked_ladder(request):
@@ -1146,6 +1248,8 @@ def get_ranked_ladder(request):
             return JsonResponse(err.error_response, status=err.error_code, safe=False)
         except RiotApiRateLimitError as err:
             return JsonResponse(err.error_response, status=err.error_code, safe=False)
+        except Exception as err:
+            return JsonResponse(f"Could not update databse. Error: {str(err)}", safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return JsonResponse(summoners, safe=False, status=http_status_code)
 

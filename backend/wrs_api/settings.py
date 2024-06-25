@@ -52,8 +52,6 @@ INSTALLED_APPS = [
 
     # Name of App
     'wrs_api',
-    # # Start up configuration
-    # 'wrs_api.apps.AppInitializationConfig',
     # Django DRF
     'rest_framework',
     # CORS Config
@@ -74,15 +72,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    ## CORS
+    # CORS
     "corsheaders.middleware.CorsMiddleware",
 
     # RATE LIMITING CONFIG
-    # 'django_ratelimit.middleware.RatelimitMiddleware'
+    # Workaround to check if the app is sending out a 403 which should be a 429
     'wrs_api.403to429middleware.Custom403to429Middleware'
 
 ]
 
+# Does not seem to be catching properly if the rate limiter is called inside of a function (not attached on a view function)
 # RATELIMIT_VIEW = 'wrs_api.views.custom403handler'
 
 
@@ -108,7 +107,7 @@ TEMPLATES = [
         },
     },
 ]
-
+# # Dev/local
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -119,6 +118,16 @@ CACHES = {
     }
 }
 
+# Prod/location is the dockercompose service name "redis" instead of 127.0.0.1
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://redis:6379/0",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient"
+#         }
+#     }
+# }
 
 # # MIGHT NOT BE NEEDED, IF I DON'T USE ASYNC
 # WSGI_APPLICATION = 'wrs_api.wsgi.application'
@@ -134,22 +143,10 @@ CACHES = {
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         # 'ENGINE': "psqlextra.backend",
-#         'NAME': os.environ["DB_NAME"],
-#         'USER': os.environ["DB_USERNAME"],
-#         'PASSWORD': os.environ["DB_PASSWORD"],
-#         'HOST': os.environ["DB_ADDRESS"],
-#         'PORT': os.environ["DB_PORT"]
-#     }
-# }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        # 'ENGINE': "psqlextra.backend",
         'NAME': os.environ["DB_NAME"],
         'USER': os.environ["DB_USERNAME"],
         'PASSWORD': os.environ["DB_PASSWORD"],

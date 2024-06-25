@@ -4,9 +4,11 @@ services:
   backend:
     build:
       context: ./backend
-    command: gunicorn wrs_api.wsgi --bind 0.0.0.0:8000
+    command: sh -c "python manage.py migrate && gunicorn wrs_api.wsgi --bind 0.0.0.0:8000"
     ports:
     - "8000:8000"
+    depends_on:
+    - redis
   frontend:
     build:
       context: ./client/winratesgg
@@ -28,10 +30,18 @@ services:
     volumes:
     - cron_logs_icons:/var/log/icons
     - cron_logs_game_content:/var/log/assets
-
+  redis:
+    image: redis:latest
+    ports:
+    - "6379:6379"
 
 volumes:
   react_build:
   cron_logs_icons:
-  crong_logs_game_content:
+  cron_logs_game_content:
 
+# Note, when switching between local dev & prod
+# 1) swap axios URLS in client
+# 2) swap DB .env variables
+# 3) add/remove redis rate limit chechk decorator in view functions
+# 4) Swap settings.py database & cache config (redis-server, redis-cli in terminal to work locally)
