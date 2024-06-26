@@ -8,3 +8,5 @@ class AppInitializationConfig(AppConfig):
 
     def ready(self):
         management.call_command('seed_data')
+
+

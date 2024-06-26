@@ -108,26 +108,26 @@ TEMPLATES = [
     },
 ]
 # # Dev/local
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/0",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient"
-        }
-    }
-}
-
-# Prod/location is the dockercompose service name "redis" instead of 127.0.0.1
 # CACHES = {
 #     "default": {
 #         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://redis:6379/0",
+#         "LOCATION": "redis://127.0.0.1:6379/0",
 #         "OPTIONS": {
 #             "CLIENT_CLASS": "django_redis.client.DefaultClient"
 #         }
 #     }
 # }
+
+# Prod/location is the dockercompose service name "redis" for the redis instance instead of 127.0.0.1 running locally on my machine
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        }
+    }
+}
 
 # # MIGHT NOT BE NEEDED, IF I DON'T USE ASYNC
 # WSGI_APPLICATION = 'wrs_api.wsgi.application'

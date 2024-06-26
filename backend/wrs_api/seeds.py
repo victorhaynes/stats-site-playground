@@ -279,7 +279,8 @@ regions = ["americas", "asia", "europe", "sea", "esports"]
 # AMERICAS = na1, br1, la1, la2
 # ASIA = jp1, kr
 # EUROPE = euw1, eun1, tr1, ru
-# SEA = oc1, ph2, sg2, th2, tw2, vn2 ..... oc1 is ASIA when SEA is not an option
+# SEA = oc1, ph2, sg2, th2, tw2, vn2
+# ..... oc1 is ASIA when SEA is not an option
 platforms = ['tr1', 'ph2', 'la1', 'tw2', 'la2', 'eun1', 'vn2',
 'kr', 'oc1', 'na1', 'jp1', 'euw1', 'sg2', 'ru', 'th2', 'br1']
 

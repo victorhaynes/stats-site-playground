@@ -39,22 +39,46 @@ async function getLeaderboard() {
             const mapDisplayedToRegionToVerboseRegion = {
                 'na': 'americas',
                 'br': 'americas',
+                'lan': 'americas',
+                'las': 'americas',
                 'euw': 'europe',
-                'kr': 'asia'     
+                'eun': 'europe',
+                'tr': 'europe',
+                'ru': 'europe',
+                'kr': 'asia',
+                'jp': 'asia',
+                'oc': 'sea',
+                'ph': 'sea',
+                'sg': 'sea',
+                'th': 'sea',
+                'tw': 'sea',
+                'vn': 'sea',
             }
             let newRegion = mapDisplayedToRegionToVerboseRegion[displayedRegion]
 
             const mapDisplayedRegionToPlatform = {
                 'na': 'na1',
                 'br': 'br1',
+                'lan': 'la1',
+                'las': 'la2',
                 'euw': 'euw1',
-                'kr': 'kr'     
+                'eun': 'eun1',
+                'tr': 'tr1',
+                'ru': 'ru',
+                'kr': 'kr',
+                'jp': 'jp1',
+                'oc': 'oc1',
+                'ph': 'ph2',
+                'sg': 'sg2',
+                'th': 'th2',
+                'tw': 'tw2',
+                'vn': 'vn2',
             }
             const newPlatform = mapDisplayedRegionToPlatform[displayedRegion]
             // let response = await axios.get(`http://127.0.0.1:8000/api/ladder/?&platform=${newPlatform}&region=${newRegion}&page=${params.pageNumber}`);  // dev (npm start command)
 
-            let url = `http://127.0.0.1:8000/api/ladder/?&platform=${newPlatform}&region=${newRegion}&page=${params.pageNumber}` // npm start (dev)
-            // let url = `http://127.0.0.1/api/ladder/?&platform=${newPlatform}&region=${newRegion}&page=${params.pageNumber}`;  // prod port :8000 is factored out, NGINX will route from default port 80 to appropriate server
+            // let url = `http://127.0.0.1:8000/api/ladder/?&platform=${newPlatform}&region=${newRegion}&page=${params.pageNumber}` // npm start (dev)
+            let url = `http://127.0.0.1/api/ladder/?&platform=${newPlatform}&region=${newRegion}&page=${params.pageNumber}`;  // prod port :8000 is factored out, NGINX will route from default port 80 to appropriate server
             let response = await axios.get(url, {signal})
             clearTimeout(timeout)
             console.log(response.data);

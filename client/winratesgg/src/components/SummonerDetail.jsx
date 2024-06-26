@@ -40,22 +40,46 @@ const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
         const mapDisplayedToRegionToVerboseRegion = {
             'na': 'americas',
             'br': 'americas',
+            'lan': 'americas',
+            'las': 'americas',
             'euw': 'europe',
-            'kr': 'asia'     
+            'eun': 'europe',
+            'tr': 'europe',
+            'ru': 'europe',
+            'kr': 'asia',
+            'jp': 'asia',
+            'oc': 'sea',
+            'ph': 'sea',
+            'sg': 'sea',
+            'th': 'sea',
+            'tw': 'sea',
+            'vn': 'sea',    
         }
         const newRegion = mapDisplayedToRegionToVerboseRegion[displayedRegion]
 
         const mapDisplayedRegionToPlatform = {
             'na': 'na1',
             'br': 'br1',
+            'lan': 'la1',
+            'las': 'la2',
             'euw': 'euw1',
-            'kr': 'kr'     
+            'eun': 'eun1',
+            'tr': 'tr1',
+            'ru': 'ru',
+            'kr': 'kr',
+            'jp': 'jp1',
+            'oc': 'oc1',
+            'ph': 'ph2',
+            'sg': 'sg2',
+            'th': 'th2',
+            'tw': 'tw2',
+            'vn': 'vn2',    
         }
         const newPlatform = mapDisplayedRegionToPlatform[displayedRegion]
 
 
-        let url = `http://127.0.0.1:8000/api/summoner/?region=${region}&platform=${newPlatform}&gameName=${gameName}&tagLine=${tagLine}` // dev (npm start command)
-        // let url = `http://127.0.0.1/api/summoner/?region=${newRegion}&platform=${newPlatform}&gameName=${gameName}&tagLine=${tagLine}` // prod port :8000 is factored out, NGINX will route from default port 80 to appropriate server
+        // let url = `http://127.0.0.1:8000/api/summoner/?region=${region}&platform=${newPlatform}&gameName=${gameName}&tagLine=${tagLine}` // dev (npm start command)
+        let url = `http://127.0.0.1/api/summoner/?region=${newRegion}&platform=${newPlatform}&gameName=${gameName}&tagLine=${tagLine}` // prod port :8000 is factored out, NGINX will route from default port 80 to appropriate server
         
         url += queryLimit ? `&limit=${queryLimit}` : ''
         url += update ? `&update=${update}` : ''

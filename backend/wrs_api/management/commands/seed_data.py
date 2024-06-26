@@ -1,9 +1,6 @@
 from django.core.management.base import BaseCommand
 from wrs_api.models import Season, Region, Platform, Rank, Role, Item, Champion, GameMode
-from django.db.backends.signals import connection_created
-from django.dispatch import receiver
-from django.apps import apps
-from django.db import connection, OperationalError, ProgrammingError
+from django.db import ProgrammingError
 
 class Command(BaseCommand):
     help = 'Seeds essential database records for Season, Region, and Platform'
@@ -65,12 +62,105 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(self.style.WARNING('"br1" platform already exists, skipping seed...'))
 
-            # Create euw1 platform for Americas
+            # Create la1 platform for Americas
+            platform, created = Platform.objects.get_or_create(code='la1', region=americas)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "la1" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"la1" platform already exists, skipping seed...'))
+
+            # Create la2 platform for Americas
+            platform, created = Platform.objects.get_or_create(code='la2', region=americas)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "la2" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"la2" platform already exists, skipping seed...'))
+
+
+            # Create euw1 platform for Europe
             platform, created = Platform.objects.get_or_create(code='euw1', region=europe)
             if created:
                 self.stdout.write(self.style.SUCCESS('Platform "euw1" seeded successfully'))
             else:
                 self.stdout.write(self.style.WARNING('"euw1" platform already exists, skipping seed...'))
+
+            # Create eun1 platform for Europe
+            platform, created = Platform.objects.get_or_create(code='eun1', region=europe)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "eun1" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"eun1" platform already exists, skipping seed...'))
+
+            # Create tr1 platform for Europe
+            platform, created = Platform.objects.get_or_create(code='tr1', region=europe)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "tr1" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"tr1" platform already exists, skipping seed...'))
+
+            # Create ru platform for Europe
+            platform, created = Platform.objects.get_or_create(code='ru', region=europe)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "ru" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"ru" platform already exists, skipping seed...'))
+
+            # Create jp1 platform for Asia
+            platform, created = Platform.objects.get_or_create(code='jp1', region=asia)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "jp1" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"jp1" platform already exists, skipping seed...'))
+
+            # Create kr platform for Asia
+            platform, created = Platform.objects.get_or_create(code='kr', region=asia)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "kr" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"kr" platform already exists, skipping seed...'))
+
+            # Create oc1 platform for SEA
+            platform, created = Platform.objects.get_or_create(code='oc1', region=sea)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "oc1" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"oc1" platform already exists, skipping seed...'))
+
+            # Create ph2 platform for SEA
+            platform, created = Platform.objects.get_or_create(code='ph2', region=sea)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "ph2" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"ph2" platform already exists, skipping seed...'))
+
+            # Create sg2 platform for SEA
+            platform, created = Platform.objects.get_or_create(code='sg2', region=sea)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "sg2" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"sg2" platform already exists, skipping seed...'))
+
+            # Create th2 platform for SEA
+            platform, created = Platform.objects.get_or_create(code='th2', region=sea)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "th2" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"th2" platform already exists, skipping seed...'))
+
+            # Create tw2 platform for SEA
+            platform, created = Platform.objects.get_or_create(code='tw2', region=sea)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "tw2" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"tw2" platform already exists, skipping seed...'))
+
+            # Create vn1 platform for SEA
+            platform, created = Platform.objects.get_or_create(code='vn1', region=sea)
+            if created:
+                self.stdout.write(self.style.SUCCESS('Platform "vn1" seeded successfully'))
+            else:
+                self.stdout.write(self.style.WARNING('"vn1" platform already exists, skipping seed...'))
+
 
 
             elo_values = [

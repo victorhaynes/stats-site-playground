@@ -4,7 +4,7 @@ services:
   backend:
     build:
       context: ./backend
-    command: sh -c "python manage.py migrate && gunicorn wrs_api.wsgi --bind 0.0.0.0:8000"
+    command: /app/entrypoint.sh
     ports:
     - "8000:8000"
     depends_on:
@@ -41,7 +41,7 @@ volumes:
   cron_logs_game_content:
 
 # Note, when switching between local dev & prod
-# 1) swap axios URLS in client
-# 2) swap DB .env variables
-# 3) add/remove redis rate limit chechk decorator in view functions
-# 4) Swap settings.py database & cache config (redis-server, redis-cli in terminal to work locally)
+# 1) swap axios URLS in client  - prod
+# 2) swap DB .env variables in /backend, /content scheduler, and /client (when URL refactor is done)  - prod
+# 3) add/remove redis rate limit chechk decorator in view functions  - prod
+# 4) Swap settings.py database & cache config (redis-server, redis-cli in terminal to work locally)  - prod
