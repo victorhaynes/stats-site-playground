@@ -1,30 +1,23 @@
-# Need items, champions, sum spells, runes (major, minor, mod)
-
-# need to insert into riotapi version an old version of the riot api then similar to s3 logic,
-# get and write to database if version is out of date
-
-# break out riotapiversion into assetversion for each of the above categories
-# also do the same for GameMode, get official/up to date game modes from riot
-# consider giving them metadata
-
 import psycopg2
-from psycopg2 import sql
 from dotenv import load_dotenv
 import os
 import requests
 from utilities import update_required
 import json
-from datetime import datetime
-
-
-print("Starting champion detail job...", datetime.now())
-
-
+import logging
 
 load_dotenv()
 
+logging.basicConfig(
+    filename='/var/log/game_content/champion_details_job.log',
+    level=logging.DEBUG,
+    format='%(asctime)s:%(levelname)s:%(message)s'
+)
 
-def get_and_upload_latest_champion_details():
+logging.debug("Starting champion detail job...")
+
+
+def main():
     try:
         connection = psycopg2.connect(
             dbname=os.environ["DB_NAME"],
@@ -52,7 +45,7 @@ def get_and_upload_latest_champion_details():
             except TypeError:
                     last_saved_champions_version = None
             except Exception as err:
-                print(f"Error reading RiotApiVersion table: {repr(err)}")
+                logging.error(f"Error reading RiotApiVersion table: {repr(err)}")
 
         if update_required(latest_version=latest_version, last_saved_version=last_saved_champions_version):
             
@@ -65,7 +58,7 @@ def get_and_upload_latest_champion_details():
             # Bulk write all champions
             with connection.cursor() as cursor:
                 try:
-                    print("Writing", len(all_champions), "champions...")
+                    logging.info("Writing", len(all_champions), "champions...")
                     for champ in all_champions:
                         cursor.execute(
                         """
@@ -77,11 +70,11 @@ def get_and_upload_latest_champion_details():
                             metadata = EXCLUDED.metadata;
                         """,
                         [int(all_champions[champ]["key"]), all_champions[champ]["name"], json.dumps(all_champions[champ])])
-                        print("Wrote", all_champions[champ]["name"], "successfully...")
+                        logging.error("Wrote", all_champions[champ]["name"], "successfully...")
                     connection.commit()
-                    print("Commited champions")
+                    logging.info("Commited champions")
                 except psycopg2.Error as err:
-                    print(f"Error writing to champions: {repr(err)}")
+                    logging.error(f"Error writing to champions: {repr(err)}")
                     connection.rollback()
                     raise
 
@@ -99,16 +92,17 @@ def get_and_upload_latest_champion_details():
                         """
                         ,[latest_version])
                     connection.commit()
-                    print("Updated and committed champions version")
+                    logging.info("Updated and committed champions version")
                 except psycopg2.Error as err:
-                    print(f"Error reading RiotApiVersion table: {repr(err)}")
+                    logging.error(f"Error reading RiotApiVersion table: {repr(err)}")
                     connection.rollback()
                     raise
         else:
-            print("No update required...", datetime.now())
+            logging.warning("No update required...")
 
     except Exception as err:
-        print(f"Issue attempting to check or get champion details. Error: {repr(err)}")
+        logging.error(f"Issue attempting to check or get champion details. Error: {repr(err)}")
 
 
-get_and_upload_latest_champion_details()
+if __name__ == "__main__":
+    main()

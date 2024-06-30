@@ -1,35 +1,27 @@
-# Need items, champions, sum spells, runes (major, minor, mod)
-
-# need to insert into riotapi version an old version of the riot api then similar to s3 logic,
-# get and write to database if version is out of date
-
-# break out riotapiversion into assetversion for each of the above categories
-# also do the same for GameMode, get official/up to date game modes from riot
-# consider giving them metadata
-
 import psycopg2
 from dotenv import load_dotenv
 import os
 import requests
 from utilities import update_required
-from datetime import datetime
+import logging
 
+load_dotenv()
 
+logging.basicConfig(
+    filename='/var/log/game_content/game_mode_details_job.log',
+    level=logging.DEBUG,
+    format='%(asctime)s:%(levelname)s:%(message)s'
+)
+
+logging.debug("Starting game modes detail job...")
 
 
 # Note: using CD dragon over official link due to lack of details
 # https://static.developer.riotgames.com/docs/lol/queues.json
 
 
-print("Starting game modes detail job...", datetime.now())
 
-
-
-
-load_dotenv()
-
-
-def get_and_upload_latest_game_modes_details():
+def main():
     try:
         connection = psycopg2.connect(
             dbname=os.environ["DB_NAME"],
@@ -57,7 +49,7 @@ def get_and_upload_latest_game_modes_details():
             except TypeError:
                     last_saved_game_modes_version = None
             except Exception as err:
-                print(f"Error reading RiotApiVersion table: {repr(err)}")
+                logging.error(f"Error reading RiotApiVersion table: {repr(err)}")
 
         if update_required(latest_version=latest_version, last_saved_version=last_saved_game_modes_version):
             
@@ -70,7 +62,7 @@ def get_and_upload_latest_game_modes_details():
             # Bulk write all game modes
             with connection.cursor() as cursor:
                 try:
-                    print("Writing", len(game_modes), "game modes...")
+                    logging.info("Writing", len(game_modes), "game modes...")
                     for mode in game_modes:
                         cursor.execute(
                         """
@@ -80,12 +72,12 @@ def get_and_upload_latest_game_modes_details():
                             DO UPDATE SET 
                             name = EXCLUDED.name;
                         """,
-                        [int(mode), game_modes[mode]["shortName"]])
-                        print("Wrote", game_modes[mode]["shortName"], "successfully...")
+                        [int(mode["id"]), mode["shortName"]])
+                        logging.info("Wrote", mode["shortName"], "successfully...")
                     connection.commit()
-                    print("Commited game modes")
+                    logging.info("Commited game modes")
                 except psycopg2.Error as err:
-                    print(f"Error writing to game modes: {repr(err)}")
+                    logging.error(f"Error writing to game modes: {repr(err)}")
                     connection.rollback()
                     raise
 
@@ -103,16 +95,17 @@ def get_and_upload_latest_game_modes_details():
                         """
                         ,[latest_version])
                     connection.commit()
-                    print("Updated and committed game modes version")
+                    logging.info("Updated and committed game modes version")
                 except psycopg2.Error as err:
                     print(f"Error reading RiotApiVersion table: {repr(err)}")
                     connection.rollback()
                     raise
         else:
-            print("No update required...", datetime.now())
+            logging.warning("No update required...")
 
     except Exception as err:
-        print(f"Issue attempting to check or get game modes details. Error: {repr(err)}")
+        logging.error(f"Issue attempting to check or get game modes details. Error: {repr(err)}")
 
 
-get_and_upload_latest_game_modes_details()
+if __name__ == "__main__":
+    main()

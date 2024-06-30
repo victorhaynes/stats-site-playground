@@ -5,19 +5,21 @@ import requests
 import tarfile
 import io
 from dotenv import load_dotenv
-from datetime import datetime
 from utilities import update_required
-
-
-print("Starting rune & stat mod icon job...", datetime.now())
-
+import logging
 
 load_dotenv()
 
+logging.basicConfig(
+    filename='/var/log/icons/rune_icons_job.log',
+    level=logging.DEBUG,
+    format='%(asctime)s:%(levelname)s:%(message)s'
+)
+
+logging.debug("Starting rune & stat mod icon job...")
 
 
-
-def get_and_upload_latest_runes_icons():
+def main():
     try:
         s3 = boto3.client(
             's3',
@@ -46,7 +48,7 @@ def get_and_upload_latest_runes_icons():
             if update_required(latest_version, last_saved_game_version):
                 # Download the tarball
                 url = f"https://ddragon.leagueoflegends.com/cdn/dragontail-{latest_version}.tgz"
-                print("Getting tarbal")
+                logging.info("Getting tarbal")
                 tgz_response = requests.get(url)
                 if tgz_response.status_code == 200:
 
@@ -59,7 +61,7 @@ def get_and_upload_latest_runes_icons():
                     perks_and_stat_mod_response = requests.get(url)
 
                     if runes_response.status_code == 200 and perks_and_stat_mod_response.status_code == 200:
-                        print("Got runes and stat mods json")
+                        logging.info("Got runes and stat mods json")
                         all_runes_data = runes_response.json()
 
                         rune_icon_name_to_id_filename_map = {}
@@ -72,10 +74,7 @@ def get_and_upload_latest_runes_icons():
 
 
                         all_cd_perks = perks_and_stat_mod_response.json()
-                        print("here", all_cd_perks[0:2])
-
                         all_stat_mods = [d for d in all_cd_perks if "StatMods".lower() in d["iconPath"].lower()]
-                        print("here", all_stat_mods)
                         stat_mod_icon_name_to_id_filename_map = {}
                         for mod in all_stat_mods:
                             stat_mod_name_with_file_extension = mod["iconPath"].split("/StatMods/")[-1].lower()
@@ -84,7 +83,6 @@ def get_and_upload_latest_runes_icons():
                         with tarfile.open(fileobj=io.BytesIO(tgz_response.content)) as tar:
                             for member in tar.getmembers():
                                 if member.name.startswith(f"img/perk-images/Styles") and member.name.endswith('.png'):
-                                    print("inside", member.name)
                                     file_obj = tar.extractfile(member)
                                     if file_obj is not None:
                                         file_name = os.path.basename(member.name)
@@ -97,50 +95,46 @@ def get_and_upload_latest_runes_icons():
                                             rune_id_for_key = rune_name_no_file_extension
 
                                         s3_rune_key = f"major_and_minor_rune_icons/{rune_id_for_key}.png"
-                                        print(s3_rune_key)
                                         s3.put_object(Bucket=bucket, Key=s3_rune_key, Body=file_obj.read())
-                                        print(f"Uploaded {s3_rune_key} to S3 _", datetime.now())
+                                        logging.info(f"Uploaded {s3_rune_key} to S3 _")
 
                                 if member.name.startswith(f"img/perk-images/StatMods") and member.name.endswith('.png'):
 
                                     stat_mod_icon_name = member.name.split("/StatMods/")[-1].lower()
-                                    print("inside", member.name)
-                                    print(stat_mod_icon_name)
                                     file_obj = tar.extractfile(member)
-                                    print(stat_mod_icon_name_to_id_filename_map)
                                     if file_obj is not None:                                        
                                         stat_mod_file_name_for_key = stat_mod_icon_name_to_id_filename_map[stat_mod_icon_name]
 
 
                                         s3_mod_key = f"major_and_minor_rune_icons/{stat_mod_file_name_for_key}.png"
-                                        print(s3_mod_key)
                                         s3.put_object(Bucket=bucket, Key=s3_mod_key, Body=file_obj.read())
-                                        print(f"Uploaded {s3_mod_key} to S3 _", datetime.now())
+                                        logging.info(f"Uploaded {s3_mod_key} to S3 _")
 
 
 
 
                         s3.put_object(Bucket=bucket, Key=patch_key, Body=json.dumps({'version': latest_version}))
-                        print("Updated latest patch to:", latest_version, "_", datetime.now())
+                        logging.info("Updated latest patch to:", latest_version, "_")
 
                     else:
-                        print("Error fetching runes json from Data Dragon or stat mods from Community Dragon", datetime.now())
+                        logging.error("Error fetching runes json from Data Dragon or stat mods from Community Dragon")
 
                 else:
-                    print("Error Downloading .tgz file from Data Dragon", datetime.now())
+                    logging.error("Error Downloading .tgz file from Data Dragon")
 
             else:
-                print("No rune icons update performed", datetime.now())
+                logging.warning("No rune icons update performed")
 
         else:
-            print("Error getting latest API version from Data Dragon.", datetime.now())
+            logging.error("Error getting latest API version from Data Dragon.")
         
     except Exception as error:
-        print(f"An error occured: {repr(error)}")
+        logging.info(f"An error occured: {repr(error)}")
 
 
 
-get_and_upload_latest_runes_icons()
+if __name__ == "__main__":
+    main()
 
 
 

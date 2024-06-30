@@ -8,23 +8,25 @@
 # consider giving them metadata
 
 import psycopg2
-from psycopg2 import sql
 from dotenv import load_dotenv
 import os
 import requests
 from utilities import update_required
 import json
-from datetime import datetime
-from pprint import pprint
-
-print("Starting runes detail job...", datetime.now())
-
-
+import logging
 
 load_dotenv()
 
+logging.basicConfig(
+    filename='/var/log/game_content/rune_details_job.log',
+    level=logging.DEBUG,
+    format='%(asctime)s:%(levelname)s:%(message)s'
+)
 
-def get_and_upload_latest_runes_details():
+logging.debug("Starting runes detail job...")
+
+
+def main():
     try:
         connection = psycopg2.connect(
             dbname=os.environ["DB_NAME"],
@@ -52,7 +54,7 @@ def get_and_upload_latest_runes_details():
             except TypeError:
                     last_saved_runes_version = None
             except Exception as err:
-                print(f"Error reading RiotApiVersion table: {repr(err)}")
+                logging.error(f"Error reading RiotApiVersion table: {repr(err)}")
 
         if update_required(latest_version=latest_version, last_saved_version=last_saved_runes_version):
             # Fetch (all) runes(s).json from Riot Data Dragon
@@ -79,12 +81,10 @@ def get_and_upload_latest_runes_details():
                 # Extract stat mods
                 all_stat_mods = [d for d in all_cd_perks if "StatMods".lower() in d["iconPath"].lower()]
 
-                pprint(all_stat_mods)
-
                 # Bulk write all keystones
                 with connection.cursor() as cursor:
                     try:
-                        print("Writing", len(all_keystones), "keystones...")
+                        logging.info("Writing", len(all_keystones), "keystones...")
                         for keystone in all_keystones:
                             cursor.execute(
                             """
@@ -96,11 +96,11 @@ def get_and_upload_latest_runes_details():
                                 metadata = EXCLUDED.metadata;
                             """,
                             [int(keystone["id"]), keystone["name"], json.dumps(keystone)])
-                            print("Wrote", keystone["name"], "successfully...")
+                            logging.info("Wrote", keystone["name"], "successfully...")
                         connection.commit()
-                        print("Commited keystones")
+                        logging.info("Commited keystones")
                     except psycopg2.Error as err:
-                        print(f"Error writing to keystones table: {repr(err)}")
+                        logging.error(f"Error writing to keystones table: {repr(err)}")
                         connection.rollback()
                         raise
 
@@ -109,7 +109,7 @@ def get_and_upload_latest_runes_details():
                 # SecondaryPerkOne, SecondaryPerkTwo
                 with connection.cursor() as cursor:
                     try:
-                        print("Writing", len(all_minor_runes), "minor runres (p1)...")
+                        logging.info("Writing", len(all_minor_runes), "minor runres (p1)...")
                         for rune in all_minor_runes:
                             cursor.execute(
                             """
@@ -121,17 +121,17 @@ def get_and_upload_latest_runes_details():
                                 metadata = EXCLUDED.metadata;
                             """,
                             [int(rune["id"]), rune["name"], json.dumps(rune)])
-                            print("Wrote", rune["name"], "successfully...")
+                            logging.info("Wrote", rune["name"], "successfully...")
                         connection.commit()
-                        print("Commited primary perk ones")
+                        logging.info("Commited primary perk ones")
                     except psycopg2.Error as err:
-                        print(f"Error writing to primary perk one table: {repr(err)}")
+                        logging.error(f"Error writing to primary perk one table: {repr(err)}")
                         connection.rollback()
                         raise
 
                 with connection.cursor() as cursor:
                     try:
-                        print("Writing", len(all_minor_runes), "minor runres (p2)...")
+                        logging.info("Writing", len(all_minor_runes), "minor runres (p2)...")
                         for rune in all_minor_runes:
                             cursor.execute(
                             """
@@ -143,17 +143,17 @@ def get_and_upload_latest_runes_details():
                                 metadata = EXCLUDED.metadata;
                             """,
                             [int(rune["id"]), rune["name"], json.dumps(rune)])
-                            print("Wrote", rune["name"], "successfully...")
+                            logging.info("Wrote", rune["name"], "successfully...")
                         connection.commit()
-                        print("Commited primary perk twos")
+                        logging.info("Commited primary perk twos")
                     except psycopg2.Error as err:
-                        print(f"Error writing to primary perk two table: {repr(err)}")
+                        logging.error(f"Error writing to primary perk two table: {repr(err)}")
                         connection.rollback()
                         raise
 
                 with connection.cursor() as cursor:
                     try:
-                        print("Writing", len(all_minor_runes), "minor runres (p3)...")
+                        logging.info("Writing", len(all_minor_runes), "minor runres (p3)...")
                         for rune in all_minor_runes:
                             cursor.execute(
                             """
@@ -165,17 +165,17 @@ def get_and_upload_latest_runes_details():
                                 metadata = EXCLUDED.metadata;
                             """,
                             [int(rune["id"]), rune["name"], json.dumps(rune)])
-                            print("Wrote", rune["name"], "successfully...")
+                            logging.info("Wrote", rune["name"], "successfully...")
                         connection.commit()
-                        print("Commited primary perk threes")
+                        logging.info("Commited primary perk threes")
                     except psycopg2.Error as err:
-                        print(f"Error writing to primary perk three table: {repr(err)}")
+                        logging.error(f"Error writing to primary perk three table: {repr(err)}")
                         connection.rollback()
                         raise
 
                 with connection.cursor() as cursor:
                     try:
-                        print("Writing", len(all_minor_runes), "minor runres (s1)...")
+                        logging.info("Writing", len(all_minor_runes), "minor runres (s1)...")
                         for rune in all_minor_runes:
                             cursor.execute(
                             """
@@ -187,17 +187,17 @@ def get_and_upload_latest_runes_details():
                                 metadata = EXCLUDED.metadata;
                             """,
                             [int(rune["id"]), rune["name"], json.dumps(rune)])
-                            print("Wrote", rune["name"], "successfully...")
+                            logging.info("Wrote", rune["name"], "successfully...")
                         connection.commit()
-                        print("Commited secondary perk ones")
+                        logging.info("Commited secondary perk ones")
                     except psycopg2.Error as err:
-                        print(f"Error writing to secondary perk two table: {repr(err)}")
+                        logging.error(f"Error writing to secondary perk two table: {repr(err)}")
                         connection.rollback()
                         raise
 
                 with connection.cursor() as cursor:
                     try:
-                        print("Writing", len(all_minor_runes), "minor runres (s2)...")
+                        logging.info("Writing", len(all_minor_runes), "minor runres (s2)...")
                         for rune in all_minor_runes:
                             cursor.execute(
                             """
@@ -209,18 +209,18 @@ def get_and_upload_latest_runes_details():
                                 metadata = EXCLUDED.metadata;
                             """,
                             [int(rune["id"]), rune["name"], json.dumps(rune)])
-                            print("Wrote", rune["name"], "successfully...")
+                            logging.info("Wrote", rune["name"], "successfully...")
                         connection.commit()
-                        print("Commited secondary perk twos")
+                        logging.info("Commited secondary perk twos")
                     except psycopg2.Error as err:
-                        print(f"Error writing to secondary perk two table: {repr(err)}")
+                        logging.error(f"Error writing to secondary perk two table: {repr(err)}")
                         connection.rollback()
                         raise
 
                 # Write stat mods, repeat for StatShardOne, StatShardTwo, StatShardThree
                 with connection.cursor() as cursor:
                     try:
-                        print("Writing", len(all_stat_mods), "stat mods (1)...")
+                        logging.info("Writing", len(all_stat_mods), "stat mods (1)...")
                         for mod in all_stat_mods:
                             cursor.execute(
                             """
@@ -234,15 +234,15 @@ def get_and_upload_latest_runes_details():
                             [int(mod["id"]), mod["name"], json.dumps(mod)])
                             print("Wrote", mod["name"], "successfully...")
                         connection.commit()
-                        print("Commited stat mods (1)")
+                        logging.info("Commited stat mods (1)")
                     except psycopg2.Error as err:
-                        print(f"Error writing to stat mods (1) table: {repr(err)}")
+                        logging.error(f"Error writing to stat mods (1) table: {repr(err)}")
                         connection.rollback()
                         raise
 
                 with connection.cursor() as cursor:
                     try:
-                        print("Writing", len(all_stat_mods), "stat mods (2)...")
+                        logging.info("Writing", len(all_stat_mods), "stat mods (2)...")
                         for mod in all_stat_mods:
                             cursor.execute(
                             """
@@ -256,15 +256,15 @@ def get_and_upload_latest_runes_details():
                             [int(mod["id"]), mod["name"], json.dumps(mod)])
                             print("Wrote", mod["name"], "successfully...")
                         connection.commit()
-                        print("Commited stat mods (2)")
+                        logging.info("Commited stat mods (2)")
                     except psycopg2.Error as err:
-                        print(f"Error writing to stat mods (2) table: {repr(err)}")
+                        logging.error(f"Error writing to stat mods (2) table: {repr(err)}")
                         connection.rollback()
                         raise
 
                 with connection.cursor() as cursor:
                     try:
-                        print("Writing", len(all_stat_mods), "stat mods (3)...")
+                        logging.info("Writing", len(all_stat_mods), "stat mods (3)...")
                         for mod in all_stat_mods:
                             cursor.execute(
                             """
@@ -276,11 +276,11 @@ def get_and_upload_latest_runes_details():
                                 metadata = EXCLUDED.metadata;
                             """,
                             [int(mod["id"]), mod["name"], json.dumps(mod)])
-                            print("Wrote", mod["name"], "successfully...")
+                            logging.info("Wrote", mod["name"], "successfully...")
                         connection.commit()
-                        print("Commited stat mods (3)")
+                        logging.info("Commited stat mods (3)")
                     except psycopg2.Error as err:
-                        print(f"Error writing to stat mods (3) table: {repr(err)}")
+                        logging.error(f"Error writing to stat mods (3) table: {repr(err)}")
                         connection.rollback()
                         raise
 
@@ -297,16 +297,17 @@ def get_and_upload_latest_runes_details():
                         """
                         ,[latest_version])
                     connection.commit()
-                    print("Updated and committed runes version")
+                    logging.info("Updated and committed runes version")
                 except psycopg2.Error as err:
-                    print(f"Error reading RiotApiVersion table: {repr(err)}")
+                    logging.error(f"Error reading RiotApiVersion table: {repr(err)}")
                     connection.rollback()
                     raise
         else:
-            print("No update required...", datetime.now())
+            logging.warning("No update required...")
 
     except Exception as err:
-        print(f"Issue attempting to check or get runes details. Error: {repr(err)}")
+        logging.error(f"Issue attempting to check or get runes details. Error: {repr(err)}")
 
 
-get_and_upload_latest_runes_details()
+if __name__ == "__main__":
+    main()

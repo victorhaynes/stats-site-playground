@@ -32,7 +32,7 @@ async function getLeaderboard() {
         const signal = controller.signal;
         const timeout = setTimeout(() => {
             controller.abort()
-        }, 45000)
+        }, 120000)
 
         try {
             const displayedRegion = params.displayRegion

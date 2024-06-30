@@ -51,12 +51,12 @@ RUN mkdir -p /var/log/icons \
              /var/log/icons/rune_icons_job.log \
              /var/log/icons/profile_icons_job.log \
              /var/log/icons/summoner_spell_icons_job.log \
-    && mkdir -p /var/log/assets \
-    && touch /var/log/assets/champion_details_job.log \
-             /var/log/assets/game_mode_details_job.log \
-             /var/log/assets/item_details_job.log \
-             /var/log/assets/rune_details_job.log \
-             /var/log/assets/summoner_spell_details_job.log
+    && mkdir -p /var/log/game_content \
+    && touch /var/log/game_content/champion_details_job.log \
+             /var/log/game_content/game_mode_details_job.log \
+             /var/log/game_content/item_details_job.log \
+             /var/log/game_content/rune_details_job.log \
+             /var/log/game_content/summoner_spell_details_job.log
 
 
 CMD ["crond", "-f"]

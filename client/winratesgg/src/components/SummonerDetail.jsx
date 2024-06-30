@@ -90,7 +90,7 @@ const SummonerDetail = ({region, platform, globallyUpdateDisplayedRegion}) => {
         const signal = controller.signal;
         const timeout = setTimeout(() => {
             controller.abort()
-        }, 45000)
+        }, 120000)
 
         try {
             let response = await axios.get(url, {signal})

@@ -4,16 +4,22 @@ import os
 import requests
 from dotenv import load_dotenv
 import requests
-from datetime import datetime
 from utilities import update_required
-
-print("Starting item icon job...", datetime.now())
-
+import logging
 
 load_dotenv()
 
+logging.basicConfig(
+    filename='/var/log/icons/item_icons_job.log',
+    level=logging.DEBUG,
+    format='%(asctime)s:%(levelname)s:%(message)s'
+)
 
-def get_and_upload_latest_item_icons():
+logging.debug("Starting item icon job...")
+
+
+
+def main():
 
     try:
         s3 = boto3.client(
@@ -52,16 +58,17 @@ def get_and_upload_latest_item_icons():
                         if response.status_code == 200:
                             item_icon_png = response.content
                             s3.put_object(Body=item_icon_png, Bucket=bucket, Key=item_icon_key)
-                            print("Uploaded", item_icon_key, item_name, "to S3.")
+                            logging.info("Uploaded", item_icon_key, item_name, "to S3.")
                     s3.put_object(Bucket=bucket, Key=patch_key, Body=json.dumps({'version': latest_version}))
-                    print("Updated item latest patch to:", latest_version)
+                    logging.info("Updated item latest patch to:", latest_version)
 
             else:
-                print("No item icons update performed", datetime.now())
+                logging.warning("No item icons update performed")
         else:
-            print("Error getting latest API version from Data Dragon.", datetime.now())
+            logging.error("Error getting latest API version from Data Dragon.")
 
     except Exception as error:
-        print(f"An error occured: {repr(error)}")
+        logging.error(f"An error occured: {repr(error)}")
 
-get_and_upload_latest_item_icons()
+if __name__ == "__main__":
+    main()

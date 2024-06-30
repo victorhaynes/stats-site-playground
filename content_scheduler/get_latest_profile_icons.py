@@ -4,19 +4,23 @@ import os
 import requests
 from dotenv import load_dotenv
 import requests
-from datetime import datetime
 from botocore.exceptions import ClientError
 from utilities import update_required
-
-print("Starting profile icon job...", datetime.now())
-
+import logging
 
 load_dotenv()
 
+logging.basicConfig(
+    filename='/var/log/icons/profile_icons_job.log',
+    level=logging.DEBUG,
+    format='%(asctime)s:%(levelname)s:%(message)s'
+)
+
+logging.debug("Starting profile icon job...")
 
 # Note: unlike item icons & champion icons, profile icons do not frequently change. So this function checks if exists first
 # the goal is to reduce the number of writes to s3
-def get_and_upload_latest_profile_icons():
+def main():
 
     try:
         s3 = boto3.client(
@@ -54,27 +58,28 @@ def get_and_upload_latest_profile_icons():
 
                         try:
                             s3.head_object(Bucket=bucket, Key=profile_icon_key)
-                            print(f"{profile_icon_key} already exists. Skipping upload.")
+                            logging.warning(f"{profile_icon_key} already exists. Skipping upload.")
                         except ClientError as err:
                             if err.response['Error']['Code'] == "404":
                                 response = requests.get(f"https://ddragon.leagueoflegends.com/cdn/{latest_version}/img/profileicon/{profile_icon_id_with_file_extention}")
                                 if response.status_code == 200:
                                     profile_icon_png = response.content
                                     s3.put_object(Body=profile_icon_png, Bucket=bucket, Key=profile_icon_key)
-                                    print("Uploaded", profile_icon_id_with_file_extention, "to S3, _", datetime.now())
+                                    logging.info("Uploaded", profile_icon_id_with_file_extention)
                             else:
                                 raise 
 
                     s3.put_object(Bucket=bucket, Key=patch_key, Body=json.dumps({'version': latest_version}))
-                    print("Updated item latest patch to:", latest_version)
+                    logging.info("Updated item latest patch to:", latest_version)
 
 
             else:
-                print("No profile icons update performed", datetime.now())
+                logging.warning("No profile icons update performed")
         else:
-            print("Error getting latest API version from Data Dragon.", datetime.now())
+            logging.warning("Error getting latest API version from Data Dragon.")
 
     except Exception as error:
-        print(f"An error occured: {repr(error)}")
+        logging.error(f"An error occured: {repr(error)}")
 
-get_and_upload_latest_profile_icons()
+if __name__ == "__main__":
+    main()

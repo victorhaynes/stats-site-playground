@@ -13,17 +13,20 @@ import os
 import requests
 from utilities import update_required
 import json
-from datetime import datetime
-
-
-print("Starting summoner spell detail job...", datetime.now())
-
-
+import logging
 
 load_dotenv()
 
+logging.basicConfig(
+    filename='/var/log/game_content/summoner_spell_details_job.log',
+    level=logging.DEBUG,
+    format='%(asctime)s:%(levelname)s:%(message)s'
+)
 
-def get_and_upload_latest_summoner_spells_details():
+logging.debug("Starting summoner spell detail job...")
+
+
+def main():
     try:
         connection = psycopg2.connect(
             dbname=os.environ["DB_NAME"],
@@ -51,7 +54,7 @@ def get_and_upload_latest_summoner_spells_details():
             except TypeError:
                     last_saved_summoner_spells_version = None
             except Exception as err:
-                print(f"Error reading RiotApiVersion table: {repr(err)}")
+                logging.error(f"Error reading RiotApiVersion table: {repr(err)}")
 
         if update_required(latest_version=latest_version, last_saved_version=last_saved_summoner_spells_version):
             
@@ -64,7 +67,7 @@ def get_and_upload_latest_summoner_spells_details():
             # Bulk write all summoner spells
             with connection.cursor() as cursor:
                 try:
-                    print("Writing", len(all_sums), "summoner spells...")
+                    logging.info("Writing", len(all_sums), "summoner spells...")
                     for sum_spell in all_sums:
                         cursor.execute(
                         """
@@ -76,11 +79,11 @@ def get_and_upload_latest_summoner_spells_details():
                             metadata = EXCLUDED.metadata;
                         """,
                         [int(all_sums[sum_spell]["key"]), all_sums[sum_spell]["name"], json.dumps(all_sums[sum_spell])])
-                        print("Wrote", all_sums[sum_spell]["name"], "successfully...")
+                        logging.info("Wrote", all_sums[sum_spell]["name"], "successfully...")
                     connection.commit()
-                    print("Commited summoner spells")
+                    logging.info("Commited summoner spells")
                 except psycopg2.Error as err:
-                    print(f"Error writing to summoenr spells: {repr(err)}")
+                    logging.error(f"Error writing to summoenr spells: {repr(err)}")
                     connection.rollback()
                     raise
 
@@ -104,10 +107,11 @@ def get_and_upload_latest_summoner_spells_details():
                     connection.rollback()
                     raise
         else:
-            print("No update required...", datetime.now())
+            logging.warning("No update to summoner spells required...")
 
     except Exception as err:
-        print(f"Issue attempting to check or get summoner spells details. Error: {repr(err)}")
+        logging.error(f"Issue attempting to check or get summoner spells details. Error: {repr(err)}")
 
 
-get_and_upload_latest_summoner_spells_details()
+if __name__ == "__main__":
+    main()

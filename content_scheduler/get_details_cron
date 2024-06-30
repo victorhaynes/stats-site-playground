@@ -1,5 +1,5 @@
-0 10 * * *  /usr/local/bin/python /app/get_latest_champion_details.py >> /var/log/assets/champion_details_job.log 2>&1
-0 10 * * *  /usr/local/bin/python /app/get_latest_gamde_modes_details.py >> /var/log/assets/game_mode_details_job.log 2>&1
-0 10 * * *  /usr/local/bin/python /app/get_latest_item_details.py >> /var/log/assets/item_details_job.log 2>&1
-0 10 * * * /usr/local/bin/python /app/get_latest_runes_details.py >> /var/log/assets/rune_details_job.log 2>&1
-0 10 * * *  /usr/local/bin/python /app/get_latest_summoner_spells_details.py >> /var/log/assets/summoner_spell_details_job.log 2>&1
+0 10 * * *  /usr/local/bin/python /app/get_latest_champion_details.py >> /var/log/game_content/champion_details_job.log 2>&1
+0 10 * * *  /usr/local/bin/python /app/get_latest_gamde_modes_details.py >> /var/log/game_content/game_mode_details_job.log 2>&1
+0 10 * * *  /usr/local/bin/python /app/get_latest_item_details.py >> /var/log/game_content/item_details_job.log 2>&1
+0 10 * * * /usr/local/bin/python /app/get_latest_runes_details.py >> /var/log/game_content/rune_details_job.log 2>&1
+0 10 * * *  /usr/local/bin/python /app/get_latest_summoner_spells_details.py >> /var/log/game_content/summoner_spell_details_job.log 2>&1

@@ -195,7 +195,7 @@ def get_summoner(request):
             print("oldest game", all_matches_played[-1])
 
             print("!!!TESTING ONLY CHECK FOR SOME MATCHES!!!")
-            all_matches_played = all_matches_played[0:3]
+            all_matches_played = all_matches_played[0:2]
 
             # GET details for all matches fetched that are not already in database
             with connection.cursor() as cursor:

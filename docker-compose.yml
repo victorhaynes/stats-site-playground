@@ -29,7 +29,7 @@ services:
       context: ./content_scheduler
     volumes:
     - cron_logs_icons:/var/log/icons
-    - cron_logs_game_content:/var/log/assets
+    - cron_logs_game_content:/var/log/game_content
   redis:
     image: redis:latest
     ports:

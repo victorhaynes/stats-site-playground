@@ -2,11 +2,12 @@ from django.core.management.base import BaseCommand
 from wrs_api.models import Season, Region, Platform, Rank, Role, Item, Champion, GameMode
 from django.db import ProgrammingError
 
+# Currently turned off, apps.py commented out. Database was seeded before server is turned on
+
 class Command(BaseCommand):
     help = 'Seeds essential database records for Season, Region, and Platform'
 
     
-
     def handle(self, *args, **kwargs):
 
         try:
@@ -316,7 +317,7 @@ class Command(BaseCommand):
                 "1040": {"name": "Odyssey (Cadet)", "shortName": "Odyssey (Cadet)", "description": "Cadet", "detailedDescription": "Odyssey (Cadet)"},
                 "411": {"name": "Ranked", "shortName": "Ranked", "description": "Ranked Draft", "detailedDescription": ""},
                 "1900": {"name": "Ultra Rapid Fire", "shortName": "URF", "description": "Ultra Rapid Fire", "detailedDescription": ""},
-                "0": {"name": "Custom", "shortName": "Custom", "description": "Custom", "detailedDescription": ""},
+                # "0": {"name": "Custom", "shortName": "Custom", "description": "Custom", "detailedDescription": ""},
                 "410": {"name": "Ranked", "shortName": "Ranked", "description": "Ranked Draft", "detailedDescription": ""},
                 "1901": {"name": "URF 1v1", "shortName": "URF 1v1", "description": "URF 1v1", "detailedDescription": ""},
                 "1": {"name": "Normal", "shortName": "Normal", "description": "Blind Pick", "detailedDescription": "Normal (Blind Pick)"},
